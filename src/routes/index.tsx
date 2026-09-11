@@ -1,17 +1,25 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+﻿import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  Shield,
+  ScanSearch,
+  ShieldCheck,
+  Workflow,
+  Check,
   ArrowRight,
+  Lock,
+  Receipt,
   Zap,
-  Cpu,
-  Eye,
+  Trophy,
+  Target,
+  TrendingUp,
   CheckCircle2,
   Sparkles,
-  Lock,
-  Layers,
-  BarChart3,
-  Flame,
-  ChevronRight,
+  Terminal,
+  Cpu,
+  Activity,
+  Eye,
+  Wifi,
+  Database,
+  AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,29 +32,32 @@ import {
 import { SiteNavbar } from "@/components/site/SiteNavbar";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { LiveTicker } from "@/components/site/LiveTicker";
+import { FloatingParticles } from "@/components/site/FloatingParticles";
+
+import { GlitchText } from "@/components/site/GlitchText";
 import { AnimatedCounter } from "@/components/site/AnimatedCounter";
 import { LogoSymbol } from "@/components/brand/Logo";
 import { cn } from "@/lib/utils";
 
-const symbolLogo = "/predicta-symbol.png";
+const symbolLogo = "/PREDICTA-symbol.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "PREDICTA — Instant Virtuals Engineered with Precision" },
+      { title: "PREDICTA â€” Instant Virtuals Outcome Exposed" },
       {
         name: "description",
         content:
-          "PREDICTA decodes SportyBet instant virtual match simulations in real-time. High-precision neural match intelligence before the game loads.",
+          "PREDICTA exposes the next SportyBet instant virtual outcome before the game loads. Upload your screenshot, hack the result, play with certainty.",
       },
-      { property: "og:title", content: "PREDICTA — Instant Virtuals Outcome Exposed" },
+      { property: "og:title", content: "PREDICTA â€” Instant Virtuals Outcome Exposed" },
       {
         property: "og:description",
         content:
-          "Our proprietary neural engine penetrates instant virtual simulations and delivers the next outcome with calibrated certainty.",
+          "Our algorithm penetrates the SportyBet instant virtual engine and delivers the next outcome â€” no guesswork, just exposed results.",
       },
     ],
-    links: [{ rel: "canonical", href: "https://predicta.lovable.app/" }],
+    links: [{ rel: "canonical", href: "https://PREDICTA.lovable.app/" }],
     scripts: [
       {
         type: "application/ld+json",
@@ -83,7 +94,7 @@ export const Route = createFileRoute("/")({
                 price: p.price,
                 priceCurrency: "GHS",
                 availability: "https://schema.org/InStock",
-                url: "https://predicta.lovable.app/#packages",
+                url: "https://PREDICTA.lovable.app/#packages",
               },
             },
           })),
@@ -94,189 +105,207 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const bentoItems = [
+const features = [
+
   {
-    title: "Neural Vision OCR & Match Telemetry",
-    subtitle: "Automated Frame Extraction",
-    body: "Upload any raw SportyBet screenshot. The neural engine instantly decodes match identifiers, team names, and odds matrix with zero manual entry.",
-    badge: "Vision AI",
     icon: Cpu,
-    colSpan: "lg:col-span-2",
-    accent: "from-blue-500/20 via-cyan-500/10 to-transparent",
+    title: "Algorithm Precision",
+    body: "Our proprietary breach engine decodes each virtual match frame with machine-level accuracy. Results are locked â€” zero second-guessing.",
   },
   {
-    title: "Sub-Second Infiltration",
-    subtitle: "<0.8s Exposure Latency",
-    body: "Outcomes are intercepted and resolved ahead of the client-side game engine render pipeline.",
-    badge: "Speed",
+    icon: Trophy,
+    title: "Proven Strikes",
+    body: "Thousands of users have already exposed outcomes daily. Numbers don't lie â€” our track record proves it.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Zero Traces",
+    body: "All breach operations are encrypted end-to-end. Your account, uploads, and exposed outcomes leave no trail.",
+  },
+  {
     icon: Zap,
-    colSpan: "lg:col-span-1",
-    accent: "from-emerald-500/20 via-teal-500/10 to-transparent",
-  },
-  {
-    title: "Strict 1X2 Deterministic Logic",
-    subtitle: "Zero Guesswork",
-    body: "Every prediction is strictly calibrated into Home Win, Draw, or Away Win with high probability bounds.",
-    badge: "Precision",
-    icon: BarChart3,
-    colSpan: "lg:col-span-1",
-    accent: "from-purple-500/20 via-pink-500/10 to-transparent",
-  },
-  {
-    title: "Enterprise Isolated Enclaves",
-    subtitle: "Hardware-grade Privacy",
-    body: "Every scan operation runs inside isolated runtime environments over 256-bit encrypted channels. No data retention.",
-    badge: "Security",
-    icon: Lock,
-    colSpan: "lg:col-span-2",
-    accent: "from-cyan-500/20 via-blue-500/10 to-transparent",
+    title: "Instant Delivery",
+    body: "Upload your screenshot. Our system penetrates the virtual feed and returns the exposed outcome in seconds.",
   },
 ];
 
 const steps = [
   {
     n: "01",
-    title: "Capture Screenshot",
-    body: "Take a screenshot of your SportyBet instant virtual match screen — PNG, JPG or WEBP.",
+    title: "Upload",
+    body: "Drop your SportyBet instant virtual screenshot â€” PNG, JPG or WEBP. Our system reads the game identifier.",
   },
   {
     n: "02",
-    title: "Neural Match Decryption",
-    body: "PREDICTA cross-references the simulation seed, reads the game identifier, and locks the next outcome.",
+    title: "Penetrate",
+    body: "The algorithm breaches the virtual engine feed, cross-references the match ID, and locks the next outcome.",
   },
   {
     n: "03",
-    title: "Execute with Certainty",
-    body: "Receive certified verdicts before kickoff. Play with engineered confidence, not probability guesswork.",
+    title: "Expose",
+    body: "Receive your certified outcome â€” confirmed before the game loads. Bet with certainty, not chance.",
   },
 ];
 
 const packages = [
   {
     name: "Starter",
-    price: "GH₵250",
+    price: "GHâ‚µ250",
     credits: "2 outcomes per screenshot",
-    summary: "Ideal for testing and single session runs.",
-    perks: [
-      "2 scan credits included",
-      "Instant Virtual Football markets",
-      "Full historical reports",
-      "Standard telemetry support",
-    ],
+    perks: ["2 scan credits", "Instant Virtual Football only", "Outcome history", "Email support"],
     popular: false,
     badge: null,
   },
   {
     name: "Plus",
-    price: "GH₵350",
+    price: "GHâ‚µ350",
     credits: "4 outcomes per screenshot",
-    summary: "Our most balanced tier for active daily players.",
-    perks: [
-      "3 scan credits included",
-      "Instant Virtual Football markets",
-      "Full historical reports",
-      "Priority neural queue routing",
-      "Fast-track admin approval",
-    ],
-    popular: true,
-    badge: "Recommended",
+    perks: ["3 scan credits", "Instant Virtual Football only", "Outcome history", "Priority email support"],
+    popular: false,
+    badge: "ðŸ”¥ Best Value",
   },
   {
     name: "Premium",
-    price: "GH₵500",
+    price: "GHâ‚µ500",
     credits: "8 outcomes per screenshot",
-    summary: "Maximum capacity for serious virtual analysts.",
-    perks: [
-      "5 scan credits included",
-      "Instant Virtual Football markets",
-      "Full historical reports",
-      "Dedicated neural processing priority",
-      "VIP direct WhatsApp support",
-    ],
-    popular: false,
-    badge: "Maximum Intel",
+    perks: ["5 scan credits", "Instant Virtual Football only", "Outcome history", "Priority support"],
+    popular: true,
+    badge: "âš¡ Most Popular",
   },
+];
+
+const trust = [
+  { icon: Lock, title: "Fully encrypted", body: "Every breach operation runs over 256-bit encrypted tunnels. Nothing leaks." },
+  { icon: ShieldCheck, title: "Verified outcomes", body: "Every exposed result passes through our multi-layer verification engine." },
+  { icon: TrendingUp, title: "Consistent delivery", body: "Tens of thousands of outcomes delivered with zero downtime." },
+  { icon: Receipt, title: "Transparent pricing", body: "Clear credit packages, visible history â€” no hidden fees, ever." },
 ];
 
 const faqs = [
   {
-    q: "How does the PREDICTA neural engine operate?",
-    a: "You upload a SportyBet instant virtual screenshot. PREDICTA's neural vision model extracts the simulation match ID, penetrates the engine's pre-rendered outcome feed, and delivers the decisive outcome before the match animations run.",
+    q: "How does the outcome exposure system work?",
+    a: "You upload a SportyBet instant virtual screenshot. PREDICTA's algorithm reads the game ID, penetrates the virtual engine's outcome feed, and delivers the result before the match is rendered.",
   },
   {
-    q: "Which screenshot formats are accepted?",
-    a: "PNG, JPG, JPEG and WEBP format screenshots from both mobile and desktop screens. High-resolution, readable odds produce the quickest verification.",
+    q: "Which image formats are supported?",
+    a: "PNG, JPG, JPEG and WEBP screenshots. Clear, high-resolution images produce the most accurate outcome exposures.",
   },
   {
-    q: "What are scan credits and how are they used?",
-    a: "Each package provides a specific number of scan credits. One credit processes one screenshot and delivers the exposed instant virtual outcomes according to your tier.",
+    q: "What are scan credits?",
+    a: "Each package includes scan credits. One credit processes one screenshot and delivers your exposed instant virtual outcome. Credits are consumed per scan.",
   },
   {
-    q: "How are Mobile Money payments verified?",
-    a: "Submit your payment details and reference code. Our administrative team verifies the transaction, and your credits are credited to your balance promptly.",
+    q: "Is my account secure?",
+    a: "Accounts use managed authentication with enterprise-grade access controls. Your profile, payments, outcomes and notifications are only visible to you.",
   },
   {
-    q: "Is my user data private and secure?",
-    a: "Yes. All operations run over secure 256-bit encrypted channels. Your scans, payments, reports, and phone credentials are confidential and visible only to you.",
+    q: "How is payment verified?",
+    a: "Submit your payment with its reference. It is recorded as pending, reviewed by an administrator, and credits are added only once the payment is approved.",
   },
   {
-    q: "Can I review previous analysis verdicts?",
-    a: "Yes. Every completed analysis is logged in your secure History tab with match names, odds, timestamps, and confidence scores for ongoing tracking.",
+    q: "Can I review past exposed outcomes?",
+    a: "Yes. Every completed exposure is saved to your history with its ID, date, image and status â€” and can be reopened or downloaded at any time.",
   },
 ];
 
-/* ── Apple Terminal Card Preview ── */
-function AppleTerminalCard() {
+/* â”€â”€ Logo Watermark Background â”€â”€ */
+function LogoWatermark() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-[0.025]" aria-hidden="true">
+      <div className="absolute inset-0 animate-logo-drift" style={{ transformOrigin: "center center" }}>
+        {Array.from({ length: 35 }, (_, i) => (
+          <img
+            key={i}
+            src={symbolLogo}
+            alt=""
+            className="absolute h-16 w-16 select-none"
+            style={{
+              left: `${(i * 19 + 5) % 95}%`,
+              top: `${(i * 23 + 8) % 90}%`,
+              transform: `rotate(${(i * 37) % 360}deg)`,
+              animationDelay: `${(i * 0.3) % 4}s`,
+              filter: "hue-rotate(120deg) brightness(2)",
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* â”€â”€ Terminal Hack Card â”€â”€ */
+function TerminalHackCard() {
   const outcomes = [
-    { game: "SPBET-VIRT #4102", match: "Lions FC vs Eagles Utd", result: "HOME WIN (1)", odds: "1.85", status: "VERIFIED" },
-    { game: "SPBET-VIRT #4103", match: "Storm City vs Thunder FC", result: "AWAY WIN (2)", odds: "2.10", status: "VERIFIED" },
-    { game: "SPBET-VIRT #4104", match: "Phoenix FC vs Red Devils", result: "DRAW (X)", odds: "3.20", status: "VERIFIED" },
+    { game: "SPBET-VIRT #3291", match: "Lions FC vs Eagles Utd", result: "HOME WIN", odds: "1.85", status: "EXPOSED" },
+    { game: "SPBET-VIRT #3292", match: "Storm City vs Thunder FC", result: "OVER 2.5 GOALS", odds: "1.72", status: "EXPOSED" },
+    { game: "SPBET-VIRT #3293", match: "Phoenix FC vs Red Devils", result: "BTTS â€” YES", odds: "1.90", status: "EXPOSED" },
   ];
 
   return (
-    <div className="w-full max-w-md lg:max-w-none mx-auto rounded-3xl p-5 sm:p-7 relative overflow-hidden bg-[#0C0C12]/80 backdrop-blur-2xl border border-white/[0.12] shadow-[0_30px_90px_rgba(0,0,0,0.8)]">
-      {/* Subtle specular rim glare */}
-      <div className="pointer-events-none absolute -top-24 -left-24 size-64 rounded-full bg-[#2997FF]/15 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 size-64 rounded-full bg-[#A855F7]/15 blur-3xl" />
+    <div
+      className="rounded-xl p-3 sm:p-6 relative overflow-hidden font-mono bg-slate-950 border border-emerald-500/40 shadow-2xl text-slate-100"
+    >
+      {/* Scan line */}
+      <div className="animate-scan-line" />
 
-      {/* Window Controls Header */}
-      <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/[0.08] relative z-10">
-        <div className="flex items-center gap-2">
-          <span className="size-3 rounded-full bg-white/20" />
-          <span className="size-3 rounded-full bg-white/20" />
-          <span className="size-3 rounded-full bg-white/20" />
-          <span className="ml-2.5 font-mono text-xs font-semibold text-neutral-300">
-            PREDICTA Engine · Live Telemetry
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-400">
-          <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span>Locked</span>
-        </div>
+      {/* Shine sweep */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div
+          className="absolute inset-0 w-[30%] animate-shine"
+          style={{ background: "linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.08), transparent)" }}
+        />
       </div>
 
-      {/* Outcome Cards */}
-      <div className="space-y-2.5 relative z-10">
+      {/* Terminal header bar */}
+      <div className="flex items-center gap-1.5 mb-3 sm:mb-4 pb-3 border-b border-slate-800 min-w-0">
+        <span className="size-2.5 shrink-0 rounded-full bg-red-500" />
+        <span className="size-2.5 shrink-0 rounded-full bg-yellow-500" />
+        <span className="size-2.5 shrink-0 rounded-full bg-emerald-500" />
+        <span className="ml-2 text-[9px] sm:text-[10px] tracking-wider truncate flex-1 min-w-0 text-emerald-400">
+          root@PREDICTA:~$ ./breach_sportybet.sh
+        </span>
+        <span className="shrink-0 inline-block w-1.5 h-3 bg-emerald-400 animate-terminal-cursor" />
+      </div>
+
+      {/* Status row */}
+      <div className="flex items-center justify-between gap-2 flex-wrap mb-3 sm:mb-4 relative">
+        <div className="flex items-center gap-1.5">
+          <span className="size-2 shrink-0 rounded-full bg-emerald-500 animate-status-blink" />
+          <span className="text-[10px] sm:text-xs font-bold tracking-widest text-emerald-400">
+            BREACH ACTIVE
+          </span>
+        </div>
+        <Badge className="text-[9px] sm:text-[10px] gap-1 font-mono bg-red-500/15 border-red-500/40 text-red-400 shrink-0">
+          <AlertTriangle className="size-3" />
+          3 OUTCOMES EXPOSED
+        </Badge>
+      </div>
+
+      {/* Outcome rows */}
+      <div className="space-y-2 sm:space-y-3 relative">
         {outcomes.map((v, i) => (
           <div
             key={v.game}
-            className="rounded-2xl p-3.5 sm:p-4 bg-white/[0.03] border border-white/[0.07] hover:border-white/20 transition-all duration-300 hover:bg-white/[0.05]"
+            className="rounded-lg p-2.5 sm:p-3 transition-all bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50"
+            style={{
+              animation: `slide-up-fade 0.5s cubic-bezier(0.22, 1, 0.36, 1) ${0.1 + i * 0.15}s both`,
+            }}
           >
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
-                <p className="text-[11px] tracking-wider truncate text-neutral-400 font-mono">
-                  {v.game} · {v.match}
+                <p className="text-[8px] sm:text-[9px] tracking-wider truncate text-slate-400">
+                  {v.game} Â· {v.match}
                 </p>
-                <p className="mt-1 text-sm sm:text-base font-semibold text-white tracking-tight truncate">
+                <p className="mt-0.5 text-xs sm:text-sm font-bold text-white">
                   {v.result}
                 </p>
               </div>
               <div className="text-right shrink-0">
-                <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-[#2997FF]/15 text-[#64D2FF] border border-[#2997FF]/30">
-                  <CheckCircle2 className="size-3" />
+                <span className="inline-flex items-center gap-1 rounded px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] sm:text-[10px] font-bold bg-emerald-500/15 border border-emerald-500/40 text-emerald-300">
+                  <Check className="size-2.5" />
                   {v.status}
                 </span>
-                <p className="mt-1 text-xs sm:text-sm font-mono font-bold text-neutral-300">
+                <p className="mt-0.5 text-[9px] sm:text-[10px] font-bold text-emerald-400">
                   @{v.odds}
                 </p>
               </div>
@@ -285,13 +314,25 @@ function AppleTerminalCard() {
         ))}
       </div>
 
-      {/* Bottom Status Bar */}
-      <div className="mt-4 pt-3.5 border-t border-white/[0.08] flex items-center justify-between text-xs text-neutral-400 relative z-10">
-        <span className="flex items-center gap-2">
-          <Cpu className="size-3.5 text-[#2997FF]" />
-          <span>Neural Model: Predicta-2.4-Pro</span>
-        </span>
-        <span className="font-mono text-neutral-300 font-medium">99.4% Calibrated</span>
+      {/* Summary bar */}
+      <div className="mt-3 sm:mt-4 rounded-lg p-2.5 sm:p-3 border bg-red-950/20 border-red-500/30">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold text-red-400">
+            <Cpu className="size-3.5 shrink-0" />
+            <span className="truncate">SYSTEM ACCESS: GRANTED</span>
+          </div>
+          <span className="text-[9px] sm:text-[10px] font-bold shrink-0 text-emerald-400">
+            âœ“ EXPOSED
+          </span>
+        </div>
+        <div className="mt-2 h-1 sm:h-1.5 overflow-hidden rounded-full bg-red-950/50">
+          <div
+            className="h-full rounded-full animate-hack-bar bg-gradient-to-r from-red-500 to-emerald-400"
+          />
+        </div>
+        <p className="mt-1.5 text-[9px] sm:text-[10px] text-slate-400">
+          Next breach cycle: <span className="text-emerald-400">00:03:47</span>
+        </p>
       </div>
     </div>
   );
@@ -299,345 +340,314 @@ function AppleTerminalCard() {
 
 function Index() {
   return (
-    <div className="min-h-screen bg-[#060608] text-[#F5F5F7] selection:bg-[#2997FF] selection:text-white" style={{ overflowX: "clip" }}>
+    <div className="min-h-screen relative overflow-x-hidden bg-background text-foreground">
+      {/* Global logo watermark */}
+      <LogoWatermark />
+
       <SiteNavbar />
       <LiveTicker />
 
       <main className="relative">
-        {/* ── HERO SECTION (Apple Keynote Style) ── */}
-        <section id="overview" className="relative pt-12 sm:pt-20 pb-16 sm:pb-28 overflow-hidden">
-          {/* Ambient Lighting / Keynote Spotlight */}
+        {/* â”€â”€ HERO â”€â”€ */}
+        <section className="relative overflow-hidden border-b border-border/60 bg-white">
+
+
+          {/* Red radial ambient glow */}
           <div
-            className="pointer-events-none absolute inset-x-0 top-0 h-[650px]"
+            className="pointer-events-none absolute inset-0"
             style={{
-              background:
-                "radial-gradient(ellipse 90% 50% at 50% -10%, rgba(41, 151, 255, 0.22), rgba(0, 210, 255, 0.08), transparent 75%)",
+              background: "radial-gradient(60% 60% at 75% 0%, rgba(228, 24, 39, 0.08), transparent 70%)",
+            }}
+          />
+          {/* Green radial ambient glow */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background: "radial-gradient(40% 40% at 5% 100%, rgba(16, 185, 129, 0.08), transparent 70%)",
             }}
           />
 
-          <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
-              {/* Left Column: Keynote Typography */}
-              <div className="lg:col-span-7 text-left">
-                {/* Micro Pill Badge */}
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-1.5 text-xs font-medium text-neutral-300 backdrop-blur-md mb-6 shadow-xs">
-                  <span className="size-2 rounded-full bg-[#2997FF] animate-pulse" />
-                  <span>PREDICTA Intelligence · Virtual Neural Engine</span>
-                  <ChevronRight className="size-3 text-neutral-500" />
-                </div>
+          <FloatingParticles />
 
-                {/* Master Headline */}
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.08] text-white">
-                  Instant Virtuals.{" "}
-                  <span className="block bg-gradient-to-r from-[#2997FF] via-[#64D2FF] to-[#BF5AF2] bg-clip-text text-transparent">
-                    Engineered Precision.
-                  </span>
-                </h1>
+          <div className="relative mx-auto grid max-w-6xl items-center gap-8 sm:gap-12 px-4 py-10 sm:py-16 sm:px-6 lg:grid-cols-2 lg:py-24">
+            {/* Left column */}
+            <div className="animate-rise relative">
+              {/* Breach badge */}
+              <div className="mb-5">
+                <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3.5 py-1.5 font-mono text-xs font-bold tracking-widest text-primary shadow-sm">
+                  <span className="size-2 rounded-full bg-primary animate-status-blink" />
+                  SYSTEM BREACH ACTIVE
+                </span>
+              </div>
 
-                {/* Refined Subheadline */}
-                <p className="mt-6 text-base sm:text-lg lg:text-xl leading-relaxed text-neutral-400 font-normal max-w-xl">
-                  The breakthrough simulation intelligence platform. Upload any SportyBet instant virtual screenshot and decode the locked match outcome before kickoff.
-                </p>
+              {/* Main headline with glitch */}
+              <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-6xl leading-tight text-slate-950">
+                Instant Virtuals.{" "}
+                <GlitchText className="text-primary">
+                  Outcome Exposed.
+                </GlitchText>
+              </h1>
 
-                {/* Apple CTA Pills */}
-                <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
-                  <Link
-                    to="/register"
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-white text-black hover:bg-neutral-200 text-sm font-semibold px-7 py-3.5 shadow-lg shadow-white/10 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    <span>Get Started Free</span>
-                    <ArrowRight className="size-4" />
+              <p className="mt-5 max-w-xl text-base leading-relaxed sm:text-lg text-slate-700 font-medium">
+                Our proprietary algorithm penetrates the{" "}
+                <span className="font-bold text-emerald-700">
+                  SportyBet instant virtual engine
+                </span>{" "}
+                â€” delivering the next match outcome before the game even loads. No guesswork. Just exposed results.
+              </p>
+
+              <div className="mt-6 sm:mt-8 flex flex-col gap-3 sm:flex-row">
+                <Button
+                  size="lg"
+                  className="relative overflow-hidden group font-mono font-bold tracking-widest bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25"
+                  asChild
+                >
+                  <Link to="/register">
+                    <span className="relative z-10 flex items-center gap-2">
+                      HACK THE OUTCOME{" "}
+                      <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                    </span>
                   </Link>
-
-                  <a
-                    href="#specs"
-                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.05] hover:bg-white/10 text-white text-sm font-medium px-6 py-3.5 backdrop-blur-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    <Layers className="size-4 text-neutral-400" />
-                    <span>View Architecture Specs</span>
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  asChild
+                  className="font-mono border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-bold"
+                >
+                  <a href="#how-it-works">
+                    <Terminal className="mr-2 size-4 text-emerald-600" />
+                    ENTER THE SYSTEM
                   </a>
-                </div>
-
-                {/* Specs Row */}
-                <div className="mt-12 pt-8 border-t border-white/[0.08] grid grid-cols-3 gap-6 max-w-lg">
-                  <div>
-                    <div className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                      <AnimatedCounter end={99} suffix="%" className="tabular-nums" />
-                    </div>
-                    <div className="text-xs text-neutral-400 mt-1">Match Accuracy</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                      &lt;0.8s
-                    </div>
-                    <div className="text-xs text-neutral-400 mt-1">Neural Latency</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-1.5">
-                      <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-                      24/7
-                    </div>
-                    <div className="text-xs text-neutral-400 mt-1">Always Online</div>
-                  </div>
-                </div>
+                </Button>
               </div>
 
-              {/* Right Column: Hardware Glass Preview */}
-              <div className="lg:col-span-5 flex justify-center">
-                <AppleTerminalCard />
-              </div>
+              {/* Animated stats */}
+              <dl className="mt-6 sm:mt-10 grid grid-cols-3 gap-3 sm:gap-6 border-t border-slate-200 pt-6">
+                <div>
+                  <dt className="text-xl sm:text-2xl font-extrabold font-mono text-slate-950">
+                    <AnimatedCounter end={99} suffix="%" className="tabular-nums" />
+                  </dt>
+                  <dd className="text-[11px] sm:text-xs font-mono font-semibold text-slate-600 mt-0.5">Accuracy rate</dd>
+                </div>
+                <div>
+                  <dt className="text-xl sm:text-2xl font-extrabold font-mono text-slate-950">
+                    <AnimatedCounter end={14} suffix="K+" className="tabular-nums" />
+                  </dt>
+                  <dd className="text-[11px] sm:text-xs font-mono font-semibold text-slate-600 mt-0.5">Exposed</dd>
+                </div>
+                <div>
+                  <dt className="flex items-center gap-1.5 text-xl sm:text-2xl font-extrabold font-mono text-slate-950">
+                    <span className="size-2.5 shrink-0 rounded-full bg-emerald-600 animate-status-blink" />
+                    24/7
+                  </dt>
+                  <dd className="text-[11px] sm:text-xs font-mono font-semibold text-slate-600 mt-0.5">Always live</dd>
+                </div>
+              </dl>
+            </div>
+
+            {/* Right column â€” terminal card */}
+            <div className="animate-rise">
+              <TerminalHackCard />
             </div>
           </div>
         </section>
 
-        {/* ── BENTO GRID SECTION (Apple Specs & Architecture) ── */}
-        <section id="specs" className="py-20 sm:py-28 relative border-t border-white/[0.06] bg-[#060608]">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            {/* Header */}
-            <div className="max-w-2xl text-left mb-12 sm:mb-16">
-              <span className="text-xs font-semibold tracking-widest text-[#2997FF] uppercase">
-                Architecture &amp; Intelligence
+        {/* â”€â”€ FEATURES â”€â”€ */}
+        <section id="features" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24 relative">
+
+          <div className="max-w-2xl relative">
+            <span className="mb-3 inline-flex items-center gap-1.5 font-mono text-xs font-bold tracking-widest text-primary">
+              <Activity className="size-3.5" />
+              WHY OUR ALGORITHM NEVER FAILS
+            </span>
+            <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl text-slate-950">
+              Built to Expose, Not Guess
+            </h2>
+            <p className="mt-3 text-slate-600 font-medium">
+              Every component is engineered to deliver certainty â€” not predictions.
+            </p>
+          </div>
+          <div className="mt-8 sm:mt-10 grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 relative">
+            {features.map((f) => (
+              <div
+                key={f.title}
+                className="group rounded-xl p-5 sm:p-6 transition-all hover:-translate-y-1 cursor-default bg-white border border-slate-200/80 shadow-md hover:shadow-xl hover:border-primary/40"
+              >
+                <span className="inline-flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+                  <f.icon className="size-5" />
+                </span>
+                <h3 className="mt-4 text-base font-bold font-mono text-slate-950">
+                  {f.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600 font-medium">
+                  {f.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* â”€â”€ HOW IT WORKS â”€â”€ */}
+        <section id="how-it-works" className="border-y border-slate-200 relative bg-slate-50/80">
+          <FloatingParticles />
+
+          <div className="mx-auto max-w-6xl px-4 py-10 sm:py-16 sm:px-6 lg:py-24 relative">
+            <div className="max-w-2xl">
+              <span className="mb-3 inline-flex items-center gap-1.5 font-mono text-xs font-bold tracking-widest text-emerald-700">
+                <Wifi className="size-3.5" />
+                BREACH PROTOCOL
               </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mt-2.5">
-                Engineered for certainty. Built for speed.
+              <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl text-slate-950">
+                How The System Works
               </h2>
-              <p className="mt-3.5 text-base sm:text-lg text-neutral-400">
-                Every component of PREDICTA is designed to eliminate guesswork from instant virtual simulations.
+              <p className="mt-3 text-slate-600 font-medium">
+                Three steps from screenshot to exposed instant virtual outcome.
               </p>
             </div>
-
-            {/* Bento Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-              {bentoItems.map((item) => (
-                <div
-                  key={item.title}
-                  className={cn(
-                    "rounded-3xl p-6 sm:p-8 bg-[#0C0C12] border border-white/[0.08] hover:border-white/[0.18] transition-all duration-300 relative overflow-hidden group shadow-lg",
-                    item.colSpan
-                  )}
-                >
-                  {/* Subtle hover gradient glow */}
-                  <div
-                    className={cn(
-                      "pointer-events-none absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500",
-                      item.accent
-                    )}
-                  />
-
-                  <div className="relative z-10 flex flex-col h-full justify-between">
-                    <div>
-                      <div className="flex items-center justify-between gap-3 mb-6">
-                        <span className="inline-flex size-11 items-center justify-center rounded-2xl bg-white/[0.06] border border-white/10 text-white">
-                          <item.icon className="size-5" />
-                        </span>
-                        <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-medium text-neutral-300">
-                          {item.badge}
-                        </span>
-                      </div>
-
-                      <p className="text-xs font-medium text-[#2997FF] uppercase tracking-wider">
-                        {item.subtitle}
-                      </p>
-                      <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight mt-1.5">
-                        {item.title}
-                      </h3>
-                      <p className="mt-3 text-sm sm:text-base leading-relaxed text-neutral-400">
-                        {item.body}
-                      </p>
-                    </div>
-
-                    <div className="mt-8 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs text-neutral-400">
-                      <span>Telemetry Verified</span>
-                      <ChevronRight className="size-4 text-neutral-500 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── WORKFLOW SECTION (Apple Step Sequence) ── */}
-        <section id="workflow" className="py-20 sm:py-28 relative border-t border-white/[0.06] bg-[#0A0A0E]">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="max-w-2xl text-left mb-12 sm:mb-16">
-              <span className="text-xs font-semibold tracking-widest text-[#2997FF] uppercase">
-                Simplicity at Scale
-              </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mt-2.5">
-                Three steps from screenshot to verdict.
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <ol className="mt-8 sm:mt-10 grid gap-4 sm:gap-5 sm:grid-cols-3">
               {steps.map((s, idx) => (
-                <div
+                <li
                   key={s.n}
-                  className="rounded-3xl p-6 sm:p-8 bg-[#060608] border border-white/[0.08] relative group hover:border-white/20 transition-all duration-300"
+                  className="group rounded-xl p-5 sm:p-6 transition-all bg-white border border-slate-200/90 shadow-md hover:shadow-xl hover:border-emerald-500/50"
                 >
-                  <span className="font-mono text-3xl sm:text-4xl font-extrabold text-white/20 group-hover:text-[#2997FF]/60 transition-colors">
+                  <span
+                    className={cn(
+                      "inline-flex size-10 items-center justify-center rounded-full text-sm font-extrabold tracking-widest font-mono transition-colors",
+                      idx === 1
+                        ? "bg-emerald-100 text-emerald-800"
+                        : "bg-primary/10 text-primary"
+                    )}
+                  >
                     {s.n}
                   </span>
-                  <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight mt-4">
+                  <h3 className="mt-3 text-lg font-bold font-mono text-slate-950">
                     {s.title}
                   </h3>
-                  <p className="mt-2.5 text-sm leading-relaxed text-neutral-400">
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600 font-medium">
                     {s.body}
                   </p>
-                </div>
+                </li>
               ))}
-            </div>
+            </ol>
           </div>
         </section>
 
-        {/* ── PRICING / PACKAGES (Apple One / Pro Tier Style) ── */}
-        <section id="packages" className="py-20 sm:py-28 relative border-t border-white/[0.06] bg-[#060608]">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="max-w-2xl text-center mx-auto mb-14 sm:mb-20">
-              <span className="text-xs font-semibold tracking-widest text-[#2997FF] uppercase">
-                Transparent Credits
+
+
+        {/* â”€â”€ TRUST â”€â”€ */}
+        <section className="relative bg-white border-y border-slate-200">
+          <div className="mx-auto max-w-6xl px-4 py-14 sm:py-20 sm:px-6">
+            {/* Section header */}
+            <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
+              <span className="mb-3 inline-flex items-center gap-1.5 font-mono text-xs font-bold tracking-widest text-primary">
+                <Database className="size-3.5" />
+                OPERATIONAL INTEGRITY
               </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mt-2.5">
-                Choose your intelligence tier.
+              <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl text-slate-950">
+                Built on Trust, Hardened by Design
               </h2>
-              <p className="mt-3.5 text-base sm:text-lg text-neutral-400">
-                1 scan credit processes 1 screenshot and unlocks certified match outcomes.
+              <p className="mt-3 text-slate-600 font-medium text-sm sm:text-base">
+                Every layer of PREDICTA is engineered for security, reliability, and transparency.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-              {packages.map((pkg) => (
-                <div
-                  key={pkg.name}
-                  className={cn(
-                    "rounded-3xl p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 relative",
-                    pkg.popular
-                      ? "bg-[#0F121C] border-2 border-[#2997FF] shadow-[0_0_60px_-15px_rgba(41,151,255,0.3)]"
-                      : "bg-[#0C0C12] border border-white/[0.08] hover:border-white/20"
-                  )}
-                >
-                  {pkg.badge && (
-                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                      <span className="rounded-full bg-[#2997FF] text-white text-[11px] font-semibold px-3.5 py-1 tracking-wide uppercase shadow-md">
-                        {pkg.badge}
-                      </span>
-                    </div>
-                  )}
-
-                  <div>
-                    <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-xl font-bold text-white tracking-tight">
-                        {pkg.name}
-                      </h3>
-                      <span className="text-xs text-neutral-400 font-mono">
-                        {pkg.credits}
-                      </span>
-                    </div>
-
-                    <div className="mt-4 flex items-baseline gap-1">
-                      <span className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                        {pkg.price}
-                      </span>
-                    </div>
-
-                    <p className="mt-2 text-xs text-neutral-400 leading-relaxed">
-                      {pkg.summary}
-                    </p>
-
-                    <div className="my-6 border-t border-white/[0.08]" />
-
-                    <ul className="space-y-3 text-xs text-neutral-300">
-                      {pkg.perks.map((perk) => (
-                        <li key={perk} className="flex items-center gap-2.5">
-                          <CheckCircle2 className="size-4 text-[#2997FF] shrink-0" />
-                          <span>{perk}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="mt-8">
-                    <Link
-                      to="/register"
+            {/* Trust cards grid */}
+            <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {trust.map((t, idx) => {
+                const accents = [
+                  { border: "border-t-red-500", iconBg: "bg-red-50 group-hover:bg-red-100", iconText: "text-red-600" },
+                  { border: "border-t-emerald-500", iconBg: "bg-emerald-50 group-hover:bg-emerald-100", iconText: "text-emerald-600" },
+                  { border: "border-t-blue-500", iconBg: "bg-blue-50 group-hover:bg-blue-100", iconText: "text-blue-600" },
+                  { border: "border-t-amber-500", iconBg: "bg-amber-50 group-hover:bg-amber-100", iconText: "text-amber-600" },
+                ];
+                const accent = accents[idx % accents.length] ?? {
+                  border: "border-t-emerald-500",
+                  iconBg: "bg-emerald-50 group-hover:bg-emerald-100",
+                  iconText: "text-emerald-600",
+                };
+                return (
+                  <div
+                    key={t.title}
+                    className={cn(
+                      "group relative rounded-xl border border-slate-200/80 border-t-[3px] bg-white p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-default",
+                      accent.border
+                    )}
+                  >
+                    <span
                       className={cn(
-                        "w-full flex items-center justify-center rounded-full py-3 text-xs font-semibold tracking-wide transition-all duration-200",
-                        pkg.popular
-                          ? "bg-[#2997FF] hover:bg-[#0077ED] text-white shadow-md hover:scale-[1.02] active:scale-[0.98]"
-                          : "bg-white text-black hover:bg-neutral-200 hover:scale-[1.02] active:scale-[0.98]"
+                        "inline-flex size-11 items-center justify-center rounded-lg transition-colors duration-300",
+                        accent.iconBg,
+                        accent.iconText
                       )}
                     >
-                      Select {pkg.name}
-                    </Link>
+                      <t.icon className="size-5" />
+                    </span>
+                    <h3 className="mt-4 text-sm font-bold font-mono text-slate-950">
+                      {t.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-slate-600 font-medium">
+                      {t.body}
+                    </p>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
 
-        {/* ── CUPERTINO FAQ SECTION ── */}
-        <section id="faq" className="py-20 sm:py-28 relative border-t border-white/[0.06] bg-[#0A0A0E]">
-          <div className="mx-auto max-w-3xl px-4 sm:px-6">
-            <div className="text-center max-w-xl mx-auto mb-12 sm:mb-16">
-              <span className="text-xs font-semibold tracking-widest text-[#2997FF] uppercase">
-                Frequently Asked Questions
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mt-2.5">
-                Answers &amp; Intelligence.
-              </h2>
-            </div>
-
-            <Accordion type="single" collapsible className="space-y-3">
-              {faqs.map((f) => (
-                <AccordionItem
-                  key={f.q}
-                  value={f.q}
-                  className="rounded-2xl border border-white/[0.08] bg-[#060608] px-5 sm:px-6 transition-colors"
-                >
-                  <AccordionTrigger className="text-left text-sm sm:text-base font-medium text-white hover:text-[#2997FF] py-4">
-                    {f.q}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-xs sm:text-sm leading-relaxed text-neutral-400 pb-5">
-                    {f.a}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
+        {/* â”€â”€ FAQ â”€â”€ */}
+        <section id="faq" className="mx-auto max-w-3xl px-4 py-10 sm:py-16 sm:px-6 lg:py-24">
+          <span className="mb-3 inline-flex items-center gap-1.5 font-mono text-xs font-bold tracking-widest text-emerald-700">
+            <Eye className="size-3.5" />
+            FREQUENTLY ASKED
+          </span>
+          <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl text-slate-950">
+            Questions &amp; Intel
+          </h2>
+          <Accordion type="single" collapsible className="mt-8">
+            {faqs.map((f) => (
+              <AccordionItem
+                key={f.q}
+                value={f.q}
+                className="border-slate-200"
+              >
+                <AccordionTrigger className="text-left text-base font-bold font-mono text-slate-900 hover:text-primary">
+                  {f.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm leading-relaxed text-slate-600 font-medium">
+                  {f.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </section>
 
-        {/* ── KEYNOTE FINAL CTA ── */}
-        <section className="py-20 sm:py-28 relative border-t border-white/[0.08] overflow-hidden bg-[#060608]">
-          <div
-            className="pointer-events-none absolute inset-0 opacity-40"
-            style={{
-              background:
-                "radial-gradient(circle at 50% 50%, rgba(41, 151, 255, 0.15), rgba(168, 85, 247, 0.08), transparent 70%)",
-            }}
-          />
+        {/* â”€â”€ CTA BANNER â”€â”€ */}
+        <section className="border-t border-primary/30 relative overflow-hidden bg-gradient-to-r from-red-600 via-primary to-red-700 text-white">
 
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 text-center relative z-10">
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white">
-              Ready to Experience Instant Foresight?
+          <FloatingParticles />
+          <div className="mx-auto max-w-4xl px-4 py-12 sm:py-16 text-center sm:px-6 relative">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3.5 py-1.5 font-mono text-[10px] sm:text-xs font-bold tracking-widest text-white">
+              <span className="size-2 shrink-0 rounded-full bg-emerald-400 animate-status-blink" />
+              <span>SYSTEM ONLINE â€” READY TO BREACH</span>
+            </div>
+            <h2 className="text-2xl font-black tracking-tight sm:text-3xl lg:text-4xl text-white">
+              Ready to Expose Your First Instant Virtual?
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-neutral-400 max-w-xl mx-auto">
-              Join PREDICTA today and start decoding SportyBet instant virtuals with engineered accuracy.
+            <p className="mx-auto mt-3 max-w-xl text-sm sm:text-base text-white/90 font-medium">
+              Create your PREDICTA account and start receiving exposed instant virtual outcomes in minutes.
             </p>
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
-              <Link
-                to="/register"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-white text-black hover:bg-neutral-200 text-sm font-semibold px-8 py-3.5 shadow-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-              >
-                <span>Create Your Account</span>
-                <ArrowRight className="size-4" />
+            <Button
+              size="lg"
+              className="mt-6 sm:mt-8 group font-mono font-bold tracking-widest bg-white text-primary hover:bg-slate-100 shadow-xl"
+              asChild
+            >
+              <Link to="/register">
+                HACK THE OUTCOME{" "}
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
-              <Link
-                to="/login"
-                className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/[0.04] hover:bg-white/10 text-white text-sm font-medium px-7 py-3.5 backdrop-blur-md transition-all duration-200"
-              >
-                <span>Sign In to Workspace</span>
-              </Link>
-            </div>
+            </Button>
           </div>
         </section>
       </main>
@@ -646,3 +656,4 @@ function Index() {
     </div>
   );
 }
+

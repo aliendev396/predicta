@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+﻿import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -33,9 +33,9 @@ export const Route = createFileRoute("/register")({
   },
   head: () => ({
     meta: [
-      { title: "Create Account — PREDICTA" },
+      { title: "Create Account â€” PREDICTA" },
       { name: "description", content: "Create your PREDICTA account, complete registration and get instant virtual verdicts from PREDICTA." },
-      { property: "og:title", content: "Create Account — PREDICTA" },
+      { property: "og:title", content: "Create Account â€” PREDICTA" },
       { property: "og:description", content: "Join PREDICTA and start analyzing screenshots with AI." },
     ],
   }),
@@ -187,12 +187,12 @@ function RegisterPage() {
       }
 
       setPending(false);
-      setNotice("Partner account created — awaiting approval…");
+      setNotice("Partner account created â€” awaiting approvalâ€¦");
       navigate({ to: "/partner-apply", replace: true });
       return;
     }
 
-    // Log the new regular member straight in — the registration fee screen follows.
+    // Log the new regular member straight in â€” the registration fee screen follows.
     if (!data.session) {
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: syntheticEmail,
@@ -204,7 +204,7 @@ function RegisterPage() {
       }
     }
     setPending(false);
-    setNotice("Account created — continuing to your registration…");
+    setNotice("Account created â€” continuing to your registrationâ€¦");
     navigate({ to: "/registration", replace: true });
   }
 
@@ -212,23 +212,23 @@ function RegisterPage() {
     <AuthBackground>
       <Link to="/" className="flex justify-center" aria-label="PREDICTA home">
         <div className="inline-flex items-center rounded-xl bg-white px-5 py-2.5 shadow-lg">
-          <LogoFull className="h-8 w-auto object-contain" />
+          <LogoFull className="h-7" />
         </div>
       </Link>
-      <div className="mt-6 sm:mt-8 rounded-xl border border-primary/30 bg-card p-4.5 sm:p-8 shadow-xl ring-1 ring-primary/10">
-        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+      <div className="mt-8 rounded-xl border border-primary/30 bg-card p-6 shadow-xl ring-1 ring-primary/10 sm:p-8">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
           {isPartnerInvite ? "Partner registration" : "Create your account"}
         </h1>
         <p className="mt-1.5 text-sm text-muted-foreground">
           {isPartnerInvite
-            ? "Create your account to access your partner hub immediately — no registration fee."
+            ? "Create your account to access your partner hub immediately â€” no registration fee."
             : "Create your account with your mobile phone number to continue."}
         </p>
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <Label htmlFor="name">Full name</Label>
-            <Input id="name" value={fullName} maxLength={80} onChange={(e) => setFullName(e.target.value)} required />
+            <Input id="name" value={fullName} maxLength={80} onChange={(e) => setFullName(e.target.value)} placeholder="Ama Mensah" required />
           </div>
 
           <PhoneInput
@@ -299,3 +299,5 @@ function RegisterPage() {
     </AuthBackground>
   );
 }
+
+

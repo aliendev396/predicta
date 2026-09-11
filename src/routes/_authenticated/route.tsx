@@ -1,11 +1,9 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { createFileRoute, Outlet, redirect, useRouterState, useRouter } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { LogoSymbol } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
-import { useIsIOS } from "@/hooks/useIsIOS";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -98,12 +96,12 @@ function AuthenticatedError({ reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-6 text-center">
       <LogoSymbol className="h-12 w-auto animate-pulse" />
-      <h1 className="text-lg font-semibold text-foreground">Syncing workspace…</h1>
+      <h1 className="text-lg font-semibold text-foreground">Syncing workspaceâ€¦</h1>
       <p className="max-w-md text-xs text-muted-foreground">
         Reconnecting to PREDICTA servers. If this takes more than a moment, click below.
       </p>
       <Button size="sm" onClick={handleRetry} disabled={retrying}>
-        {retrying ? "Connecting…" : "Refresh Workspace"}
+        {retrying ? "Connectingâ€¦" : "Refresh Workspace"}
       </Button>
     </div>
   );
@@ -112,21 +110,20 @@ function AuthenticatedError({ reset }: { error: Error; reset: () => void }) {
 function AuthenticatedLayout() {
   const { user, isAdmin, isPartner } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isIOS = useIsIOS();
 
   if (pathname === "/registration" || pathname === "/partner-apply") {
     return (
-      <div className={cn("min-h-screen bg-secondary/30 px-3 py-6 sm:px-6 sm:py-12", isIOS && "ios-page-enter")}>
+      <div className="min-h-screen bg-secondary/30 px-4 py-8 sm:px-6 sm:py-12">
         <Outlet />
       </div>
     );
   }
 
   return (
-    <div className={isIOS ? "ios-page-enter" : undefined}>
-      <AppShell userId={user.id} isAdmin={isAdmin} isPartner={isPartner}>
-        <Outlet />
-      </AppShell>
-    </div>
+    <AppShell userId={user.id} isAdmin={isAdmin} isPartner={isPartner}>
+      <Outlet />
+    </AppShell>
   );
 }
+
+

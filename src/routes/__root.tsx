@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+﻿import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
@@ -14,14 +14,13 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SplashScreen } from "../components/SplashScreen";
 import { Toaster } from "../components/ui/sonner";
 import { supabase } from "../integrations/supabase/client";
-import { isIOS } from "../hooks/useIsIOS";
 
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <img src="/predicta-symbol.png" alt="PREDICTA" className="mx-auto h-14 w-auto animate-pulse mb-6 object-contain" />
-        <h2 className="text-lg font-semibold text-foreground">Taking you home…</h2>
+        <img src="/PREDICTA-symbol.png" alt="" className="mx-auto h-14 w-auto animate-pulse mb-6" />
+        <h2 className="text-lg font-semibold text-foreground">Taking you homeâ€¦</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           This page doesn't exist. Redirecting you automatically.
         </p>
@@ -53,9 +52,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <img src="/predicta-symbol.png" alt="PREDICTA" className="mx-auto h-14 w-auto animate-pulse mb-6 object-contain" />
+        <img src="/PREDICTA-symbol.png" alt="" className="mx-auto h-14 w-auto animate-pulse mb-6" />
         <h1 className="text-lg font-semibold tracking-tight text-foreground">
-          Loading PREDICTA…
+          Loading PREDICTAâ€¦
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Reconnecting to the server. This should only take a moment.
@@ -86,25 +85,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" },
-      { name: "color-scheme", content: "light" },
-      { name: "supported-color-schemes", content: "light" },
-      { name: "theme-color", content: "#E41827" },
-      { name: "mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
-      { name: "format-detection", content: "telephone=no" },
-      { title: "PREDICTA — Instant Virtuals Outcome Exposed" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: "PREDICTA â€” AI Visual Analytics" },
       {
         name: "description",
         content:
-          "PREDICTA exposes the next SportyBet instant virtual outcome before the game loads. Upload your screenshot, predict the result, play with certainty.",
+          "PREDICTA turns screenshots into intelligent, structured insight reports using AI image analysis.",
       },
       { name: "author", content: "PREDICTA" },
-      { property: "og:title", content: "PREDICTA — Instant Virtuals Outcome Exposed" },
+      { name: "theme-color", content: "#ffffff" },
+      { property: "og:title", content: "PREDICTA â€” AI Visual Analytics" },
       {
         property: "og:description",
-        content: "Our proprietary algorithm penetrates the SportyBet instant virtual engine and delivers the next outcome before the game loads.",
+        content: "Upload visual information and let PREDICTA's AI analyze and explain what it sees.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -118,13 +111,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             {
               "@type": "Organization",
               name: "PREDICTA",
-              url: "https://predicta.lovable.app",
-              logo: "https://predicta.lovable.app/icon-512.png",
+              url: "https://PREDICTA.lovable.app",
+              logo: "https://PREDICTA.lovable.app/icon-512.png",
             },
             {
               "@type": "WebSite",
               name: "PREDICTA",
-              url: "https://predicta.lovable.app",
+              url: "https://PREDICTA.lovable.app",
             },
           ],
         }),
@@ -141,8 +134,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "preload", href: "/predicta-symbol.png", as: "image", type: "image/png" },
-      { rel: "preload", href: "/predicta-full.png", as: "image", type: "image/png" },
+      { rel: "preload", href: "/PREDICTA-symbol.png", as: "image", type: "image/png" },
+      { rel: "preload", href: "/PREDICTA-full.png", as: "image", type: "image/png" },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
@@ -172,12 +165,6 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && isIOS()) {
-      document.documentElement.classList.add("ios-device");
-    }
-  }, []);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
@@ -221,9 +208,9 @@ class AppErrorBoundary extends Component<{ children: ReactNode }, { crashed: boo
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <div className="max-w-md text-center">
-          <img src="/predicta-symbol.png" alt="PREDICTA" className="mx-auto h-14 w-auto animate-pulse mb-6 object-contain" />
+          <img src="/PREDICTA-symbol.png" alt="" className="mx-auto h-14 w-auto animate-pulse mb-6" />
           <h1 className="text-lg font-semibold tracking-tight text-foreground">
-            Loading PREDICTA…
+            Loading PREDICTAâ€¦
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Please wait while we reconnect.
@@ -247,3 +234,4 @@ class AppErrorBoundary extends Component<{ children: ReactNode }, { crashed: boo
     );
   }
 }
+

@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+﻿import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,9 +14,9 @@ import { checkLoginRateLimit, formatRetryAfter } from "@/lib/rateLimit";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Log In — PREDICTA" },
+      { title: "Log In â€” PREDICTA" },
       { name: "description", content: "Sign in to your PREDICTA workspace to analyze screenshots and review AI insight reports." },
-      { property: "og:title", content: "Log In — PREDICTA" },
+      { property: "og:title", content: "Log In â€” PREDICTA" },
       { property: "og:description", content: "Sign in to your PREDICTA AI analysis workspace." },
     ],
   }),
@@ -99,25 +99,7 @@ function LoginPage() {
       // Build candidate emails to try in sequence
       const candidateEmails: string[] = [];
 
-      // 1. Normalized zero-trimmed digits (e.g. 552231466@phone.virtu-iq.live)
-      if (cleanDigits.startsWith("0")) {
-        candidateEmails.push(`${cleanDigits.replace(/^0+/, "")}@phone.virtu-iq.live`);
-      }
-
-      // 2. Normalized E.164 email (e.g. 233552231466@phone.virtu-iq.live)
-      if (cleanDigits.startsWith("233") || cleanDigits.startsWith("02") || cleanDigits.startsWith("05")) {
-        const ghDigits = cleanDigits.startsWith("233") ? cleanDigits : `233${cleanDigits.replace(/^0+/, "")}`;
-        candidateEmails.push(`${ghDigits}@phone.virtu-iq.live`);
-      }
-      if (cleanDigits.startsWith("234") || cleanDigits.startsWith("08") || cleanDigits.startsWith("07") || cleanDigits.startsWith("09")) {
-        const ngDigits = cleanDigits.startsWith("234") ? cleanDigits : `234${cleanDigits.replace(/^0+/, "")}`;
-        candidateEmails.push(`${ngDigits}@phone.virtu-iq.live`);
-      }
-
-      // 3. Raw clean digits
-      candidateEmails.push(`${cleanDigits}@phone.virtu-iq.live`);
-
-      // 4. Check server resolver (safe server-side resolution)
+      // 1. Check server resolver (safe server-side resolution)
       try {
         const resolved = await resolveEmail({ data: { phone: raw } });
         if (resolved.email) candidateEmails.push(resolved.email);
@@ -125,12 +107,28 @@ function LoginPage() {
         // ignore
       }
 
-      // 5. Tail format fallbacks
+      // 2. Normalized E.164 email
+      if (cleanDigits.startsWith("233") || cleanDigits.startsWith("02") || cleanDigits.startsWith("05")) {
+        const ghDigits = cleanDigits.startsWith("233") ? cleanDigits : `233${cleanDigits.replace(/^0+/, "")}`;
+        candidateEmails.push(`${ghDigits}@phone.PREDICTA.live`);
+      }
+      if (cleanDigits.startsWith("234") || cleanDigits.startsWith("08") || cleanDigits.startsWith("07") || cleanDigits.startsWith("09")) {
+        const ngDigits = cleanDigits.startsWith("234") ? cleanDigits : `234${cleanDigits.replace(/^0+/, "")}`;
+        candidateEmails.push(`${ngDigits}@phone.PREDICTA.live`);
+      }
+
+      // 3. Raw clean digits & zero-trimmed digits
+      candidateEmails.push(`${cleanDigits}@phone.PREDICTA.live`);
+      if (cleanDigits.startsWith("0")) {
+        candidateEmails.push(`${cleanDigits.replace(/^0+/, "")}@phone.PREDICTA.live`);
+      }
+
+      // 4. Tail format fallbacks
       if (cleanDigits.length >= 9) {
-        candidateEmails.push(`${cleanDigits.slice(-9)}@phone.virtu-iq.live`);
+        candidateEmails.push(`${cleanDigits.slice(-9)}@phone.PREDICTA.live`);
       }
       if (cleanDigits.length >= 10) {
-        candidateEmails.push(`${cleanDigits.slice(-10)}@phone.virtu-iq.live`);
+        candidateEmails.push(`${cleanDigits.slice(-10)}@phone.PREDICTA.live`);
       }
 
       // Deduplicate
@@ -145,9 +143,7 @@ function LoginPage() {
           finalSignInData = signInData;
           break;
         } else if (signInError) {
-          lastErrorMessage = (signInError.message === "Invalid login credentials" || signInError.message.includes("Database error"))
-            ? "Invalid phone number or password."
-            : signInError.message;
+          lastErrorMessage = signInError.message === "Invalid login credentials" ? "Invalid phone number or password." : signInError.message;
         }
       }
 
@@ -177,11 +173,11 @@ function LoginPage() {
     <AuthBackground>
       <Link to="/" className="flex justify-center" aria-label="PREDICTA home">
         <div className="inline-flex items-center rounded-xl bg-white px-5 py-2.5 shadow-lg">
-          <LogoFull className="h-8 w-auto object-contain" />
+          <LogoFull className="h-7" />
         </div>
       </Link>
-      <div className="mt-6 sm:mt-8 rounded-xl border border-primary/30 bg-card p-4.5 sm:p-8 shadow-xl ring-1 ring-primary/10">
-        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">Welcome back</h1>
+      <div className="mt-8 rounded-xl border border-primary/30 bg-card p-6 shadow-xl ring-1 ring-primary/10 sm:p-8">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Welcome back</h1>
         <p className="mt-1.5 text-sm text-muted-foreground">Log in with your phone number to continue.</p>
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
@@ -193,7 +189,7 @@ function LoginPage() {
               autoComplete="tel"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              placeholder="e.g. 024 123 4567"
+              placeholder="024 123 4567"
               required
             />
           </div>
@@ -232,7 +228,7 @@ function LoginPage() {
           <Button type="submit" disabled={pending} className="w-full">
             {pending ? (
               <span className="flex items-center gap-2">
-                <Loader2 className="size-4 animate-spin" /> Logging in…
+                <Loader2 className="size-4 animate-spin" /> Logging inâ€¦
               </span>
             ) : (
               "Log In"
@@ -250,3 +246,5 @@ function LoginPage() {
     </AuthBackground>
   );
 }
+
+
