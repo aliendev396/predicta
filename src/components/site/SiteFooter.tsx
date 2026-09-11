@@ -1,25 +1,25 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { LogoFull } from "@/components/brand/Logo";
-import { Shield, Zap } from "lucide-react";
+import { Shield, Zap, ArrowUpRight, Twitter, Github, Mail } from "lucide-react";
 
 const groups = [
   {
-    title: "Intelligence",
+    title: "Product",
     items: [
-      { label: "Overview", href: "/#overview", isHash: true },
       { label: "How It Works", href: "#how-it-works", isHash: true },
       { label: "Features", href: "#features", isHash: true },
+      { label: "Packages", href: "#packages", isHash: true },
       { label: "Accuracy Reports", href: "#features", isHash: true },
     ],
   },
   {
-    title: "Platform",
+    title: "Account",
     items: [
-      { label: "Packages & Tiers", href: "#packages", isHash: true },
-      { label: "Partner Program", href: "/partner-apply" },
       { label: "Create Account", href: "/register" },
       { label: "Member Login", href: "/login" },
+      { label: "Partner Program", href: "/partner-apply" },
+      { label: "Dashboard", href: "/dashboard" },
     ],
   },
   {
@@ -27,8 +27,8 @@ const groups = [
     items: [
       { label: "Help & FAQ", href: "#faq", isHash: true },
       { label: "Getting Started", href: "/register" },
-      { label: "Account Security", href: "/privacy" },
       { label: "System Status", href: "/" },
+      { label: "Account Security", href: "/privacy" },
     ],
   },
   {
@@ -48,111 +48,119 @@ export function SiteFooter() {
 
   const handleLegalClick = (e: React.MouseEvent, href: string) => {
     e.preventDefault();
-    const current = legalClicks[href] ?? 0;
-    const next = current + 1;
+    const next = (legalClicks[href] ?? 0) + 1;
     if (next >= 4) {
-      setLegalClicks((prev) => ({ ...prev, [href]: 0 }));
+      setLegalClicks((p) => ({ ...p, [href]: 0 }));
       void navigate({ to: href as any });
     } else {
-      setLegalClicks((prev) => ({ ...prev, [href]: next }));
+      setLegalClicks((p) => ({ ...p, [href]: next }));
     }
   };
 
   return (
-    <footer
-      style={{
-        background: "#080206",
-        borderTop: "1px solid rgba(228, 24, 39, 0.18)",
-      }}
-    >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        {/* Top brand band */}
+    <footer className="bg-[#F8F9FB] border-t border-[#E8EDF3]">
+
+      {/* ── CTA band above footer ── */}
+      <div
+        className="relative overflow-hidden"
+        style={{
+          background: "linear-gradient(135deg, #C50F1F 0%, #E41827 45%, #C50F1F 100%)",
+        }}
+      >
+        {/* Subtle dot grid overlay */}
         <div
-          className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 py-10"
-          style={{ borderBottom: "1px solid rgba(228,24,39,0.10)" }}
-        >
-          <div>
-            <Link to="/" aria-label="PREDICTA home" className="inline-block transition-opacity hover:opacity-80">
-              <LogoFull className="h-7 sm:h-8 w-auto" />
+          className="pointer-events-none absolute inset-0 opacity-[0.06]"
+          style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "24px 24px" }}
+        />
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-12">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+            <div>
+              <p className="text-xs font-mono font-bold tracking-widest text-red-200 uppercase mb-1">
+                Ready to start?
+              </p>
+              <h3 className="text-xl sm:text-2xl font-bold text-white">
+                Expose your first instant virtual outcome today.
+              </h3>
+            </div>
+            <Link
+              to="/register"
+              className="inline-flex items-center gap-2 shrink-0 rounded-full bg-white px-6 py-3 text-sm font-bold text-red-700 shadow-lg hover:shadow-xl transition-all hover:scale-[1.03] active:scale-[0.98]"
+            >
+              Get Started Free
+              <ArrowUpRight className="size-4" />
             </Link>
-            <p className="mt-2.5 max-w-sm text-xs leading-relaxed" style={{ color: "rgba(240,240,240,0.38)" }}>
-              High-precision breach intelligence for instant virtual simulation engines. Engineered for certainty — not chance.
+          </div>
+        </div>
+      </div>
+
+      {/* ── Main footer body ── */}
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-16">
+        {/* Top row — logo + tagline + status */}
+        <div
+          className="flex flex-col sm:flex-row sm:items-start justify-between gap-8 pb-10"
+          style={{ borderBottom: "1px solid #E8EDF3" }}
+        >
+          <div className="max-w-xs">
+            <Link to="/" aria-label="PREDICTA home" className="inline-block mb-3 hover:opacity-80 transition-opacity">
+              <LogoFull variant="dark" className="h-7 w-auto" />
+            </Link>
+            <p className="text-sm leading-relaxed text-slate-500">
+              High-precision breach intelligence for instant virtual simulation engines. Engineered for certainty.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div
-              className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-mono font-semibold"
-              style={{
-                border: "1px solid rgba(16,185,129,0.30)",
-                background: "rgba(16,185,129,0.06)",
-                color: "#6ee7b7",
-              }}
-            >
-              <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="flex flex-col gap-3">
+            {/* Live status */}
+            <div className="inline-flex items-center gap-2 self-start sm:self-end rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1.5 text-xs font-semibold text-emerald-700">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
               Predicta Core 2.4 · Operational
+            </div>
+            {/* Trust badges */}
+            <div className="flex items-center gap-3 text-xs text-slate-400">
+              <span className="inline-flex items-center gap-1">
+                <Shield className="size-3.5 text-slate-400" />
+                256-bit Encryption
+              </span>
+              <span className="text-slate-200">·</span>
+              <span className="inline-flex items-center gap-1">
+                <Zap className="size-3.5 text-red-400" />
+                Real-time Engine
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Links grid */}
+        {/* Link columns */}
         <div className="grid grid-cols-2 gap-8 py-10 sm:grid-cols-4">
           {groups.map((g) => (
             <div key={g.title}>
-              <h3
-                className="text-[11px] font-bold tracking-widest uppercase mb-3.5"
-                style={{ color: "rgba(228,24,39,0.85)" }}
-              >
+              <h3 className="mb-4 text-[11px] font-bold tracking-widest text-slate-900 uppercase">
                 {g.title}
               </h3>
               <ul className="space-y-2.5">
                 {g.items.map((item) => {
-                  const isLegalGroup = g.title === "Legal";
-                  const linkStyle = { color: "rgba(240,240,240,0.40)" };
-                  const hoverEnter = (e: React.MouseEvent<HTMLElement>) =>
-                    (e.currentTarget.style.color = "rgba(240,240,240,0.90)");
-                  const hoverLeave = (e: React.MouseEvent<HTMLElement>) =>
-                    (e.currentTarget.style.color = "rgba(240,240,240,0.40)");
+                  const isLegal = g.title === "Legal";
+                  const cls = "text-sm text-slate-500 hover:text-red-600 transition-colors";
 
-                  if (isLegalGroup) {
+                  if (isLegal) {
                     return (
                       <li key={item.label}>
                         <button
                           type="button"
                           onClick={(e) => handleLegalClick(e, item.href)}
-                          className="text-left text-xs cursor-pointer select-none transition-colors"
-                          style={linkStyle}
-                          onMouseEnter={hoverEnter}
-                          onMouseLeave={hoverLeave}
+                          className={`${cls} text-left cursor-pointer select-none`}
                         >
                           {item.label}
                         </button>
                       </li>
                     );
                   }
-
                   return (
                     <li key={item.label}>
                       {item.isHash ? (
-                        <a
-                          href={item.href}
-                          className="text-xs transition-colors"
-                          style={linkStyle}
-                          onMouseEnter={hoverEnter}
-                          onMouseLeave={hoverLeave}
-                        >
-                          {item.label}
-                        </a>
+                        <a href={item.href} className={cls}>{item.label}</a>
                       ) : (
-                        <Link
-                          to={item.href as any}
-                          className="text-xs transition-colors"
-                          style={linkStyle}
-                          onMouseEnter={hoverEnter}
-                          onMouseLeave={hoverLeave}
-                        >
-                          {item.label}
-                        </Link>
+                        <Link to={item.href as any} className={cls}>{item.label}</Link>
                       )}
                     </li>
                   );
@@ -164,21 +172,18 @@ export function SiteFooter() {
 
         {/* Bottom bar */}
         <div
-          className="flex flex-col gap-3 py-7 sm:flex-row sm:items-center sm:justify-between text-xs"
-          style={{ borderTop: "1px solid rgba(228,24,39,0.10)", color: "rgba(240,240,240,0.30)" }}
+          className="flex flex-col gap-3 pt-8 sm:flex-row sm:items-center sm:justify-between text-xs text-slate-400"
+          style={{ borderTop: "1px solid #E8EDF3" }}
         >
           <p>
-            Copyright © {new Date().getFullYear()} PREDICTA. All rights reserved. For entertainment and informational simulation analytics only.
+            © {new Date().getFullYear()} PREDICTA. All rights reserved. For entertainment and informational simulation analytics only.
           </p>
-          <div className="flex items-center gap-4 flex-wrap" style={{ color: "rgba(240,240,240,0.40)" }}>
-            <span className="inline-flex items-center gap-1.5">
-              <Shield className="size-3.5 text-emerald-500" />
-              256-Bit Encryption
+          <div className="flex items-center gap-2">
+            <span className="inline-flex size-7 items-center justify-center rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer">
+              <Twitter className="size-3.5" />
             </span>
-            <span style={{ color: "rgba(228,24,39,0.35)" }}>·</span>
-            <span className="inline-flex items-center gap-1.5">
-              <Zap className="size-3.5 text-red-500" />
-              Real-time Engine
+            <span className="inline-flex size-7 items-center justify-center rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer">
+              <Mail className="size-3.5" />
             </span>
           </div>
         </div>

@@ -175,7 +175,7 @@ function LoginPage() {
       <Link to="/" className="flex justify-center" aria-label="PREDICTA home">
         <div
           className="inline-flex items-center rounded-xl px-5 py-2.5 transition-all hover:scale-[1.02]"
-          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)" }}
+          style={{ background: "#FFFFFF", border: "1px solid #E8EDF3", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
         >
           <LogoFull className="h-7" />
         </div>
@@ -185,7 +185,7 @@ function LoginPage() {
       <div className="mt-5 flex justify-center">
         <div
           className="inline-flex items-center gap-2 rounded-full px-3 py-1 font-mono text-[10px] font-bold tracking-widest"
-          style={{ border: "1px solid rgba(16,185,129,0.30)", background: "rgba(16,185,129,0.06)", color: "#6ee7b7" }}
+          style={{ border: "1px solid #D1FAE5", background: "#F0FDF4", color: "#059669" }}
         >
           <span className="size-1.5 rounded-full bg-emerald-400 animate-status-blink" />
           SECURE CONNECTION ESTABLISHED
@@ -196,9 +196,9 @@ function LoginPage() {
       <div
         className="mt-6 rounded-2xl p-6 sm:p-8"
         style={{
-          background: "rgba(12,4,9,0.92)",
-          border: "1px solid rgba(228,24,39,0.30)",
-          boxShadow: "0 0 0 1px rgba(228,24,39,0.08), 0 24px 60px rgba(0,0,0,0.7), 0 0 30px rgba(228,24,39,0.08)",
+          background: "#FFFFFF",
+          border: "1px solid #E8EDF3",
+          boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px rgba(0,0,0,0.07), 0 0 0 1px rgba(228,24,39,0.06)",
           backdropFilter: "blur(16px)",
         }}
       >
@@ -208,12 +208,12 @@ function LoginPage() {
           style={{ background: "linear-gradient(90deg, transparent, rgba(228,24,39,0.6), transparent)", marginTop: "-1px" }}
         />
 
-        <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#F0F0F0" }}>Welcome back</h1>
-        <p className="mt-1.5 text-sm" style={{ color: "rgba(240,240,240,0.50)" }}>Log in with your phone number to continue.</p>
+        <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#0F172A" }}>Welcome back</h1>
+        <p className="mt-1.5 text-sm" style={{ color: "#64748B" }}>Log in with your phone number to continue.</p>
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <Label htmlFor="phone" style={{ color: "rgba(240,240,240,0.70)" }}>Phone number</Label>
+            <Label htmlFor="phone" style={{ color: "#374151" }}>Phone number</Label>
             <Input
               id="phone"
               type="tel"
@@ -222,11 +222,11 @@ function LoginPage() {
               onChange={(e) => setIdentifier(e.target.value)}
               placeholder="024 123 4567"
               required
-              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(228,24,39,0.22)", color: "#F0F0F0" }}
+              style={{ background: "#F8F9FB", border: "1px solid #E2E8F0", color: "#0F172A" }}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" style={{ color: "rgba(240,240,240,0.70)" }}>Password</Label>
+            <Label htmlFor="password" style={{ color: "#374151" }}>Password</Label>
             <div className="relative">
               <Input
                 id="password"
@@ -236,26 +236,26 @@ function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="pr-11"
                 required
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(228,24,39,0.22)", color: "#F0F0F0" }}
+                style={{ background: "#F8F9FB", border: "1px solid #E2E8F0", color: "#0F172A" }}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 className="absolute inset-y-0 right-0 inline-flex w-11 items-center justify-center transition-colors"
-                style={{ color: "rgba(240,240,240,0.45)" }}
+                style={{ color: "#94A3B8" }}
               >
                 {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
             </div>
           </div>
           {error && (
-            <p role="alert" className="rounded-xl px-3 py-2.5 text-sm" style={{ background: "rgba(228,24,39,0.12)", border: "1px solid rgba(228,24,39,0.30)", color: "#f87171" }}>
+            <p role="alert" className="rounded-xl px-3 py-2.5 text-sm" style={{ background: "rgba(228,24,39,0.12)", border: "1px solid #E8EDF3", color: "#f87171" }}>
               {error}
             </p>
           )}
           {notice && (
-            <p role="status" className="rounded-xl px-3 py-2.5 text-sm" style={{ background: "rgba(16,185,129,0.10)", border: "1px solid rgba(16,185,129,0.25)", color: "#6ee7b7" }}>
+            <p role="status" className="rounded-xl px-3 py-2.5 text-sm border border-emerald-200 bg-emerald-50 text-emerald-700">
               {notice}
             </p>
           )}
@@ -277,7 +277,7 @@ function LoginPage() {
 
         <p className="mt-6 text-center text-sm" style={{ color: "rgba(240,240,240,0.45)" }}>
           Don&apos;t have an account?{" "}
-          <Link to="/register" className="font-semibold transition-colors hover:text-red-400" style={{ color: "#f87171" }}>
+          <Link to="/register" className="font-semibold text-red-600 hover:text-red-700 transition-colors">
             Register now
           </Link>
         </p>

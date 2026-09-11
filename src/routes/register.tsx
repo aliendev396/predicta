@@ -213,7 +213,7 @@ function RegisterPage() {
       <Link to="/" className="flex justify-center" aria-label="PREDICTA home">
         <div
           className="inline-flex items-center rounded-xl px-5 py-2.5 transition-all hover:scale-[1.02]"
-          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)" }}
+          style={{ background: "#FFFFFF", border: "1px solid #E8EDF3", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
         >
           <LogoFull className="h-7" />
         </div>
@@ -223,7 +223,7 @@ function RegisterPage() {
       <div className="mt-5 flex justify-center">
         <div
           className="inline-flex items-center gap-2 rounded-full px-3 py-1 font-mono text-[10px] font-bold tracking-widest"
-          style={{ border: "1px solid rgba(16,185,129,0.30)", background: "rgba(16,185,129,0.06)", color: "#6ee7b7" }}
+          style={{ border: "1px solid #D1FAE5", background: "#F0FDF4", color: "#059669" }}
         >
           <span className="size-1.5 rounded-full bg-emerald-400 animate-status-blink" />
           SECURE REGISTRATION CHANNEL
@@ -233,9 +233,9 @@ function RegisterPage() {
       <div
         className="mt-6 rounded-2xl p-6 sm:p-8"
         style={{
-          background: "rgba(12,4,9,0.92)",
-          border: "1px solid rgba(228,24,39,0.30)",
-          boxShadow: "0 0 0 1px rgba(228,24,39,0.08), 0 24px 60px rgba(0,0,0,0.7), 0 0 30px rgba(228,24,39,0.08)",
+          background: "#FFFFFF",
+          border: "1px solid #E8EDF3",
+          boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px rgba(0,0,0,0.07), 0 0 0 1px rgba(228,24,39,0.06)",
           backdropFilter: "blur(16px)",
         }}
       >
@@ -252,7 +252,7 @@ function RegisterPage() {
           <div className="space-y-2">
             <Label htmlFor="name" style={{ color: "rgba(240,240,240,0.70)" }}>Full name</Label>
             <Input id="name" value={fullName} maxLength={80} onChange={(e) => setFullName(e.target.value)} placeholder="Ama Mensah" required
-              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(228,24,39,0.22)", color: "#F0F0F0" }}
+              style={{ background: "#F8F9FB", border: "1px solid #E2E8F0", color: "#0F172A" }}
             />
           </div>
 
@@ -303,11 +303,11 @@ function RegisterPage() {
             )}
           </div>
           {error && (
-            <p role="alert" className="rounded-xl px-3 py-2.5 text-sm" style={{ background: "rgba(228,24,39,0.12)", border: "1px solid rgba(228,24,39,0.30)", color: "#f87171" }}>
+            <p role="alert" className="rounded-xl px-3 py-2.5 text-sm" style={{ background: "rgba(228,24,39,0.12)", border: "1px solid #E8EDF3", color: "#f87171" }}>
               {error}
             </p>
           )}
-          {notice && <p className="rounded-xl px-3 py-2.5 text-sm" style={{ background: "rgba(16,185,129,0.10)", border: "1px solid rgba(16,185,129,0.25)", color: "#6ee7b7" }}>{notice}</p>}
+          {notice && <p className="rounded-xl px-3 py-2.5 text-sm border border-emerald-200 bg-emerald-50 text-emerald-700">{notice}</p>}
           <button
             type="submit"
             className="w-full rounded-xl py-3 text-sm font-bold font-mono tracking-widest text-white transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60"
