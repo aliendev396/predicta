@@ -1,44 +1,60 @@
 import { cn } from "@/lib/utils";
 
 // Logos are served from /public so they work on any host (Vercel, Lovable, etc.)
-// without depending on the Lovable-specific /__l5e/assets-v1/ CDN path.
-const FULL_LOGO = "/virtu-iq-full.png";
-const SYMBOL_LOGO = "/virtu-iq-symbol.png";
+const FULL_LOGO = "/predicta-full.png";
+const FULL_LOGO_WHITE = "/predicta-full-white.png";
+const SYMBOL_LOGO = "/predicta-symbol.png";
+const WORDMARK_LOGO = "/predicta-wordmark.png";
+const WORDMARK_LOGO_WHITE = "/predicta-wordmark-white.png";
 
-type LogoProps = { className?: string } & Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src" | "alt">;
+type LogoProps = {
+  className?: string;
+  variant?: "dark" | "light";
+} & Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src" | "alt">;
 
-export function LogoFull({ className, ...rest }: LogoProps) {
+export function LogoFull({ className, variant = "light", ...rest }: LogoProps) {
   return (
     <img
-      src={FULL_LOGO}
-      alt="Virtu-IQ"
+      src={variant === "dark" ? FULL_LOGO : FULL_LOGO_WHITE}
+      alt="PREDICTA"
       loading="eager"
       decoding="async"
-      className={cn("h-7 w-auto select-none", className)}
+      className={cn("h-7 w-auto select-none object-contain", className)}
       {...rest}
     />
   );
 }
 
-export function LogoSymbol({ className, ...rest }: LogoProps) {
+export function LogoSymbol({ className, ...rest }: Omit<LogoProps, "variant">) {
   return (
     <img
       src={SYMBOL_LOGO}
-      alt="Virtu-IQ"
+      alt="PREDICTA"
       loading="eager"
       decoding="async"
-      className={cn("h-9 w-auto select-none", className)}
+      className={cn("h-9 w-auto select-none object-contain", className)}
+      {...rest}
+    />
+  );
+}
+
+export function LogoWordmark({ className, variant = "light", ...rest }: LogoProps) {
+  return (
+    <img
+      src={variant === "dark" ? WORDMARK_LOGO : WORDMARK_LOGO_WHITE}
+      alt="PREDICTA"
+      loading="eager"
+      decoding="async"
+      className={cn("h-6 w-auto select-none object-contain", className)}
       {...rest}
     />
   );
 }
 
 /**
- * Large faint-white Virtu-IQ symbol used as a watermark inside brand-blue cards.
- * `brightness-0 invert` flattens the mark to pure white so it reads as a soft
- * embossed watermark rather than a pasted logo.
+ * Large faint PREDICTA symbol used as a watermark inside cards.
  */
-export function LogoWatermark({ className, ...rest }: LogoProps) {
+export function LogoWatermark({ className, ...rest }: Omit<LogoProps, "variant">) {
   return (
     <img
       src={SYMBOL_LOGO}
@@ -46,10 +62,10 @@ export function LogoWatermark({ className, ...rest }: LogoProps) {
       aria-hidden
       className={cn(
         "pointer-events-none absolute select-none brightness-0 invert",
-        "-right-8 -bottom-10 h-64 w-auto opacity-[0.12] sm:h-80 sm:-right-10 sm:-bottom-14",
+        "-right-8 -bottom-10 h-64 w-auto opacity-[0.08] sm:h-80 sm:-right-10 sm:-bottom-14",
         className,
       )}
       {...rest}
     />
   );
-}
+}

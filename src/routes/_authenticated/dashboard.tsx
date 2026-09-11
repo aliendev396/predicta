@@ -10,10 +10,10 @@ import { analysesQuery, profileQuery, referralsQuery, rolesQuery } from "@/lib/d
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Virtu-IQ" },
-      { name: "description", content: "Your Virtu-IQ workspace: credit balance, recent screenshot analyses and insight reports." },
-      { property: "og:title", content: "Dashboard — Virtu-IQ" },
-      { property: "og:description", content: "Track credits and AI insight reports in your Virtu-IQ workspace." },
+      { title: "Dashboard — PREDICTA" },
+      { name: "description", content: "Your PREDICTA workspace: credit balance, recent screenshot analyses and insight reports." },
+      { property: "og:title", content: "Dashboard — PREDICTA" },
+      { property: "og:description", content: "Track credits and AI insight reports in your PREDICTA workspace." },
     ],
   }),
   component: DashboardPage,
@@ -43,7 +43,7 @@ function DashboardPage() {
     <>
       <PageHeader
         title={`Welcome back${profile?.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""}`}
-        description="Upload an instant virtual football screenshot and Virtu-IQ picks the most likely outcomes."
+        description="Upload an instant virtual football screenshot and PREDICTA picks the most likely outcomes."
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -63,7 +63,7 @@ function DashboardPage() {
         <div className="relative">
           <h2 className="text-xl font-bold">Ready for your next verdict?</h2>
           <p className="mt-2 max-w-lg text-sm opacity-90">
-            Each scan costs 1 credit. Upload an instant/virtual football screenshot and Virtu-IQ names
+            Each scan costs 1 credit. Upload an instant/virtual football screenshot and PREDICTA names
             the most likely outcomes your plan covers in seconds.
           </p>
           <Button asChild variant="secondary" className="mt-5">

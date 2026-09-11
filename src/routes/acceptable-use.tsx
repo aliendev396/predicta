@@ -8,13 +8,13 @@ import { LegalHeroBanner } from "@/components/brand/LegalHeroBanner";
 export const Route = createFileRoute("/acceptable-use")({
   head: () => ({
     meta: [
-      { title: "Acceptable Use Policy — Virtu-IQ" },
+      { title: "Acceptable Use Policy — PREDICTA" },
       {
         name: "description",
-        content: "Guidelines for acceptable and prohibited activities on the Virtu-IQ platform.",
+        content: "Guidelines for acceptable and prohibited activities on the PREDICTA platform.",
       },
-      { property: "og:title", content: "Acceptable Use Policy — Virtu-IQ" },
-      { property: "og:description", content: "Standards for fair use, API access, partner integrity, and security at Virtu-IQ." },
+      { property: "og:title", content: "Acceptable Use Policy — PREDICTA" },
+      { property: "og:description", content: "Standards for fair use, API access, partner integrity, and security at PREDICTA." },
     ],
   }),
   component: AcceptableUsePage,
@@ -32,7 +32,7 @@ function AcceptableUsePage() {
           badgeText="COMMUNITY STANDARDS & INTEGRITY"
           lastUpdated="Last Updated: August 2026"
           title="Acceptable Use Policy"
-          description="This policy outlines required standards of conduct, prohibited behaviors, and system abuse guidelines for all Virtu-IQ members, partners, and visitors."
+          description="This policy outlines required standards of conduct, prohibited behaviors, and system abuse guidelines for all PREDICTA members, partners, and visitors."
         />
 
         {/* Content Document */}
@@ -68,7 +68,7 @@ function AcceptableUsePage() {
                   2. Prohibited Financial Practices
                 </h2>
                 <p className="text-slate-600 mb-3">
-                  Virtu-IQ enforces zero-tolerance rules for fraudulent or dishonest financial submissions:
+                  PREDICTA enforces zero-tolerance rules for fraudulent or dishonest financial submissions:
                 </p>
                 <div className="rounded-xl border border-red-200 bg-red-50/50 p-4 space-y-2 text-xs sm:text-sm text-red-950">
                   <p className="font-bold flex items-center gap-1.5">
@@ -90,7 +90,7 @@ function AcceptableUsePage() {
                   3. Partner & Affiliate Standards
                 </h2>
                 <p className="text-slate-600 mb-3">
-                  Partners representing Virtu-IQ must adhere to professional promotional standards:
+                  Partners representing PREDICTA must adhere to professional promotional standards:
                 </p>
                 <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
                   <li>No false promises of 100% financial return or guaranteed wagering wealth.</li>

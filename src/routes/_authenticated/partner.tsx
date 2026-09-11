@@ -12,14 +12,14 @@ import { commissionsQuery, ghs, partnerPayoutsQuery, partnerStatsQuery, profileQ
 export const Route = createFileRoute("/_authenticated/partner")({
   head: () => ({
     meta: [
-      { title: "Partner Hub — Virtu-IQ" },
+      { title: "Partner Hub — PREDICTA" },
       {
         name: "description",
         content:
-          "Track registrations from your Virtu-IQ referral code, revenue from your members and commissions earned.",
+          "Track registrations from your PREDICTA referral code, revenue from your members and commissions earned.",
       },
-      { property: "og:title", content: "Partner Hub — Virtu-IQ" },
-      { property: "og:description", content: "Your Virtu-IQ referral performance at a glance." },
+      { property: "og:title", content: "Partner Hub — PREDICTA" },
+      { property: "og:description", content: "Your PREDICTA referral performance at a glance." },
     ],
   }),
   component: PartnerPage,
@@ -67,7 +67,7 @@ function PartnerPage() {
     <>
       <PageHeader
         title="Partner hub"
-        description="Everything you need as a Virtu-IQ partner — your link, your members and your earnings."
+        description="Everything you need as a PREDICTA partner — your link, your members and your earnings."
       />
 
       <section className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary via-primary to-[#1D4ED8] p-6 text-primary-foreground shadow-[var(--shadow-soft)] sm:p-8">
@@ -84,7 +84,7 @@ function PartnerPage() {
           </p>
           <p className="mt-3 text-sm opacity-85">
             {stats?.commission_rate ?? 10}% of every approved payment from members you bring to
-            Virtu-IQ.
+            PREDICTA.
           </p>
 
           <div className="mt-7 rounded-xl bg-white/12 p-4 backdrop-blur-[2px]">

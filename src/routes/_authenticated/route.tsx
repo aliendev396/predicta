@@ -100,7 +100,7 @@ function AuthenticatedError({ reset }: { error: Error; reset: () => void }) {
       <LogoSymbol className="h-12 w-auto animate-pulse" />
       <h1 className="text-lg font-semibold text-foreground">Syncing workspace…</h1>
       <p className="max-w-md text-xs text-muted-foreground">
-        Reconnecting to Virtu-IQ servers. If this takes more than a moment, click below.
+        Reconnecting to PREDICTA servers. If this takes more than a moment, click below.
       </p>
       <Button size="sm" onClick={handleRetry} disabled={retrying}>
         {retrying ? "Connecting…" : "Refresh Workspace"}

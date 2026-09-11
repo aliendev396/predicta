@@ -1,6 +1,6 @@
 {
-  "name": "Virtu-IQ",
-  "short_name": "Virtu-IQ",
+  "name": "PREDICTA",
+  "short_name": "PREDICTA",
   "description": "AI-powered visual analytics. Turn screenshots into intelligent insights.",
   "start_url": "/",
   "display": "standalone",

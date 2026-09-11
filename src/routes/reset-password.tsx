@@ -11,10 +11,10 @@ import { AuthBackground } from "@/components/brand/AuthBackground";
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
     meta: [
-      { title: "Reset Password — Virtu-IQ" },
-      { name: "description", content: "Choose a new password for your Virtu-IQ account." },
-      { property: "og:title", content: "Reset Password — Virtu-IQ" },
-      { property: "og:description", content: "Set a new password and get back into your Virtu-IQ workspace." },
+      { title: "Reset Password — PREDICTA" },
+      { name: "description", content: "Choose a new password for your PREDICTA account." },
+      { property: "og:title", content: "Reset Password — PREDICTA" },
+      { property: "og:description", content: "Set a new password and get back into your PREDICTA workspace." },
     ],
   }),
   component: ResetPasswordPage,
@@ -41,9 +41,9 @@ function ResetPasswordPage() {
 
   return (
     <AuthBackground>
-      <Link to="/" className="flex justify-center" aria-label="Virtu-IQ home">
+      <Link to="/" className="flex justify-center" aria-label="PREDICTA home">
         <div className="inline-flex items-center rounded-xl bg-white px-5 py-2.5 shadow-lg">
-          <LogoFull className="h-7" />
+          <LogoFull className="h-8 w-auto object-contain" />
         </div>
       </Link>
       <div className="mt-8 rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] sm:p-8">

@@ -9,10 +9,10 @@ import { analysesQuery } from "@/lib/data";
 export const Route = createFileRoute("/_authenticated/history")({
   head: () => ({
     meta: [
-      { title: "Analysis History — Virtu-IQ" },
-      { name: "description", content: "Browse every screenshot analysis and AI insight report in your Virtu-IQ workspace." },
-      { property: "og:title", content: "Analysis History — Virtu-IQ" },
-      { property: "og:description", content: "All of your Virtu-IQ insight reports in one place." },
+      { title: "Analysis History — PREDICTA" },
+      { name: "description", content: "Browse every screenshot analysis and AI insight report in your PREDICTA workspace." },
+      { property: "og:title", content: "Analysis History — PREDICTA" },
+      { property: "og:description", content: "All of your PREDICTA insight reports in one place." },
     ],
   }),
   component: HistoryPage,

@@ -14,10 +14,10 @@ import { checkLoginRateLimit, formatRetryAfter } from "@/lib/rateLimit";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Log In — Virtu-IQ" },
-      { name: "description", content: "Sign in to your Virtu-IQ workspace to analyze screenshots and review AI insight reports." },
-      { property: "og:title", content: "Log In — Virtu-IQ" },
-      { property: "og:description", content: "Sign in to your Virtu-IQ AI analysis workspace." },
+      { title: "Log In — PREDICTA" },
+      { name: "description", content: "Sign in to your PREDICTA workspace to analyze screenshots and review AI insight reports." },
+      { property: "og:title", content: "Log In — PREDICTA" },
+      { property: "og:description", content: "Sign in to your PREDICTA AI analysis workspace." },
     ],
   }),
   component: LoginPage,
@@ -175,9 +175,9 @@ function LoginPage() {
 
   return (
     <AuthBackground>
-      <Link to="/" className="flex justify-center" aria-label="Virtu-IQ home">
+      <Link to="/" className="flex justify-center" aria-label="PREDICTA home">
         <div className="inline-flex items-center rounded-xl bg-white px-5 py-2.5 shadow-lg">
-          <LogoFull className="h-7" />
+          <LogoFull className="h-8 w-auto object-contain" />
         </div>
       </Link>
       <div className="mt-6 sm:mt-8 rounded-xl border border-primary/30 bg-card p-4.5 sm:p-8 shadow-xl ring-1 ring-primary/10">

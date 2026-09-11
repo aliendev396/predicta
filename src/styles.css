@@ -6,7 +6,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * VIRTU-IQ — Hacking Theme Design System
+ * PREDICTA — Instant Virtuals Prediction Design System
  * Colors: Black (bg), Red (primary/CTA), Green (status/matrix), White (text)
  * Inspired by SportyBet instant virtuals infiltration aesthetic
  */
@@ -66,84 +66,90 @@
   --color-hack-red: var(--hack-red);
 }
 
-/* ── WHITE & SPORTYBET RED THEME — Virtual Oracle style ── */
+/* ── APPLE KEYNOTE & PRO OBSIDIAN THEME ── */
 :root {
-  color-scheme: light;
+  color-scheme: dark;
   forced-color-adjust: none;
-  --radius: 0.5rem;
-  --brand: oklch(0.53 0.22 27);
-  --brand-deep: oklch(0.43 0.22 27);
-  --hack-green: oklch(0.62 0.20 142);
-  --hack-green-dim: oklch(0.48 0.16 142);
-  --hack-red: oklch(0.53 0.22 27);
-  /* Light off-white background (#F3F5F8) */
-  --background: oklch(0.97 0.005 240);
-  --foreground: oklch(0.18 0.01 270);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.01 270);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.01 270);
-  /* Primary = SportyBet Crimson Red */
-  --primary: oklch(0.53 0.22 27);
-  --primary-foreground: oklch(0.99 0 0);
-  /* Secondary = light gray panels (#EDEFF3) */
-  --secondary: oklch(0.94 0.005 240);
-  --secondary-foreground: oklch(0.20 0.01 270);
-  --muted: oklch(0.94 0.005 240);
-  --muted-foreground: oklch(0.45 0.01 240);
-  /* Accent = red tint */
-  --accent: oklch(0.53 0.22 27 / 0.08);
-  --accent-foreground: oklch(0.53 0.22 27);
-  --destructive: oklch(0.53 0.22 27);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.53 0.22 27 / 0.25);
-  --input: oklch(1 0 0);
-  --ring: oklch(0.53 0.22 27);
-  --chart-1: oklch(0.53 0.22 27);
-  --chart-2: oklch(0.62 0.20 142);
-  --chart-3: oklch(0.65 0.18 60);
-  --chart-4: oklch(0.68 0.15 200);
-  --chart-5: oklch(0.62 0.20 300);
-  --sidebar: oklch(0.98 0.005 240);
-  --sidebar-foreground: oklch(0.18 0.01 270);
-  --sidebar-primary: oklch(0.53 0.22 27);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.53 0.22 27 / 0.08);
-  --sidebar-accent-foreground: oklch(0.53 0.22 27);
-  --sidebar-border: oklch(0.53 0.22 27 / 0.2);
-  --sidebar-ring: oklch(0.53 0.22 27);
+  --radius: 0.875rem;
+  --brand: oklch(0.65 0.20 250);
+  --brand-deep: oklch(0.55 0.22 250);
+  --hack-green: oklch(0.75 0.18 160);
+  --hack-green-dim: oklch(0.60 0.14 160);
+  --hack-red: oklch(0.60 0.22 250);
+  
+  /* Apple space black / dark titanium background */
+  --background: #060608;
+  --foreground: #F5F5F7;
+  --card: rgba(18, 18, 24, 0.72);
+  --card-foreground: #F5F5F7;
+  --popover: rgba(22, 22, 28, 0.95);
+  --popover-foreground: #F5F5F7;
+  
+  /* Primary = Apple Pro Blue (#2997FF) */
+  --primary: #2997FF;
+  --primary-foreground: #FFFFFF;
+  
+  /* Secondary = Apple frosted titanium gray */
+  --secondary: rgba(255, 255, 255, 0.08);
+  --secondary-foreground: #E5E5EA;
+  --muted: rgba(255, 255, 255, 0.06);
+  --muted-foreground: #86868B;
+  
+  /* Accent = subtle electric cyan/blue tint */
+  --accent: rgba(41, 151, 255, 0.14);
+  --accent-foreground: #2997FF;
+  --destructive: #FF453A;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(255, 255, 255, 0.10);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: #2997FF;
+  
+  --chart-1: #2997FF;
+  --chart-2: #30D158;
+  --chart-3: #64D2FF;
+  --chart-4: #BF5AF2;
+  --chart-5: #FFD60A;
+  
+  --sidebar: #0A0A0E;
+  --sidebar-foreground: #F5F5F7;
+  --sidebar-primary: #2997FF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: rgba(255, 255, 255, 0.08);
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(255, 255, 255, 0.10);
+  --sidebar-ring: #2997FF;
 }
 
 .dark {
-  color-scheme: light;
+  color-scheme: dark;
   forced-color-adjust: none;
-  --background: oklch(0.97 0.005 240);
-  --foreground: oklch(0.18 0.01 270);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.01 270);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.01 270);
-  --primary: oklch(0.53 0.22 27);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.94 0.005 240);
-  --secondary-foreground: oklch(0.20 0.01 270);
-  --muted: oklch(0.94 0.005 240);
-  --muted-foreground: oklch(0.45 0.01 240);
-  --accent: oklch(0.53 0.22 27 / 0.08);
-  --accent-foreground: oklch(0.53 0.22 27);
-  --destructive: oklch(0.53 0.22 27);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.53 0.22 27 / 0.25);
-  --input: oklch(1 0 0);
-  --ring: oklch(0.53 0.22 27);
-  --sidebar: oklch(0.98 0.005 240);
-  --sidebar-foreground: oklch(0.18 0.01 270);
-  --sidebar-primary: oklch(0.53 0.22 27);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.53 0.22 27 / 0.08);
-  --sidebar-accent-foreground: oklch(0.53 0.22 27);
-  --sidebar-border: oklch(0.53 0.22 27 / 0.2);
-  --sidebar-ring: oklch(0.53 0.22 27);
+  --background: #060608;
+  --foreground: #F5F5F7;
+  --card: rgba(18, 18, 24, 0.72);
+  --card-foreground: #F5F5F7;
+  --popover: rgba(22, 22, 28, 0.95);
+  --popover-foreground: #F5F5F7;
+  --primary: #2997FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: rgba(255, 255, 255, 0.08);
+  --secondary-foreground: #E5E5EA;
+  --muted: rgba(255, 255, 255, 0.06);
+  --muted-foreground: #86868B;
+  --accent: rgba(41, 151, 255, 0.14);
+  --accent-foreground: #2997FF;
+  --destructive: #FF453A;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(255, 255, 255, 0.10);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: #2997FF;
+  --sidebar: #0A0A0E;
+  --sidebar-foreground: #F5F5F7;
+  --sidebar-primary: #2997FF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: rgba(255, 255, 255, 0.08);
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(255, 255, 255, 0.10);
+  --sidebar-ring: #2997FF;
 }
 
 @layer base {
@@ -789,3 +795,67 @@
   backdrop-filter: blur(20px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
 }
+
+/* ══════════════════════════════════════════
+   APPLE-INSPIRED DESIGN UTILITIES
+═══════════════════════════════════════════ */
+
+.apple-glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.apple-glass-card {
+  background: rgba(18, 18, 24, 0.72);
+  backdrop-filter: blur(30px) saturate(190%);
+  -webkit-backdrop-filter: blur(30px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.apple-glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.apple-nav-blur {
+  background: rgba(6, 6, 8, 0.82);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.apple-pill-btn {
+  border-radius: 9999px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.apple-pill-btn:hover {
+  transform: scale(1.02);
+}
+
+.apple-pill-btn:active {
+  transform: scale(0.98);
+}
+
+.apple-text-headline {
+  background: linear-gradient(180deg, #FFFFFF 0%, #A1A1A6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.apple-text-subheadline {
+  color: #86868B;
+}
+
+.apple-glow-blue {
+  box-shadow: 0 0 60px -10px rgba(41, 151, 255, 0.35);
+}
+
+.apple-glow-cyan {
+  box-shadow: 0 0 60px -10px rgba(0, 210, 255, 0.3);
+}

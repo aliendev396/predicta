@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type { } from "@tanstack/react-start";
 
-const BASE_URL = "https://virtu-iq.lovable.app";
+const BASE_URL = "https://predicta.lovable.app";
 
 interface SitemapEntry {
   path: string;

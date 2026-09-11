@@ -15,13 +15,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/partner-apply")({
   head: () => ({
     meta: [
-      { title: "Partner Application — Virtu-IQ" },
+      { title: "Partner Application — PREDICTA" },
       {
         name: "description",
-        content: "Apply to become a verified Virtu-IQ partner and earn commission on every member you refer.",
+        content: "Apply to become a verified PREDICTA partner and earn commission on every member you refer.",
       },
-      { property: "og:title", content: "Partner Application — Virtu-IQ" },
-      { property: "og:description", content: "Apply to become a verified Virtu-IQ partner." },
+      { property: "og:title", content: "Partner Application — PREDICTA" },
+      { property: "og:description", content: "Apply to become a verified PREDICTA partner." },
     ],
   }),
   component: PartnerApplyPage,
@@ -76,7 +76,7 @@ function PartnerApplyPage() {
   const submit = useMutation({
     mutationFn: async () => {
       if (audience.trim().length < 3) throw new Error("Tell us about your audience.");
-      if (motivation.trim().length < 10) throw new Error("Tell us why you want to partner with Virtu-IQ.");
+      if (motivation.trim().length < 10) throw new Error("Tell us why you want to partner with PREDICTA.");
       if (payoutDetails.trim().length < 5) throw new Error("Add your payout number or account details.");
       const { error } = await supabase.from("partner_applications").insert({
         user_id: user.id,
@@ -193,7 +193,7 @@ function PartnerApplyPage() {
               <Handshake className="size-3.5" /> Partner application
             </span>
             <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">
-              Apply to partner with Virtu-IQ
+              Apply to partner with PREDICTA
             </h1>
             <p className="mt-1.5 text-sm text-muted-foreground">
               No registration fee for partners. Once approved you get your own referral link and dashboard.
@@ -223,7 +223,7 @@ function PartnerApplyPage() {
                   rows={4}
                   value={motivation}
                   onChange={(e) => setMotivation(e.target.value)}
-                  placeholder="How you plan to introduce Virtu-IQ to your people"
+                  placeholder="How you plan to introduce PREDICTA to your people"
                   required
                 />
               </div>

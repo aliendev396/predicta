@@ -8,13 +8,13 @@ import { LegalHeroBanner } from "@/components/brand/LegalHeroBanner";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms of Service — Virtu-IQ" },
+      { title: "Terms of Service — PREDICTA" },
       {
         name: "description",
-        content: "Review the Terms of Service governing access to the Virtu-IQ virtual match outcome analysis platform.",
+        content: "Review the Terms of Service governing access to the PREDICTA virtual match outcome analysis platform.",
       },
-      { property: "og:title", content: "Terms of Service — Virtu-IQ" },
-      { property: "og:description", content: "Rules, user agreements, and service guidelines for Virtu-IQ members." },
+      { property: "og:title", content: "Terms of Service — PREDICTA" },
+      { property: "og:description", content: "Rules, user agreements, and service guidelines for PREDICTA members." },
     ],
   }),
   component: TermsPage,
@@ -32,7 +32,7 @@ function TermsPage() {
           badgeText="USER AGREEMENT"
           lastUpdated="Last Updated: August 2026"
           title="Terms of Service"
-          description="These Terms of Service govern your access to and use of the Virtu-IQ outcome analysis workspace, credit packages, partner features, and services."
+          description="These Terms of Service govern your access to and use of the PREDICTA outcome analysis workspace, credit packages, partner features, and services."
         />
 
         {/* Content Document */}
@@ -52,10 +52,10 @@ function TermsPage() {
                   1. Acceptance of Terms
                 </h2>
                 <p className="text-slate-600 mb-2">
-                  By creating an account, paying a registration fee, purchasing credit packages, or otherwise accessing Virtu-IQ, you agree to be bound by these Terms of Service.
+                  By creating an account, paying a registration fee, purchasing credit packages, or otherwise accessing PREDICTA, you agree to be bound by these Terms of Service.
                 </p>
                 <p className="text-slate-600">
-                  If you do not agree to these terms, you must not use or access the Virtu-IQ platform.
+                  If you do not agree to these terms, you must not use or access the PREDICTA platform.
                 </p>
               </div>
 
@@ -66,7 +66,7 @@ function TermsPage() {
                   2. Services & Credit System
                 </h2>
                 <p className="text-slate-600 mb-3">
-                  Virtu-IQ provides algorithmic optical and outcome intelligence for instant virtual sporting events:
+                  PREDICTA provides algorithmic optical and outcome intelligence for instant virtual sporting events:
                 </p>
                 <ul className="list-disc pl-5 space-y-2 text-slate-600">
                   <li>
@@ -88,13 +88,13 @@ function TermsPage() {
                   3. Entertainment & Informational Disclaimer
                 </h2>
                 <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-4 mb-4 text-amber-950 text-xs sm:text-sm leading-relaxed">
-                  <strong>Important Notice:</strong> Virtu-IQ is an independent AI analysis tool designed for entertainment and statistical reference. Virtu-IQ is not affiliated with, endorsed by, or partnered with SportyBet or any third-party sportsbook operator.
+                  <strong>Important Notice:</strong> PREDICTA is an independent AI analysis tool designed for entertainment and statistical reference. PREDICTA is not affiliated with, endorsed by, or partnered with SportyBet or any third-party sportsbook operator.
                 </div>
                 <p className="text-slate-600 mb-2">
                   While our proprietary algorithm decodes match frame data with high precision, virtual gaming outcomes are subject to underlying simulation mechanics.
                 </p>
                 <p className="text-slate-600">
-                  Users are solely responsible for their wagering decisions. Virtu-IQ is not liable for any financial losses incurred through third-party platforms.
+                  Users are solely responsible for their wagering decisions. PREDICTA is not liable for any financial losses incurred through third-party platforms.
                 </p>
               </div>
 
@@ -110,7 +110,7 @@ function TermsPage() {
                 <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
                   <li>Partners must not engage in deceptive marketing, spam, or misleading claims.</li>
                   <li>Commission payouts are subject to administrative review, verification of genuine referral activity, and manual clearance via Mobile Money.</li>
-                  <li>Virtu-IQ reserves the right to suspend partner status if fraudulent or self-referral schemes are detected.</li>
+                  <li>PREDICTA reserves the right to suspend partner status if fraudulent or self-referral schemes are detected.</li>
                 </ul>
               </div>
 

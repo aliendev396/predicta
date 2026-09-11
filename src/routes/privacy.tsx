@@ -8,13 +8,13 @@ import { LegalHeroBanner } from "@/components/brand/LegalHeroBanner";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — Virtu-IQ" },
+      { title: "Privacy Policy — PREDICTA" },
       {
         name: "description",
-        content: "Learn how Virtu-IQ protects your personal information, analysis uploads, payments, and account data.",
+        content: "Learn how PREDICTA protects your personal information, analysis uploads, payments, and account data.",
       },
-      { property: "og:title", content: "Privacy Policy — Virtu-IQ" },
-      { property: "og:description", content: "Data security, encryption, and privacy standards at Virtu-IQ." },
+      { property: "og:title", content: "Privacy Policy — PREDICTA" },
+      { property: "og:description", content: "Data security, encryption, and privacy standards at PREDICTA." },
     ],
   }),
   component: PrivacyPolicyPage,
@@ -32,7 +32,7 @@ function PrivacyPolicyPage() {
           badgeText="SECURITY & PRIVACY"
           lastUpdated="Last Updated: August 2026"
           title="Privacy Policy"
-          description="At Virtu-IQ, your privacy and operational security are non-negotiable. This policy details how we handle your account credentials, screenshot analysis data, and transactions."
+          description="At PREDICTA, your privacy and operational security are non-negotiable. This policy details how we handle your account credentials, screenshot analysis data, and transactions."
         />
 
         {/* Content Document */}
@@ -106,7 +106,7 @@ function PrivacyPolicyPage() {
                   3. Data Security & Encryption
                 </h2>
                 <p className="text-slate-600 mb-3">
-                  Virtu-IQ enforces bank-grade security protocols across all infrastructure layers:
+                  PREDICTA enforces bank-grade security protocols across all infrastructure layers:
                 </p>
                 <ul className="list-disc pl-5 space-y-2 text-slate-600">
                   <li>256-bit TLS encryption in transit for all image uploads, API requests, and web sessions.</li>
@@ -126,7 +126,7 @@ function PrivacyPolicyPage() {
                   We <strong className="text-slate-900">never sell, rent, or trade</strong> your personal information or analysis history to third parties or marketing brokers.
                 </p>
                 <p className="text-slate-600">
-                  Data is shared solely with vetted infrastructure partners (such as database and hosting providers) strictly necessary to run the Virtu-IQ application.
+                  Data is shared solely with vetted infrastructure partners (such as database and hosting providers) strictly necessary to run the PREDICTA application.
                 </p>
               </div>
 
@@ -137,7 +137,7 @@ function PrivacyPolicyPage() {
                   5. Your Rights & Account Controls
                 </h2>
                 <p className="text-slate-600 mb-3">
-                  As a Virtu-IQ member, you have full control over your platform data:
+                  As a PREDICTA member, you have full control over your platform data:
                 </p>
                 <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
                   <li>Review and download your historical outcome exposures at any time.</li>
@@ -151,7 +151,7 @@ function PrivacyPolicyPage() {
                 <CheckCircle2 className="size-5 text-primary shrink-0 mt-0.5" />
                 <div className="text-xs sm:text-sm text-slate-700 leading-relaxed">
                   <strong className="text-slate-950">Questions regarding privacy?</strong>
-                  <p className="mt-0.5">Contact the Virtu-IQ data compliance team via the support portal or directly through your assigned partner representative.</p>
+                  <p className="mt-0.5">Contact the PREDICTA data compliance team via the support portal or directly through your assigned partner representative.</p>
                 </div>
               </div>
             </div>

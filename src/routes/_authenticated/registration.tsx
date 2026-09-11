@@ -15,14 +15,14 @@ import { checkPaymentRateLimit, formatRetryAfter } from "@/lib/rateLimit";
 export const Route = createFileRoute("/_authenticated/registration")({
   head: () => ({
     meta: [
-      { title: "Registration Fee — Virtu-IQ" },
+      { title: "Registration Fee — PREDICTA" },
       {
         name: "description",
         content:
-          "Complete your one-time Virtu-IQ registration fee to unlock credits and instant virtual football verdicts.",
+          "Complete your one-time PREDICTA registration fee to unlock credits and instant virtual football verdicts.",
       },
-      { property: "og:title", content: "Registration Fee — Virtu-IQ" },
-      { property: "og:description", content: "Pay your one-time Virtu-IQ registration fee to activate your account." },
+      { property: "og:title", content: "Registration Fee — PREDICTA" },
+      { property: "og:description", content: "Pay your one-time PREDICTA registration fee to activate your account." },
     ],
   }),
   component: RegistrationFeePage,
@@ -94,7 +94,7 @@ function RegistrationFeePage() {
       return;
     }
     if (!profile?.registration_paid && !isAdmin) return;
-    toast.success(isAdmin ? "Access granted — welcome to Virtu-IQ!" : "Registration approved — welcome to Virtu-IQ!");
+    toast.success(isAdmin ? "Access granted — welcome to PREDICTA!" : "Registration approved — welcome to PREDICTA!");
     const timer = window.setTimeout(() => {
       void navigate({ to: "/credits", replace: true });
     }, 1400);
@@ -156,7 +156,7 @@ function RegistrationFeePage() {
           </span>
           <h1 className="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl">Registration fee</h1>
           <p className="mt-1.5 max-w-md text-sm opacity-90">
-            Pay {ghs(fee)} once to activate your Virtu-IQ account. Once an admin confirms your payment
+            Pay {ghs(fee)} once to activate your PREDICTA account. Once an admin confirms your payment
             your credits page unlocks instantly.
           </p>
           <p className="mt-4 text-4xl font-extrabold tracking-tight">{ghs(fee)}</p>

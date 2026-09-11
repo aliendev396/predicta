@@ -20,10 +20,10 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/analyze")({
   head: () => ({
     meta: [
-      { title: "Analyze Screenshot — Virtu-IQ" },
-      { name: "description", content: "Upload an instant/virtual football screenshot and Virtu-IQ picks the most likely outcomes your plan allows." },
-      { property: "og:title", content: "Analyze Screenshot — Virtu-IQ" },
-      { property: "og:description", content: "Virtu-IQ reads your instant virtual football screenshot and delivers a decisive verdict." },
+      { title: "Analyze Screenshot — PREDICTA" },
+      { name: "description", content: "Upload an instant/virtual football screenshot and PREDICTA picks the most likely outcomes your plan allows." },
+      { property: "og:title", content: "Analyze Screenshot — PREDICTA" },
+      { property: "og:description", content: "PREDICTA reads your instant virtual football screenshot and delivers a decisive verdict." },
     ],
   }),
   component: AnalyzePage,
@@ -268,7 +268,7 @@ function AnalyzePage() {
             {profile?.credits ?? 0} credits available
           </p>
           <Button type="submit" size="lg" disabled={!file || locked} className="sm:min-w-56">
-            {busy ? "Virtu-IQ is deciding…" : noCredits ? "No credits left" : "Get my verdict"}
+            {busy ? "PREDICTA is deciding…" : noCredits ? "No credits left" : "Get my verdict"}
           </Button>
         </div>
 
@@ -284,7 +284,7 @@ function AnalyzePage() {
         )}
 
         <p className="text-xs text-muted-foreground">
-          Virtu-IQ predicts instant/virtual football only. Real live matches and non-football screenshots still consume 1 credit.
+          PREDICTA predicts instant/virtual football only. Real live matches and non-football screenshots still consume 1 credit.
         </p>
       </form>
     </>

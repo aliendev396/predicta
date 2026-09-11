@@ -20,7 +20,7 @@ function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <img src="/virtu-iq-symbol.png" alt="" className="mx-auto h-14 w-auto animate-pulse mb-6" />
+        <img src="/predicta-symbol.png" alt="PREDICTA" className="mx-auto h-14 w-auto animate-pulse mb-6 object-contain" />
         <h2 className="text-lg font-semibold text-foreground">Taking you home…</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           This page doesn't exist. Redirecting you automatically.
@@ -53,9 +53,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <img src="/virtu-iq-symbol.png" alt="" className="mx-auto h-14 w-auto animate-pulse mb-6" />
+        <img src="/predicta-symbol.png" alt="PREDICTA" className="mx-auto h-14 w-auto animate-pulse mb-6 object-contain" />
         <h1 className="text-lg font-semibold tracking-tight text-foreground">
-          Loading Virtu-IQ…
+          Loading PREDICTA…
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Reconnecting to the server. This should only take a moment.
@@ -94,14 +94,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "default" },
       { name: "format-detection", content: "telephone=no" },
-      { title: "Virtu-IQ — Instant Virtuals Outcome Exposed" },
+      { title: "PREDICTA — Instant Virtuals Outcome Exposed" },
       {
         name: "description",
         content:
-          "Virtu-IQ exposes the next SportyBet instant virtual outcome before the game loads. Upload your screenshot, hack the result, play with certainty.",
+          "PREDICTA exposes the next SportyBet instant virtual outcome before the game loads. Upload your screenshot, predict the result, play with certainty.",
       },
-      { name: "author", content: "Virtu-IQ" },
-      { property: "og:title", content: "Virtu-IQ — Instant Virtuals Outcome Exposed" },
+      { name: "author", content: "PREDICTA" },
+      { property: "og:title", content: "PREDICTA — Instant Virtuals Outcome Exposed" },
       {
         property: "og:description",
         content: "Our proprietary algorithm penetrates the SportyBet instant virtual engine and delivers the next outcome before the game loads.",
@@ -117,14 +117,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@graph": [
             {
               "@type": "Organization",
-              name: "Virtu-IQ",
-              url: "https://virtu-iq.lovable.app",
-              logo: "https://virtu-iq.lovable.app/icon-512.png",
+              name: "PREDICTA",
+              url: "https://predicta.lovable.app",
+              logo: "https://predicta.lovable.app/icon-512.png",
             },
             {
               "@type": "WebSite",
-              name: "Virtu-IQ",
-              url: "https://virtu-iq.lovable.app",
+              name: "PREDICTA",
+              url: "https://predicta.lovable.app",
             },
           ],
         }),
@@ -141,8 +141,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "preload", href: "/virtu-iq-symbol.png", as: "image", type: "image/png" },
-      { rel: "preload", href: "/virtu-iq-full.png", as: "image", type: "image/png" },
+      { rel: "preload", href: "/predicta-symbol.png", as: "image", type: "image/png" },
+      { rel: "preload", href: "/predicta-full.png", as: "image", type: "image/png" },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
@@ -221,9 +221,9 @@ class AppErrorBoundary extends Component<{ children: ReactNode }, { crashed: boo
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <div className="max-w-md text-center">
-          <img src="/virtu-iq-symbol.png" alt="" className="mx-auto h-14 w-auto animate-pulse mb-6" />
+          <img src="/predicta-symbol.png" alt="PREDICTA" className="mx-auto h-14 w-auto animate-pulse mb-6 object-contain" />
           <h1 className="text-lg font-semibold tracking-tight text-foreground">
-            Loading Virtu-IQ…
+            Loading PREDICTA…
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Please wait while we reconnect.

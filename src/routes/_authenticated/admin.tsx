@@ -89,10 +89,10 @@ import {
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
-      { title: "Admin Console — Virtu-IQ" },
-      { name: "description", content: "Review Virtu-IQ payments, partner applications, members and audit logs." },
-      { property: "og:title", content: "Admin Console — Virtu-IQ" },
-      { property: "og:description", content: "Approve payments and manage the Virtu-IQ platform." },
+      { title: "Admin Console — PREDICTA" },
+      { name: "description", content: "Review PREDICTA payments, partner applications, members and audit logs." },
+      { property: "og:title", content: "Admin Console — PREDICTA" },
+      { property: "og:description", content: "Approve payments and manage the PREDICTA platform." },
     ],
   }),
   component: AdminPage,

@@ -5,12 +5,12 @@ export function renderErrorPage(_error?: unknown): string {
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Virtu-IQ</title>
+    <title>PREDICTA</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       body { font: 15px/1.5 system-ui, -apple-system, sans-serif; background: #0a0a0a; color: #fafafa; display: grid; place-items: center; min-height: 100vh; margin: 0; padding: 1.5rem; }
       .card { max-width: 24rem; width: 100%; text-align: center; padding: 2rem; }
-      .logo { width: 56px; height: 56px; margin: 0 auto 1.5rem; animation: pulse 1.6s ease-in-out infinite; }
+      .logo { width: 56px; height: 56px; margin: 0 auto 1.5rem; animation: pulse 1.6s ease-in-out infinite; object-fit: contain; }
       @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
       h1 { font-size: 1.125rem; font-weight: 600; margin: 0 0 0.5rem; }
       p { color: #9ca3af; margin: 0 0 1.5rem; font-size: 0.875rem; }
@@ -22,8 +22,8 @@ export function renderErrorPage(_error?: unknown): string {
   </head>
   <body>
     <div class="card">
-      <img src="/virtu-iq-symbol.png" alt="" class="logo" />
-      <h1>Loading Virtu-IQ…</h1>
+      <img src="/predicta-symbol.png" alt="PREDICTA" class="logo" />
+      <h1>Loading PREDICTA…</h1>
       <p>Please wait while we connect.</p>
       <div class="actions">
         <button class="primary" onclick="location.reload()">Refresh</button>

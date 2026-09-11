@@ -33,10 +33,10 @@ export const Route = createFileRoute("/register")({
   },
   head: () => ({
     meta: [
-      { title: "Create Account — Virtu-IQ" },
-      { name: "description", content: "Create your Virtu-IQ account, complete registration and get instant virtual verdicts from Virtu-IQ." },
-      { property: "og:title", content: "Create Account — Virtu-IQ" },
-      { property: "og:description", content: "Join Virtu-IQ and start analyzing screenshots with AI." },
+      { title: "Create Account — PREDICTA" },
+      { name: "description", content: "Create your PREDICTA account, complete registration and get instant virtual verdicts from PREDICTA." },
+      { property: "og:title", content: "Create Account — PREDICTA" },
+      { property: "og:description", content: "Join PREDICTA and start analyzing screenshots with AI." },
     ],
   }),
   component: RegisterPage,
@@ -210,9 +210,9 @@ function RegisterPage() {
 
   return (
     <AuthBackground>
-      <Link to="/" className="flex justify-center" aria-label="Virtu-IQ home">
+      <Link to="/" className="flex justify-center" aria-label="PREDICTA home">
         <div className="inline-flex items-center rounded-xl bg-white px-5 py-2.5 shadow-lg">
-          <LogoFull className="h-7" />
+          <LogoFull className="h-8 w-auto object-contain" />
         </div>
       </Link>
       <div className="mt-6 sm:mt-8 rounded-xl border border-primary/30 bg-card p-4.5 sm:p-8 shadow-xl ring-1 ring-primary/10">

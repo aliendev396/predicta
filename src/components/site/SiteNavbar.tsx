@@ -1,97 +1,114 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, X, Terminal, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { LogoFull, LogoSymbol } from "@/components/brand/Logo";
+import { Menu, X, ChevronRight, Sparkles } from "lucide-react";
+import { LogoFull } from "@/components/brand/Logo";
 import { useAuth } from "@/hooks/useAuth";
 
 const links = [
-  { label: "How It Works", href: "#how-it-works" },
-  { label: "Features", href: "#features" },
+  { label: "Overview", href: "#overview" },
+  { label: "Neural Engine", href: "#engine" },
+  { label: "Bento Specs", href: "#specs" },
+  { label: "Workflow", href: "#workflow" },
+  { label: "Packages", href: "#packages" },
   { label: "FAQ", href: "#faq" },
 ];
 
 export function SiteNavbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { isAuthenticated, loading } = useAuth();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <header
-      className="sticky top-0 z-50 border-b transition-all"
-      style={{
-        background: "linear-gradient(180deg, #E41827, #C50F1F)",
-        borderColor: "rgba(0, 0, 0, 0.12)",
-        boxShadow: "0 4px 18px rgba(25, 30, 45, 0.15)",
-      }}
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-[#060608]/85 backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.5)]"
+          : "bg-[#060608]/60 backdrop-blur-xl border-b border-white/[0.05]"
+      }`}
     >
-      <div className="mx-auto flex h-13 sm:h-16 max-w-6xl items-center justify-between px-3 sm:px-6">
-        {/* Logo with white background badge */}
-        <Link to="/" aria-label="Virtu-IQ home" className="flex items-center gap-2 group shrink-0">
-          <div className="flex items-center rounded-lg bg-white px-2 py-0.5 sm:px-2.5 sm:py-1 shadow-xs transition-transform group-hover:scale-[1.02]">
-            <LogoSymbol className="h-6 sm:h-8 object-contain" />
-          </div>
-          <span className="hidden sm:flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-widest text-white border-white/40 bg-white/10">
-            <Terminal className="size-2.5 text-white" />
-            ONLINE
+      <div className="mx-auto flex h-14 sm:h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+        {/* Apple-styled PREDICTA Brand Logo */}
+        <Link to="/" aria-label="PREDICTA home" className="flex items-center gap-2.5 group shrink-0">
+          <LogoFull className="h-6.5 sm:h-7.5 w-auto object-contain transition-opacity group-hover:opacity-85" />
+          <span className="hidden md:inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium tracking-wide text-neutral-400">
+            <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            v2.4
           </span>
         </Link>
 
-        {/* Desktop nav */}
-        <nav aria-label="Main" className="hidden items-center gap-6 lg:flex">
+        {/* Desktop nav — Apple minimalist links */}
+        <nav aria-label="Main" className="hidden items-center gap-7 md:flex">
           {links.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="text-xs font-semibold uppercase tracking-wider text-white/90 hover:text-white transition-colors"
+              className="text-[13px] font-normal tracking-tight text-neutral-400 hover:text-white transition-colors duration-200"
             >
               {l.label}
             </a>
           ))}
         </nav>
 
-        {/* Desktop CTA */}
-        <div className="hidden items-center gap-2.5 lg:flex">
+        {/* Desktop CTA — Apple Pill buttons */}
+        <div className="hidden items-center gap-3 md:flex">
           {loading ? null : isAuthenticated ? (
-            <Button asChild className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold tracking-wide border border-emerald-400">
-              <Link to="/dashboard">Dashboard</Link>
-            </Button>
+            <Link
+              to="/dashboard"
+              className="inline-flex items-center justify-center rounded-full bg-[#2997FF] hover:bg-[#0077ED] text-white text-xs font-semibold px-4.5 py-2 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+            >
+              Dashboard
+            </Link>
           ) : (
             <>
-              <Button asChild variant="outline" className="border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white text-xs font-bold uppercase tracking-wider h-9 px-4">
-                <Link to="/login">Log In</Link>
-              </Button>
-              <Button asChild className="bg-gradient-to-b from-[#26AF53] to-[#1F9E48] border border-[#2BBE5C] text-white font-bold tracking-wider hover:brightness-110 shadow-lg shadow-emerald-900/30 h-9 px-5">
-                <Link to="/register">JOIN NOW</Link>
-              </Button>
+              <Link
+                to="/login"
+                className="text-[13px] font-medium text-neutral-300 hover:text-white px-3 py-1.5 transition-colors"
+              >
+                Log In
+              </Link>
+              <Link
+                to="/register"
+                className="inline-flex items-center justify-center rounded-full bg-white text-black hover:bg-neutral-200 text-xs font-semibold px-4.5 py-2 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+              >
+                Get Started
+              </Link>
             </>
           )}
         </div>
 
         {/* Mobile & Tablet CTA */}
-        <div className="flex items-center gap-1 sm:gap-2 lg:hidden shrink-0">
+        <div className="flex items-center gap-2 md:hidden shrink-0">
           {!loading && !isAuthenticated && (
             <>
-              <Button
-                asChild
-                size="sm"
-                variant="outline"
-                className="h-7.5 sm:h-8 border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white text-[11px] sm:text-xs font-bold px-2 sm:px-3"
+              <Link
+                to="/login"
+                className="text-xs font-medium text-neutral-300 hover:text-white px-2 py-1"
               >
-                <Link to="/login">Log In</Link>
-              </Button>
-              <Button
-                asChild
-                size="sm"
-                className="h-7.5 sm:h-8 bg-gradient-to-b from-[#26AF53] to-[#1F9E48] border border-[#2BBE5C] text-white font-bold text-[11px] sm:text-xs px-2 sm:px-3"
+                Log In
+              </Link>
+              <Link
+                to="/register"
+                className="rounded-full bg-white text-black text-[11px] font-semibold px-3 py-1.5"
               >
-                <Link to="/register">JOIN</Link>
-              </Button>
+                Join
+              </Link>
             </>
           )}
           {!loading && isAuthenticated && (
-            <Button asChild size="sm" className="h-7.5 sm:h-8 bg-emerald-600 text-white font-bold text-[11px] sm:text-xs px-2.5 sm:px-3">
-              <Link to="/dashboard">Dashboard</Link>
-            </Button>
+            <Link
+              to="/dashboard"
+              className="rounded-full bg-[#2997FF] text-white text-[11px] font-semibold px-3 py-1.5"
+            >
+              Dashboard
+            </Link>
           )}
 
           <button
@@ -99,88 +116,70 @@ export function SiteNavbar() {
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
-            className="inline-flex size-8 sm:size-10 items-center justify-center rounded-md text-white hover:bg-white/10 transition-colors ml-0.5 touch-manipulation"
+            className="inline-flex size-9 items-center justify-center rounded-full text-neutral-300 hover:text-white hover:bg-white/[0.08] transition-colors ml-1 touch-manipulation"
           >
-            {open ? <X className="size-4.5 sm:size-5" /> : <Menu className="size-4.5 sm:size-5" />}
+            {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
       </div>
 
-      {/* ── Mobile drawer — redesigned ── */}
+      {/* ── Apple-styled Mobile Cupertino Drawer ── */}
       {open && (
         <div
-          className="lg:hidden"
+          className="md:hidden border-t border-white/[0.08] bg-[#060608]/95 backdrop-blur-3xl"
           style={{
-            background: "linear-gradient(180deg, #B00D1A 0%, #8B0913 100%)",
-            borderTop: "1px solid rgba(255,255,255,0.15)",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.35)",
+            boxShadow: "0 12px 40px rgba(0,0,0,0.8)",
           }}
         >
-          {/* Nav links with chevrons */}
-          <nav aria-label="Mobile navigation" className="px-4 pt-3 pb-1">
+          {/* Nav links */}
+          <nav aria-label="Mobile navigation" className="px-5 pt-4 pb-2">
             {links.map((l, i) => (
               <a
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className="flex items-center justify-between py-3.5 text-sm font-semibold text-white/90 hover:text-white transition-colors"
+                className="flex items-center justify-between py-3 text-sm font-medium text-neutral-300 hover:text-white transition-colors"
                 style={{
-                  borderBottom: i < links.length - 1 ? "1px solid rgba(255,255,255,0.10)" : "none",
+                  borderBottom: i < links.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
                 }}
               >
                 {l.label}
-                <ChevronRight className="size-4 text-white/50" />
+                <ChevronRight className="size-4 text-neutral-500" />
               </a>
             ))}
           </nav>
 
           {/* Divider */}
-          <div className="mx-4 my-2 border-t border-white/15" />
+          <div className="mx-5 my-2 border-t border-white/[0.08]" />
 
           {/* CTA buttons */}
-          <div className="px-4 pb-5 flex flex-col gap-2.5">
+          <div className="px-5 pb-6 pt-2 flex flex-col gap-2.5">
             {isAuthenticated ? (
               <Link
                 to="/dashboard"
                 onClick={() => setOpen(false)}
-                className="flex items-center justify-center rounded-lg py-3 text-sm font-bold tracking-wider text-white transition-all"
-                style={{ background: "linear-gradient(135deg, #059669, #047857)", border: "1px solid #10b981" }}
+                className="flex items-center justify-center rounded-full py-2.5 text-xs font-semibold tracking-wide text-white bg-[#2997FF] hover:bg-[#0077ED] transition-all"
               >
-                Go to Dashboard
+                Open Dashboard
               </Link>
             ) : (
               <>
                 <Link
                   to="/register"
                   onClick={() => setOpen(false)}
-                  className="flex items-center justify-center rounded-lg py-3 text-sm font-bold tracking-widest text-white transition-all hover:brightness-110"
-                  style={{ background: "linear-gradient(135deg, #26AF53, #1F9E48)", border: "1px solid #2BBE5C" }}
+                  className="flex items-center justify-center rounded-full py-2.5 text-xs font-semibold tracking-wide text-black bg-white hover:bg-neutral-200 transition-all shadow-md"
                 >
-                  JOIN NOW — FREE ACCOUNT
+                  Get Started Free
                 </Link>
                 <Link
                   to="/login"
                   onClick={() => setOpen(false)}
-                  className="flex items-center justify-center rounded-lg py-3 text-sm font-semibold tracking-wide transition-all"
-                  style={{
-                    background: "rgba(255,255,255,0.10)",
-                    border: "1px solid rgba(255,255,255,0.25)",
-                    color: "white",
-                  }}
+                  className="flex items-center justify-center rounded-full py-2.5 text-xs font-medium tracking-wide text-neutral-300 border border-white/10 hover:bg-white/[0.06] transition-all"
                 >
-                  Log In
+                  Log In to Account
                 </Link>
               </>
             )}
-          </div>
-
-          {/* Status footer */}
-          <div
-            className="flex items-center justify-center gap-1.5 py-2 text-[10px] font-mono font-bold tracking-widest"
-            style={{ background: "rgba(0,0,0,0.2)", color: "rgba(255,255,255,0.5)" }}
-          >
-            <span className="inline-block size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            SYSTEM ONLINE · SECURE CONNECTION
           </div>
         </div>
       )}

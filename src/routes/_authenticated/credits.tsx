@@ -46,10 +46,10 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/credits")({
   head: () => ({
     meta: [
-      { title: "Credits & Packages — Virtu-IQ" },
-      { name: "description", content: "Track your Virtu-IQ prediction credits and upgrade your plan with the Starter, Plus or Premium package." },
-      { property: "og:title", content: "Credits & Packages — Virtu-IQ" },
-      { property: "og:description", content: "Monitor your credit balance and upgrade your Virtu-IQ plan." },
+      { title: "Credits & Packages — PREDICTA" },
+      { name: "description", content: "Track your PREDICTA prediction credits and upgrade your plan with the Starter, Plus or Premium package." },
+      { property: "og:title", content: "Credits & Packages — PREDICTA" },
+      { property: "og:description", content: "Monitor your credit balance and upgrade your PREDICTA plan." },
     ],
   }),
   component: CreditsPage,
@@ -108,7 +108,7 @@ function CreditsPage() {
     <>
       <PageHeader
         title="Credits"
-        description="One credit powers one Virtu-IQ instant virtual football scan."
+        description="One credit powers one PREDICTA instant virtual football scan."
       />
 
       <div className="grid gap-5 lg:grid-cols-3">
@@ -124,7 +124,7 @@ function CreditsPage() {
           <div className="relative">
             <div className="flex items-center justify-between gap-3">
               <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
-                <Coins className="size-3.5" /> Virtu-IQ balance
+                <Coins className="size-3.5" /> PREDICTA balance
               </span>
               {low && <Badge className="bg-white text-primary hover:bg-white">Running low</Badge>}
             </div>
@@ -384,7 +384,7 @@ function UpgradeDialog() {
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>
-            {step === 1 ? "Choose your Virtu-IQ package" : step === 2 ? "Make your payment" : "Payment pending approval"}
+            {step === 1 ? "Choose your PREDICTA package" : step === 2 ? "Make your payment" : "Payment pending approval"}
           </DialogTitle>
           <DialogDescription>
             {step === 1

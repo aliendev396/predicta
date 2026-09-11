@@ -8,13 +8,13 @@ import { LegalHeroBanner } from "@/components/brand/LegalHeroBanner";
 export const Route = createFileRoute("/refund-policy")({
   head: () => ({
     meta: [
-      { title: "Refund Policy — Virtu-IQ" },
+      { title: "Refund Policy — PREDICTA" },
       {
         name: "description",
-        content: "Understand Virtu-IQ's policy on scan credit refunds, payment verification disputes, and failed analyses.",
+        content: "Understand PREDICTA's policy on scan credit refunds, payment verification disputes, and failed analyses.",
       },
-      { property: "og:title", content: "Refund Policy — Virtu-IQ" },
-      { property: "og:description", content: "Clear, transparent refund and credit reimbursement guidelines at Virtu-IQ." },
+      { property: "og:title", content: "Refund Policy — PREDICTA" },
+      { property: "og:description", content: "Clear, transparent refund and credit reimbursement guidelines at PREDICTA." },
     ],
   }),
   component: RefundPolicyPage,
@@ -52,7 +52,7 @@ function RefundPolicyPage() {
                   1. Automatic Credit Reimbursement (Failed Analyses)
                 </h2>
                 <p className="text-slate-600 mb-3">
-                  Virtu-IQ is built with safety guards to protect your balance:
+                  PREDICTA is built with safety guards to protect your balance:
                 </p>
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 space-y-2 text-xs sm:text-sm text-emerald-950">
                   <p className="font-bold flex items-center gap-1.5">
@@ -110,7 +110,7 @@ function RefundPolicyPage() {
                   4. Disputed Outcome Claims
                 </h2>
                 <p className="text-slate-600 mb-2">
-                  Virtual sporting simulations produce results based on computational simulations. While Virtu-IQ delivers mathematical and statistical outcome extraction, variations in game execution or user wagering timing do not qualify for cash refunds.
+                  Virtual sporting simulations produce results based on computational simulations. While PREDICTA delivers mathematical and statistical outcome extraction, variations in game execution or user wagering timing do not qualify for cash refunds.
                 </p>
                 <p className="text-slate-600">
                   If you believe a software glitch occurred during analysis processing, our technical team will inspect the system audit logs and credit your wallet accordingly.

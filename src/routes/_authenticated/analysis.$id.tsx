@@ -13,10 +13,10 @@ import type { AnalysisResult } from "@/lib/analysis-prompt";
 export const Route = createFileRoute("/_authenticated/analysis/$id")({
   head: () => ({
     meta: [
-      { title: "Prediction Verdict — Virtu-IQ" },
-      { name: "description", content: "Virtu-IQ's confident football prediction verdict extracted from your screenshot." },
-      { property: "og:title", content: "Prediction Verdict — Virtu-IQ" },
-      { property: "og:description", content: "The most likely match outcomes, picked with confidence by Virtu-IQ." },
+      { title: "Prediction Verdict — PREDICTA" },
+      { name: "description", content: "PREDICTA's confident football prediction verdict extracted from your screenshot." },
+      { property: "og:title", content: "Prediction Verdict — PREDICTA" },
+      { property: "og:description", content: "The most likely match outcomes, picked with confidence by PREDICTA." },
     ],
   }),
   component: AnalysisDetailPage,
@@ -115,7 +115,7 @@ function AnalysisDetailPage() {
             aria-hidden
           />
           <div className="relative">
-            <p className="text-xs font-semibold tracking-widest uppercase opacity-80">Virtu-IQ verdict</p>
+            <p className="text-xs font-semibold tracking-widest uppercase opacity-80">PREDICTA verdict</p>
             <p className="mt-2 text-xl leading-snug font-bold sm:text-2xl">{result.headline}</p>
           </div>
         </div>

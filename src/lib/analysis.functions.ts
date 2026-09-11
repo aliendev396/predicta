@@ -139,8 +139,8 @@ export const runAnalysis = createServerFn({ method: "POST" })
               headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${geminiKey}`,
-                "HTTP-Referer": "https://virtu-iq.com",
-                "X-Title": "Virtu-IQ",
+                "HTTP-Referer": "https://predicta.com",
+                "X-Title": "PREDICTA",
               },
               body: JSON.stringify({
                 model,
@@ -336,7 +336,7 @@ export const runAnalysis = createServerFn({ method: "POST" })
     try {
       parsed = JSON.parse(cleaned) as Record<string, unknown>;
     } catch {
-      return fail("Virtu-IQ could not read this screenshot clearly. Please try again.");
+      return fail("PREDICTA could not read this screenshot clearly. Please try again.");
     }
 
     const matches = Array.isArray(parsed["matches"]) ? (parsed["matches"] as Record<string, unknown>[]) : [];
