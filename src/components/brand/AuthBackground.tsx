@@ -1,82 +1,113 @@
-﻿import { ReactNode } from "react";
+import { ReactNode } from "react";
 import { LogoSymbol } from "@/components/brand/Logo";
 
 export function AuthBackground({ children }: { children: ReactNode }) {
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-12 bg-gradient-to-br from-[#B50D19] via-[#E41827] to-[#7F0A12]">
-      {/* Dynamic Animated Grid Pattern */}
+    <main
+      className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-12"
+      style={{ background: "#0A0208" }}
+    >
+      {/* Red ambient top glow */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.14] bg-[radial-gradient(#ffffff_1.2px,transparent_1.2px)] [background-size:28px_28px] animate-grid-drift"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 90% 55% at 50% -8%, rgba(228,24,39,0.28) 0%, transparent 65%)",
+        }}
+        aria-hidden="true"
+      />
+      {/* Bottom green ambient */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 60% 40% at 10% 100%, rgba(16,185,129,0.07) 0%, transparent 70%)",
+        }}
         aria-hidden="true"
       />
 
-      {/* Floating Glowing Ambient Orbs */}
+      {/* Animated dot grid */}
       <div
-        className="pointer-events-none absolute -top-24 -left-24 size-96 rounded-full bg-white/20 blur-3xl animate-pulse"
-        style={{ animationDuration: "7s" }}
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute top-1/2 -right-32 size-96 rounded-full bg-black/40 blur-3xl animate-pulse"
-        style={{ animationDuration: "9s" }}
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute -bottom-20 left-1/4 size-80 rounded-full bg-white/15 blur-2xl animate-pulse"
-        style={{ animationDuration: "6s" }}
+        className="pointer-events-none absolute inset-0 opacity-[0.06] animate-grid-drift"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, rgba(228,24,39,0.9) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+        }}
         aria-hidden="true"
       />
 
-      {/* Large Decorative Faint Logo Watermark with Drift Animation */}
+      {/* Floating orbs */}
       <div
-        className="pointer-events-none absolute -top-12 -right-12 h-96 w-96 opacity-[0.08] animate-logo-drift select-none"
+        className="pointer-events-none absolute -top-20 -left-20 size-96 rounded-full blur-3xl opacity-20 animate-glow-pulse"
+        style={{ background: "radial-gradient(circle, rgba(228,24,39,0.6), transparent 70%)" }}
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute top-1/2 -right-28 size-80 rounded-full blur-3xl opacity-15 animate-glow-pulse"
+        style={{ background: "radial-gradient(circle, rgba(228,24,39,0.4), transparent 70%)", animationDelay: "1.5s" }}
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute -bottom-16 left-1/3 size-72 rounded-full blur-3xl opacity-10 animate-glow-pulse"
+        style={{ background: "radial-gradient(circle, rgba(16,185,129,0.5), transparent 70%)", animationDelay: "3s" }}
+        aria-hidden="true"
+      />
+
+      {/* Large watermark logos */}
+      <div
+        className="pointer-events-none absolute -top-10 -right-10 h-80 w-80 opacity-[0.04] animate-logo-drift select-none"
         aria-hidden="true"
       >
         <LogoSymbol className="h-full w-full brightness-0 invert" />
       </div>
       <div
-        className="pointer-events-none absolute -bottom-16 -left-12 h-80 w-80 opacity-[0.06] -rotate-12 select-none"
+        className="pointer-events-none absolute -bottom-16 -left-10 h-64 w-64 opacity-[0.03] -rotate-12 select-none"
         aria-hidden="true"
       >
         <LogoSymbol className="h-full w-full brightness-0 invert" />
       </div>
 
-      {/* Ambient Glowing Tech Rings */}
+      {/* Pulse rings */}
       <div
-        className="pointer-events-none absolute top-1/3 left-1/10 size-64 rounded-full border border-white/10 opacity-30 animate-pulse-ring"
+        className="pointer-events-none absolute top-1/3 left-[8%] size-52 rounded-full opacity-20 animate-pulse-ring"
+        style={{ border: "1px solid rgba(228,24,39,0.35)" }}
         aria-hidden="true"
       />
       <div
-        className="pointer-events-none absolute bottom-1/4 right-1/10 size-72 rounded-full border border-white/10 opacity-20 animate-pulse-ring"
-        style={{ animationDelay: "1s" }}
+        className="pointer-events-none absolute bottom-1/4 right-[8%] size-64 rounded-full opacity-15 animate-pulse-ring"
+        style={{ border: "1px solid rgba(228,24,39,0.25)", animationDelay: "1s" }}
         aria-hidden="true"
       />
 
-      {/* Futuristic Floating Particles / Sparkles */}
+      {/* Floating particles */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <span
-          className="absolute top-1/4 left-[15%] size-2 rounded-full bg-white/50 blur-[1px] animate-ping"
-          style={{ animationDuration: "3s" }}
-        />
-        <span
-          className="absolute top-3/4 left-[10%] size-1.5 rounded-full bg-white/60 blur-[1px] animate-ping"
-          style={{ animationDuration: "4.5s" }}
-        />
-        <span
-          className="absolute top-1/3 right-[18%] size-2 rounded-full bg-white/50 blur-[1px] animate-ping"
-          style={{ animationDuration: "3.8s" }}
-        />
-        <span
-          className="absolute top-2/3 right-[12%] size-1.5 rounded-full bg-white/40 blur-[1px] animate-ping"
-          style={{ animationDuration: "5s" }}
-        />
+        {[
+          { top: "25%", left: "15%", delay: "0s", dur: "3s" },
+          { top: "70%", left: "10%", delay: "1s", dur: "4.5s" },
+          { top: "35%", right: "18%", delay: "0.5s", dur: "3.8s" },
+          { top: "65%", right: "12%", delay: "2s", dur: "5s" },
+          { top: "50%", left: "50%", delay: "1.5s", dur: "4s" },
+        ].map((p, i) => (
+          <span
+            key={i}
+            className="absolute size-1.5 rounded-full blur-[1px] animate-ping"
+            style={{
+              top: p.top,
+              left: (p as any).left,
+              right: (p as any).right,
+              background: i % 2 === 0 ? "rgba(228,24,39,0.7)" : "rgba(16,185,129,0.6)",
+              animationDelay: p.delay,
+              animationDuration: p.dur,
+            }}
+          />
+        ))}
       </div>
 
-      {/* Content Container */}
+      {/* Content */}
       <div className="relative z-10 w-full max-w-md animate-rise">
         {children}
       </div>
     </main>
   );
 }
-

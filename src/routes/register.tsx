@@ -1,4 +1,4 @@
-﻿import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -211,15 +211,38 @@ function RegisterPage() {
   return (
     <AuthBackground>
       <Link to="/" className="flex justify-center" aria-label="PREDICTA home">
-        <div className="inline-flex items-center rounded-xl bg-white px-5 py-2.5 shadow-lg">
+        <div
+          className="inline-flex items-center rounded-xl px-5 py-2.5 transition-all hover:scale-[1.02]"
+          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)" }}
+        >
           <LogoFull className="h-7" />
         </div>
       </Link>
-      <div className="mt-8 rounded-xl border border-primary/30 bg-card p-6 shadow-xl ring-1 ring-primary/10 sm:p-8">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+
+      {/* Status chip */}
+      <div className="mt-5 flex justify-center">
+        <div
+          className="inline-flex items-center gap-2 rounded-full px-3 py-1 font-mono text-[10px] font-bold tracking-widest"
+          style={{ border: "1px solid rgba(16,185,129,0.30)", background: "rgba(16,185,129,0.06)", color: "#6ee7b7" }}
+        >
+          <span className="size-1.5 rounded-full bg-emerald-400 animate-status-blink" />
+          SECURE REGISTRATION CHANNEL
+        </div>
+      </div>
+
+      <div
+        className="mt-6 rounded-2xl p-6 sm:p-8"
+        style={{
+          background: "rgba(12,4,9,0.92)",
+          border: "1px solid rgba(228,24,39,0.30)",
+          boxShadow: "0 0 0 1px rgba(228,24,39,0.08), 0 24px 60px rgba(0,0,0,0.7), 0 0 30px rgba(228,24,39,0.08)",
+          backdropFilter: "blur(16px)",
+        }}
+      >
+        <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#F0F0F0" }}>
           {isPartnerInvite ? "Partner registration" : "Create your account"}
         </h1>
-        <p className="mt-1.5 text-sm text-muted-foreground">
+        <p className="mt-1.5 text-sm" style={{ color: "rgba(240,240,240,0.50)" }}>
           {isPartnerInvite
             ? "Create your account to access your partner hub immediately â€” no registration fee."
             : "Create your account with your mobile phone number to continue."}
@@ -227,8 +250,10 @@ function RegisterPage() {
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <Label htmlFor="name">Full name</Label>
-            <Input id="name" value={fullName} maxLength={80} onChange={(e) => setFullName(e.target.value)} placeholder="Ama Mensah" required />
+            <Label htmlFor="name" style={{ color: "rgba(240,240,240,0.70)" }}>Full name</Label>
+            <Input id="name" value={fullName} maxLength={80} onChange={(e) => setFullName(e.target.value)} placeholder="Ama Mensah" required
+              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(228,24,39,0.22)", color: "#F0F0F0" }}
+            />
           </div>
 
           <PhoneInput
@@ -278,20 +303,25 @@ function RegisterPage() {
             )}
           </div>
           {error && (
-            <p role="alert" className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            <p role="alert" className="rounded-xl px-3 py-2.5 text-sm" style={{ background: "rgba(228,24,39,0.12)", border: "1px solid rgba(228,24,39,0.30)", color: "#f87171" }}>
               {error}
             </p>
           )}
-          {notice && <p className="rounded-md bg-primary/10 px-3 py-2 text-sm text-primary">{notice}</p>}
-          <Button type="submit" className="w-full" disabled={pending}>
-            {pending && <Loader2 className="mr-2 size-4 animate-spin" />}
-            Create account
-          </Button>
+          {notice && <p className="rounded-xl px-3 py-2.5 text-sm" style={{ background: "rgba(16,185,129,0.10)", border: "1px solid rgba(16,185,129,0.25)", color: "#6ee7b7" }}>{notice}</p>}
+          <button
+            type="submit"
+            className="w-full rounded-xl py-3 text-sm font-bold font-mono tracking-widest text-white transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60"
+            disabled={pending}
+            style={{ background: "linear-gradient(135deg, #E41827, #B00D1A)", border: "1px solid rgba(228,24,39,0.5)", boxShadow: "0 6px 20px rgba(228,24,39,0.25)" }}
+          >
+            {pending && <Loader2 className="mr-2 size-4 animate-spin inline" />}
+            CREATE ACCOUNT
+          </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-muted-foreground">
+        <p className="mt-6 text-center text-sm" style={{ color: "rgba(240,240,240,0.45)" }}>
           Already have an account?{" "}
-          <Link to="/login" className="font-medium text-primary hover:underline">
+          <Link to="/login" className="font-medium transition-colors hover:text-red-400" style={{ color: "#f87171" }}>
             Log in
           </Link>
         </p>
