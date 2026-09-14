@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { LogoFull } from "@/components/brand/Logo";
 import { Link } from "@tanstack/react-router";
-import { ShieldCheck, Cpu, Activity, Lock } from "lucide-react";
+import { ShieldCheck, Cpu, Activity } from "lucide-react";
 
 interface AuthBackgroundProps {
   children: ReactNode;
@@ -106,20 +106,6 @@ export function AuthBackground({ children }: AuthBackgroundProps) {
         <div className="my-auto py-2 sm:py-6 max-w-md w-full mx-auto relative z-10">
           <div className="bg-white border border-slate-200/90 rounded-2xl shadow-[0_20px_50px_rgba(15,23,42,0.06)] border-t-2 border-t-red-600 p-6 sm:p-9">
             {children}
-          </div>
-        </div>
-
-        {/* Bottom Trust & Support Footer */}
-        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 pt-6 border-t border-slate-200/60 mt-6">
-          <div className="flex items-center gap-2 font-mono text-[11px] text-slate-500">
-            <Lock className="w-3.5 h-3.5 text-slate-400" />
-            <span>Deterministic Zero-Knowledge Session</span>
-          </div>
-          <div className="text-slate-500 text-[11px]">
-            Need assistance?{" "}
-            <a href="mailto:support@predicta.live" className="text-red-600 font-semibold hover:underline">
-              support@predicta.live
-            </a>
           </div>
         </div>
       </div>
