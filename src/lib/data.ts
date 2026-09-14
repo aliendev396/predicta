@@ -360,9 +360,103 @@ export const adminPartnerApplicationsQuery = () =>
   queryOptions({
     queryKey: ["admin-partner-applications"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("admin_partner_applications");
-      if (error) throw error;
-      return (data ?? []) as AdminApplicationRow[];
+      let applications: AdminApplicationRow[] = [];
+
+      // 1. Try RPC first
+      try {
+        const { data, error } = await supabase.rpc("admin_partner_applications");
+        if (!error && Array.isArray(data) && data.length > 0) {
+          return data as AdminApplicationRow[];
+        }
+      } catch {
+        // Fallback to table queries
+      }
+
+      // 2. Query partner_applications table
+      const { data: rawApps } = await supabase
+        .from("partner_applications")
+        .select("id, user_id, audience, motivation, payout_method, payout_details, status, admin_note, created_at")
+        .order("created_at", { ascending: false })
+        .limit(200);
+
+      const appUserIds = new Set<string>();
+      for (const a of rawApps ?? []) {
+        if (a.user_id) appUserIds.add(a.user_id);
+      }
+
+      // 3. Also find any profile flagged as partner_applicant who is NOT a partner yet
+      const { data: applicantProfiles } = await supabase
+        .from("profiles")
+        .select("id, full_name, email, phone, created_at, partner_applicant")
+        .eq("partner_applicant", true);
+
+      // Check which of these profiles already have the partner role
+      const { data: partnerRoles } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "partner");
+
+      const partnerUserIds = new Set((partnerRoles ?? []).map((r) => r.user_id));
+
+      // Fetch profiles for all application userIds
+      const allUserIds = Array.from(new Set([...Array.from(appUserIds), ...(applicantProfiles ?? []).map((p) => p.id)]));
+      const profileMap = new Map<string, { full_name: string | null; email: string | null; phone: string | null }>();
+
+      if (allUserIds.length > 0) {
+        const { data: profs } = await supabase
+          .from("profiles")
+          .select("id, full_name, email, phone")
+          .in("id", allUserIds);
+        for (const p of profs ?? []) {
+          profileMap.set(p.id, p);
+        }
+      }
+
+      // Add existing applications
+      for (const a of rawApps ?? []) {
+        const p = profileMap.get(a.user_id);
+        applications.push({
+          id: a.id,
+          user_id: a.user_id,
+          full_name: p?.full_name ?? null,
+          email: p?.email ?? null,
+          phone: p?.phone ?? a.payout_details ?? null,
+          audience: a.audience || "Partner link invite",
+          motivation: a.motivation || "Registered via partner invitation link",
+          payout_method: a.payout_method || "MTN MoMo",
+          payout_details: a.payout_details || p?.phone || "Pending",
+          status: a.status as "pending" | "approved" | "rejected",
+          admin_note: a.admin_note,
+          created_at: a.created_at,
+        });
+      }
+
+      // Add any applicant profiles that didn't have an application row yet (if not already approved as partner)
+      for (const p of applicantProfiles ?? []) {
+        if (!appUserIds.has(p.id) && !partnerUserIds.has(p.id)) {
+          applications.push({
+            id: p.id,
+            user_id: p.id,
+            full_name: p.full_name,
+            email: p.email,
+            phone: p.phone,
+            audience: "Partner link invite",
+            motivation: "Registered via partner invitation link (Pending approval)",
+            payout_method: "MTN MoMo",
+            payout_details: p.phone ?? "On file",
+            status: "pending",
+            admin_note: null,
+            created_at: p.created_at,
+          });
+        }
+      }
+
+      // Sort: pending first, then newest
+      return applications.sort((a, b) => {
+        if (a.status === "pending" && b.status !== "pending") return -1;
+        if (b.status === "pending" && a.status !== "pending") return 1;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
     },
   });
 

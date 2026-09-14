@@ -44,13 +44,21 @@ function LoginPage() {
           return;
         }
 
-        const { data: roleData } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", data.session.user.id);
-        const roles = (roleData ?? []).map((r) => r.role);
+        const [roleRes, profileRes, appRes] = await Promise.all([
+          supabase.from("user_roles").select("role").eq("user_id", data.session.user.id),
+          supabase.from("profiles").select("partner_applicant").eq("id", data.session.user.id).maybeSingle(),
+          supabase.from("partner_applications").select("id, status").eq("user_id", data.session.user.id).maybeSingle(),
+        ]);
+        const roles = (roleRes.data ?? []).map((r) => r.role);
+        const isApplicant =
+          profileRes.data?.partner_applicant === true ||
+          data.session.user.user_metadata?.["partner_applicant"] === "true" ||
+          Boolean(appRes.data?.id);
+
         if (roles.includes("partner") && !roles.includes("admin")) {
           navigate({ to: "/partner", replace: true });
+        } else if (!roles.includes("admin") && isApplicant) {
+          navigate({ to: "/partner-apply", replace: true });
         } else {
           navigate({ to: "/dashboard", replace: true });
         }
@@ -146,13 +154,23 @@ function LoginPage() {
     setPending(false);
 
     if (finalSignInData.user) {
-      const { data: roleData } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", finalSignInData.user.id);
-      const roles = (roleData ?? []).map((r) => r.role);
+      const [roleRes, profileRes, appRes] = await Promise.all([
+        supabase.from("user_roles").select("role").eq("user_id", finalSignInData.user.id),
+        supabase.from("profiles").select("partner_applicant").eq("id", finalSignInData.user.id).maybeSingle(),
+        supabase.from("partner_applications").select("id, status").eq("user_id", finalSignInData.user.id).maybeSingle(),
+      ]);
+      const roles = (roleRes.data ?? []).map((r) => r.role);
+      const isApplicant =
+        profileRes.data?.partner_applicant === true ||
+        finalSignInData.user.user_metadata?.["partner_applicant"] === "true" ||
+        Boolean(appRes.data?.id);
+
       if (roles.includes("partner") && !roles.includes("admin")) {
         navigate({ to: "/partner", replace: true });
+        return;
+      }
+      if (!roles.includes("admin") && isApplicant) {
+        navigate({ to: "/partner-apply", replace: true });
         return;
       }
     }

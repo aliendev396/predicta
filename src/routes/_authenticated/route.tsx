@@ -49,29 +49,38 @@ export const Route = createFileRoute("/_authenticated")({
       authUser.user_metadata?.["partner_applicant"] === true ||
       Boolean(partnerAppRes.data?.id);
 
-    // Invited partner applicants (and any user who visits /partner-apply) wait on the
-    // application screen until admin approves them (no registration fee for them).
-    if (!isAdmin && !isPartner && isPartnerApplicant) {
+    // Treat approved applications as partner access even if role row hasn't propagated yet
+    const isPartnerApproved = partnerAppRes.data?.status === "approved";
+    const isEffectivePartner = isPartner || isPartnerApproved;
+
+    // --- Partner routing (handle first to prevent loops) ---
+    // Approved partners: allow /partner, redirect everywhere else
+    if (isEffectivePartner) {
+      if (path === "/partner-apply") throw redirect({ to: "/partner" });
+      if (!isAdmin && !path.startsWith("/partner")) throw redirect({ to: "/partner" });
+      if (!isAdmin && path.startsWith("/admin")) throw redirect({ to: "/partner" });
+      return { user: authUser, roles, isAdmin, isPartner: true, registrationPaid: true };
+    }
+
+    // --- Admin routing ---
+    if (isAdmin) {
+      return { user: authUser, roles, isAdmin, isPartner, registrationPaid: true };
+    }
+
+    // --- Pending applicants: gate to /partner-apply ---
+    if (isPartnerApplicant) {
       if (path !== "/partner-apply") throw redirect({ to: "/partner-apply" });
       return { user: authUser, roles, isAdmin, isPartner, registrationPaid: true };
     }
-    if (isPartner && path === "/partner-apply") throw redirect({ to: "/partner" });
-    // Non-partner, non-applicant trying to access /partner-apply → let them through so they can apply
-    // Non-partner, non-applicant trying to access /partner → send to /partner-apply so they can apply
-    if (!isAdmin && !isPartner && !isPartnerApplicant && path.startsWith("/partner")) {
+
+    // --- Non-partner, non-applicant trying to access /partner area ---
+    if (path.startsWith("/partner")) {
       throw redirect({ to: "/partner-apply" });
     }
 
-    if (!isAdmin) {
-      if (isPartner && !path.startsWith("/partner")) throw redirect({ to: "/partner" });
-      if (path.startsWith("/admin")) throw redirect({ to: isPartner ? "/partner" : "/dashboard" });
-    }
-
-    let registrationPaid = true;
-    if (!isAdmin && !isPartner) {
-      registrationPaid = profile?.registration_paid ?? false;
-      if (!registrationPaid && path !== "/registration") throw redirect({ to: "/registration" });
-    }
+    // --- Regular user: check registration ---
+    let registrationPaid = profile?.registration_paid ?? false;
+    if (!registrationPaid && path !== "/registration") throw redirect({ to: "/registration" });
     if (registrationPaid && path === "/registration") throw redirect({ to: "/credits" });
 
     return { user: authUser, roles, isAdmin, isPartner, registrationPaid };

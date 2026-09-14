@@ -113,7 +113,7 @@ function RegisterPage() {
 
     setPending(true);
 
-    await supabase.auth.signOut().catch(() => {});
+    await supabase.auth.signOut().catch(() => { });
 
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: syntheticEmail,

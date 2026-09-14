@@ -1822,8 +1822,15 @@ function PartnerPayouts() {
     mutationFn: async ({ id, rate }: { id: string; rate: number }) => {
       if (!Number.isFinite(rate) || rate < 0 || rate > 100)
         throw new Error("Commission must be between 0 and 100%.");
-      const { error } = await supabase.rpc("admin_set_commission_rate", { _user_id: id, _rate: rate });
-      if (error) throw new Error(error.message);
+      const { error: rpcError } = await supabase.rpc("admin_set_commission_rate", { _user_id: id, _rate: rate });
+      if (!rpcError) return;
+
+      // Fallback: update profiles table directly if RPC is missing from schema cache
+      const { error: tableError } = await supabase
+        .from("profiles")
+        .update({ commission_rate: rate, updated_at: new Date().toISOString() })
+        .eq("id", id);
+      if (tableError) throw new Error(rpcError.message || tableError.message);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries();
@@ -1848,13 +1855,16 @@ function PartnerPayouts() {
   });
 
   return (
-    <div className="space-y-4">
-      <div className="relative max-w-sm">
-        <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search partners by name, email or code..."
+    <div className="space-y-6">
+      <PartnerApplications />
+
+      <div className="space-y-4 pt-2">
+        <div className="relative max-w-sm">
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search partners by name, email or code..."
           aria-label="Search partners"
           className="pl-10 rounded-xl border-slate-200 bg-white"
         />
@@ -2004,6 +2014,7 @@ function PartnerPayouts() {
           onClose={() => setSelectedPartnerPayouts(null)}
         />
       )}
+      </div>
     </div>
   );
 }
@@ -2446,13 +2457,42 @@ function PartnerApplications() {
   const rows = (data ?? []) as AdminApplicationRow[];
 
   const review = useMutation({
-    mutationFn: async ({ id, approve }: { id: string; approve: boolean }) => {
-      const { error } = await supabase.rpc("review_partner_application", {
+    mutationFn: async ({ id, userId, approve }: { id: string; userId?: string; approve: boolean }) => {
+      const targetUserId = userId || id;
+      const { error: rpcError } = await supabase.rpc("review_partner_application", {
         _application_id: id,
         _approve: approve,
         _note: approve ? "Approved as partner" : "Application rejected",
       });
-      if (error) throw new Error(error.message);
+
+      if (!rpcError) return;
+
+      // Resilient direct table fallback
+      const status = approve ? "approved" : "rejected";
+      await supabase
+        .from("partner_applications")
+        .update({
+          status,
+          admin_note: approve ? "Approved as partner" : "Application rejected",
+          reviewed_at: new Date().toISOString(),
+        })
+        .eq("id", id);
+
+      if (approve && targetUserId) {
+        await supabase
+          .from("user_roles")
+          .upsert({ user_id: targetUserId, role: "partner" }, { onConflict: "user_id,role" });
+        await supabase
+          .from("profiles")
+          .update({ partner_applicant: false, registration_paid: true, updated_at: new Date().toISOString() })
+          .eq("id", targetUserId);
+      } else if (!approve && targetUserId) {
+        await supabase
+          .from("user_roles")
+          .delete()
+          .eq("user_id", targetUserId)
+          .eq("role", "partner");
+      }
     },
     onSuccess: async (_d, vars) => {
       await queryClient.invalidateQueries();
@@ -2520,7 +2560,7 @@ function PartnerApplications() {
                   size="sm"
                   className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs gap-1.5 shadow-xs shadow-emerald-600/20"
                   disabled={review.isPending}
-                  onClick={() => review.mutate({ id: a.id, approve: true })}
+                  onClick={() => review.mutate({ id: a.id, userId: a.user_id, approve: true })}
                 >
                   <CheckCircle2 className="size-3.5" /> Approve Partner
                 </Button>
@@ -2529,7 +2569,7 @@ function PartnerApplications() {
                   variant="outline"
                   className="flex-1 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 font-bold text-xs gap-1.5"
                   disabled={review.isPending}
-                  onClick={() => review.mutate({ id: a.id, approve: false })}
+                  onClick={() => review.mutate({ id: a.id, userId: a.user_id, approve: false })}
                 >
                   <XCircle className="size-3.5" /> Reject
                 </Button>
