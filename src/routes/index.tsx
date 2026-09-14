@@ -132,7 +132,7 @@ function LandingPage() {
       <SiteNavbar />
 
       {/* Hero Section — Refined Institutional Visual AI */}
-      <section className="relative pt-16 sm:pt-20 pb-16 sm:pb-24 px-5 sm:px-8 lg:px-12 max-w-7xl mx-auto overflow-hidden">
+      <section className="relative pt-6 sm:pt-10 pb-16 sm:pb-24 px-5 sm:px-8 lg:px-12 max-w-7xl mx-auto overflow-hidden">
         {/* Ambient Glow Accent */}
         <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[350px] sm:w-[550px] h-[350px] sm:h-[550px] bg-red-500/10 rounded-full blur-[100px] pointer-events-none" />
 
