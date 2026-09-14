@@ -219,9 +219,9 @@ function RootShell({ children }: { children: ReactNode }) {
     try { localStorage.setItem('predicta-splash', '1'); } catch(e) {}
   }
   el.addEventListener('click', dismiss);
-  setTimeout(dismiss, 1200);
+  setTimeout(dismiss, 4000);
   // Hard safety fallback
-  setTimeout(function() { el.style.display = 'none'; }, 3000);
+  setTimeout(function() { el.style.display = 'none'; }, 6000);
 })();
 `,
           }}
