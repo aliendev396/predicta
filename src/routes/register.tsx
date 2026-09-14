@@ -1,11 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PhoneInput } from "@/components/ui/PhoneInput";
-import { LogoFull } from "@/components/brand/Logo";
 import { AuthBackground } from "@/components/brand/AuthBackground";
 import { supabase } from "@/integrations/supabase/client";
 import { validateMobileNumber } from "@/lib/phone";
@@ -33,10 +31,8 @@ export const Route = createFileRoute("/register")({
   },
   head: () => ({
     meta: [
-      { title: "Create Account â€” PREDICTA" },
-      { name: "description", content: "Create your PREDICTA account, complete registration and get instant virtual verdicts from PREDICTA." },
-      { property: "og:title", content: "Create Account â€” PREDICTA" },
-      { property: "og:description", content: "Join PREDICTA and start analyzing screenshots with AI." },
+      { title: "Create Account — PREDICTA" },
+      { name: "description", content: "Create your PREDICTA account to access realtime virtual verdicts." },
     ],
   }),
   component: RegisterPage,
@@ -76,7 +72,6 @@ function RegisterPage() {
           .maybeSingle();
 
         if (!profile) {
-          // Zombie session from a deleted account: wipe it so registration is fresh!
           await supabase.auth.signOut();
           return;
         }
@@ -91,8 +86,8 @@ function RegisterPage() {
   }, [navigate, isPartnerInvite]);
 
   const score = strength(password);
-  const labels = ["Too weak", "Weak", "Fair", "Strong", "Excellent"];
-  const colors = ["bg-destructive", "bg-destructive", "bg-amber-500", "bg-emerald-500", "bg-emerald-600"];
+  const labels = ["Weak", "Fair", "Good", "Strong", "Excellent"];
+  const colors = ["bg-red-500", "bg-amber-500", "bg-yellow-500", "bg-emerald-500", "bg-emerald-600"];
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -106,7 +101,6 @@ function RegisterPage() {
 
     if (fullName.trim().length < 2) return setError("Please enter your full name.");
 
-    // Validate Ghana or Nigeria mobile phone
     const phoneVal = validateMobileNumber(phone);
     if (!phoneVal.isValid) {
       return setError(phoneVal.error ?? "Please enter a valid Ghana (10 digits) or Nigeria (11 digits) mobile number.");
@@ -119,7 +113,6 @@ function RegisterPage() {
 
     setPending(true);
 
-    // Clear any previous session first so new signup is 100% clean
     await supabase.auth.signOut().catch(() => {});
 
     const { data, error: signUpError } = await supabase.auth.signUp({
@@ -137,7 +130,29 @@ function RegisterPage() {
     });
 
     if (signUpError) {
+      // If email rate limit was exceeded or user already exists, attempt direct password sign-in fallback
+      if (
+        signUpError.message.toLowerCase().includes("rate limit") ||
+        signUpError.message.toLowerCase().includes("already registered") ||
+        signUpError.message.toLowerCase().includes("user already")
+      ) {
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: syntheticEmail,
+          password,
+        });
+
+        if (!signInError && signInData?.session) {
+          setPending(false);
+          setNotice("Signed in successfully.");
+          navigate({ to: isPartnerInvite ? "/partner-apply" : "/dashboard", replace: true });
+          return;
+        }
+      }
+
       setPending(false);
+      if (signUpError.message.toLowerCase().includes("rate limit")) {
+        return setError("Supabase email rate limit reached. If your account was already created, try logging in on the Sign In page, or disable 'Confirm Email' in Supabase Dashboard -> Auth settings.");
+      }
       return setError(signUpError.message);
     }
 
@@ -156,13 +171,11 @@ function RegisterPage() {
       }
 
       if (newUserId) {
-        // 1. Call secure RPC to mark as partner applicant and waive registration fee
         await supabase.rpc("register_partner_applicant" as never, {
           _user_id: newUserId,
           _phone: phoneVal.formattedDisplay,
         } as never);
 
-        // 2. Direct upsert fallback
         await Promise.allSettled([
           supabase
             .from("profiles")
@@ -187,12 +200,11 @@ function RegisterPage() {
       }
 
       setPending(false);
-      setNotice("Partner account created â€” awaiting approvalâ€¦");
+      setNotice("Partner account created — awaiting approval...");
       navigate({ to: "/partner-apply", replace: true });
       return;
     }
 
-    // Log the new regular member straight in â€” the registration fee screen follows.
     if (!data.session) {
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: syntheticEmail,
@@ -204,68 +216,62 @@ function RegisterPage() {
       }
     }
     setPending(false);
-    setNotice("Account created â€” continuing to your registrationâ€¦");
+    setNotice("Account created — continuing to registration...");
     navigate({ to: "/registration", replace: true });
   }
 
   return (
     <AuthBackground>
-      <Link to="/" className="flex justify-center" aria-label="PREDICTA home">
-        <div
-          className="inline-flex items-center rounded-xl px-5 py-2.5 transition-all hover:scale-[1.02]"
-          style={{ background: "#FFFFFF", border: "1px solid #E8EDF3", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
-        >
-          <LogoFull className="h-7" />
+      <div className="space-y-6">
+        <div className="space-y-2.5">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white text-[10px] font-mono font-bold tracking-widest border border-slate-800 shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_6px_#ef4444]" />
+            <span>{isPartnerInvite ? "PARTNER ONBOARDING // V4.2" : "WORKSPACE REGISTRATION // V4.2"}</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-950 uppercase">
+            {isPartnerInvite ? "PARTNER ACCESS" : "CREATE ACCOUNT"}
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            {isPartnerInvite
+              ? "Join as an authorized PREDICTA partner analyst to earn revenue shares."
+              : "Register your mobile number to unlock instant AI vision predictions."}
+          </p>
+          {urlRef && (
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50/90 border border-emerald-200 text-emerald-800 text-xs font-mono font-semibold mt-1">
+              <span>INVITATION CODE:</span>
+              <span className="font-bold tracking-wider">{urlRef}</span>
+            </div>
+          )}
         </div>
-      </Link>
 
-      {/* Status chip */}
-      <div className="mt-5 flex justify-center">
-        <div
-          className="inline-flex items-center gap-2 rounded-full px-3 py-1 font-mono text-[10px] font-bold tracking-widest"
-          style={{ border: "1px solid #D1FAE5", background: "#F0FDF4", color: "#059669" }}
-        >
-          <span className="size-1.5 rounded-full bg-emerald-400 animate-status-blink" />
-          SECURE REGISTRATION CHANNEL
-        </div>
-      </div>
-
-      <div
-        className="mt-6 rounded-2xl p-6 sm:p-8"
-        style={{
-          background: "#FFFFFF",
-          border: "1px solid #E8EDF3",
-          boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px rgba(0,0,0,0.07), 0 0 0 1px rgba(228,24,39,0.06)",
-          backdropFilter: "blur(16px)",
-        }}
-      >
-        <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#F0F0F0" }}>
-          {isPartnerInvite ? "Partner registration" : "Create your account"}
-        </h1>
-        <p className="mt-1.5 text-sm" style={{ color: "rgba(240,240,240,0.50)" }}>
-          {isPartnerInvite
-            ? "Create your account to access your partner hub immediately â€” no registration fee."
-            : "Create your account with your mobile phone number to continue."}
-        </p>
-
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <Label htmlFor="name" style={{ color: "rgba(240,240,240,0.70)" }}>Full name</Label>
-            <Input id="name" value={fullName} maxLength={80} onChange={(e) => setFullName(e.target.value)} placeholder="Ama Mensah" required
-              style={{ background: "#F8F9FB", border: "1px solid #E2E8F0", color: "#0F172A" }}
+            <Label htmlFor="name" className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
+              Full Name
+            </Label>
+            <Input
+              id="name"
+              value={fullName}
+              maxLength={80}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Ama Mensah"
+              required
+              className="bg-slate-50/80 border-slate-200 text-slate-950 focus:border-red-600 focus:ring-2 focus:ring-red-600/15 rounded-xl h-11 sm:h-12 text-sm transition-all"
             />
           </div>
 
           <PhoneInput
             id="phone"
-            label="Mobile number"
+            label="Mobile Number"
             value={phone}
             onChange={(val) => setPhone(val)}
             required
           />
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
+              Password
+            </Label>
             <div className="relative">
               <Input
                 id="password"
@@ -273,16 +279,16 @@ function RegisterPage() {
                 autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pr-11"
+                className="bg-slate-50/80 border-slate-200 text-slate-950 focus:border-red-600 focus:ring-2 focus:ring-red-600/15 rounded-xl h-11 sm:h-12 text-sm pr-11 transition-all"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                className="absolute inset-y-0 right-0 inline-flex w-11 items-center justify-center text-muted-foreground hover:text-foreground"
+                className="absolute inset-y-0 right-0 px-3.5 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
               >
-                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
             {password.length > 0 && (
@@ -293,41 +299,57 @@ function RegisterPage() {
                       key={idx}
                       className={cn(
                         "h-1 flex-1 rounded-full transition-colors",
-                        idx <= score ? colors[score] : "bg-muted",
+                        idx <= score ? colors[score] : "bg-slate-200"
                       )}
                     />
                   ))}
                 </div>
-                <span className="text-xs text-muted-foreground">{labels[score]}</span>
+                <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 uppercase">
+                  <span>Security Strength:</span>
+                  <span className="font-bold">{labels[score]}</span>
+                </div>
               </div>
             )}
           </div>
+
           {error && (
-            <p role="alert" className="rounded-xl px-3 py-2.5 text-sm" style={{ background: "rgba(228,24,39,0.12)", border: "1px solid #E8EDF3", color: "#f87171" }}>
-              {error}
-            </p>
+            <div role="alert" className="rounded-xl p-3 text-xs font-medium bg-red-50/90 border border-red-200 text-red-700 flex items-start gap-2">
+              <span className="font-bold font-mono shrink-0">[ERROR]</span>
+              <span>{error}</span>
+            </div>
           )}
-          {notice && <p className="rounded-xl px-3 py-2.5 text-sm border border-emerald-200 bg-emerald-50 text-emerald-700">{notice}</p>}
+          {notice && (
+            <div role="status" className="rounded-xl p-3 text-xs font-medium bg-emerald-50/90 border border-emerald-200 text-emerald-700 flex items-start gap-2">
+              <span className="font-bold font-mono shrink-0">[INFO]</span>
+              <span>{notice}</span>
+            </div>
+          )}
+
           <button
             type="submit"
-            className="w-full rounded-xl py-3 text-sm font-bold font-mono tracking-widest text-white transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60"
             disabled={pending}
-            style={{ background: "linear-gradient(135deg, #E41827, #B00D1A)", border: "1px solid rgba(228,24,39,0.5)", boxShadow: "0 6px 20px rgba(228,24,39,0.25)" }}
+            className="w-full h-11 sm:h-12 rounded-full bg-red-600 hover:bg-slate-950 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-md shadow-red-600/20 hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
           >
-            {pending && <Loader2 className="mr-2 size-4 animate-spin inline" />}
-            CREATE ACCOUNT
+            {pending ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" /> Creating Workspace...
+              </span>
+            ) : (
+              <>
+                Create Account
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm" style={{ color: "rgba(240,240,240,0.45)" }}>
-          Already have an account?{" "}
-          <Link to="/login" className="font-medium transition-colors hover:text-red-400" style={{ color: "#f87171" }}>
-            Log in
+        <div className="pt-4 text-center text-xs text-slate-500 border-t border-slate-100">
+          Already registered?{" "}
+          <Link to="/login" className="font-bold text-red-600 hover:text-slate-950 uppercase tracking-wider transition-colors">
+            Log In Here
           </Link>
-        </p>
+        </div>
       </div>
     </AuthBackground>
   );
 }
-
-

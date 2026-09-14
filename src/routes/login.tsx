@@ -1,7 +1,6 @@
-﻿import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LogoFull } from "@/components/brand/Logo";
@@ -14,10 +13,8 @@ import { checkLoginRateLimit, formatRetryAfter } from "@/lib/rateLimit";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Log In Ã¢â‚¬â€ PREDICTA" },
-      { name: "description", content: "Sign in to your PREDICTA workspace to analyze screenshots and review AI insight reports." },
-      { property: "og:title", content: "Log In Ã¢â‚¬â€ PREDICTA" },
-      { property: "og:description", content: "Sign in to your PREDICTA AI analysis workspace." },
+      { title: "Log In — PREDICTA" },
+      { name: "description", content: "Sign in to your PREDICTA workspace to access realtime virtual match predictions." },
     ],
   }),
   component: LoginPage,
@@ -43,7 +40,6 @@ function LoginPage() {
           .maybeSingle();
 
         if (!profile) {
-          // Zombie session from a deleted account: wipe it!
           await supabase.auth.signOut();
           return;
         }
@@ -96,10 +92,8 @@ function LoginPage() {
       }
       finalSignInData = signInData;
     } else {
-      // Build candidate emails to try in sequence
       const candidateEmails: string[] = [];
 
-      // 1. Check server resolver (safe server-side resolution)
       try {
         const resolved = await resolveEmail({ data: { phone: raw } });
         if (resolved.email) candidateEmails.push(resolved.email);
@@ -107,7 +101,6 @@ function LoginPage() {
         // ignore
       }
 
-      // 2. Normalized E.164 email
       if (cleanDigits.startsWith("233") || cleanDigits.startsWith("02") || cleanDigits.startsWith("05")) {
         const ghDigits = cleanDigits.startsWith("233") ? cleanDigits : `233${cleanDigits.replace(/^0+/, "")}`;
         candidateEmails.push(`${ghDigits}@phone.PREDICTA.live`);
@@ -117,13 +110,11 @@ function LoginPage() {
         candidateEmails.push(`${ngDigits}@phone.PREDICTA.live`);
       }
 
-      // 3. Raw clean digits & zero-trimmed digits
       candidateEmails.push(`${cleanDigits}@phone.PREDICTA.live`);
       if (cleanDigits.startsWith("0")) {
         candidateEmails.push(`${cleanDigits.replace(/^0+/, "")}@phone.PREDICTA.live`);
       }
 
-      // 4. Tail format fallbacks
       if (cleanDigits.length >= 9) {
         candidateEmails.push(`${cleanDigits.slice(-9)}@phone.PREDICTA.live`);
       }
@@ -131,7 +122,6 @@ function LoginPage() {
         candidateEmails.push(`${cleanDigits.slice(-10)}@phone.PREDICTA.live`);
       }
 
-      // Deduplicate
       const uniqueCandidates = Array.from(new Set(candidateEmails));
 
       for (const emailToTry of uniqueCandidates) {
@@ -171,49 +161,25 @@ function LoginPage() {
 
   return (
     <AuthBackground>
-      {/* Logo */}
-      <Link to="/" className="flex justify-center" aria-label="PREDICTA home">
-        <div
-          className="inline-flex items-center rounded-xl px-5 py-2.5 transition-all hover:scale-[1.02]"
-          style={{ background: "#FFFFFF", border: "1px solid #E8EDF3", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
-        >
-          <LogoFull className="h-7" />
+      <div className="space-y-6">
+        <div className="space-y-2.5">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white text-[10px] font-mono font-bold tracking-widest border border-slate-800 shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" />
+            <span>AUTHENTICATION GATEWAY // V4.2</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-950 uppercase">
+            SIGN IN TO PREDICTA
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            Enter your credentials to access your real-time virtual match intelligence workspace.
+          </p>
         </div>
-      </Link>
 
-      {/* Status chip */}
-      <div className="mt-5 flex justify-center">
-        <div
-          className="inline-flex items-center gap-2 rounded-full px-3 py-1 font-mono text-[10px] font-bold tracking-widest"
-          style={{ border: "1px solid #D1FAE5", background: "#F0FDF4", color: "#059669" }}
-        >
-          <span className="size-1.5 rounded-full bg-emerald-400 animate-status-blink" />
-          SECURE CONNECTION ESTABLISHED
-        </div>
-      </div>
-
-      {/* Card */}
-      <div
-        className="mt-6 rounded-2xl p-6 sm:p-8"
-        style={{
-          background: "#FFFFFF",
-          border: "1px solid #E8EDF3",
-          boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px rgba(0,0,0,0.07), 0 0 0 1px rgba(228,24,39,0.06)",
-          backdropFilter: "blur(16px)",
-        }}
-      >
-        {/* Top red accent line */}
-        <div
-          className="absolute top-0 left-6 right-6 h-[1px] rounded-full"
-          style={{ background: "linear-gradient(90deg, transparent, rgba(228,24,39,0.6), transparent)", marginTop: "-1px" }}
-        />
-
-        <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#0F172A" }}>Welcome back</h1>
-        <p className="mt-1.5 text-sm" style={{ color: "#64748B" }}>Log in with your phone number to continue.</p>
-
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4 sm:space-y-5" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <Label htmlFor="phone" style={{ color: "#374151" }}>Phone number</Label>
+            <Label htmlFor="phone" className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
+              Phone Number
+            </Label>
             <Input
               id="phone"
               type="tel"
@@ -222,11 +188,16 @@ function LoginPage() {
               onChange={(e) => setIdentifier(e.target.value)}
               placeholder="024 123 4567"
               required
-              style={{ background: "#F8F9FB", border: "1px solid #E2E8F0", color: "#0F172A" }}
+              className="bg-slate-50/80 border-slate-200 text-slate-950 focus:border-red-600 focus:ring-2 focus:ring-red-600/15 rounded-xl h-11 sm:h-12 text-sm transition-all"
             />
           </div>
+
           <div className="space-y-2">
-            <Label htmlFor="password" style={{ color: "#374151" }}>Password</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password" className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
+                Password
+              </Label>
+            </div>
             <div className="relative">
               <Input
                 id="password"
@@ -234,58 +205,59 @@ function LoginPage() {
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pr-11"
+                className="bg-slate-50/80 border-slate-200 text-slate-950 focus:border-red-600 focus:ring-2 focus:ring-red-600/15 rounded-xl h-11 sm:h-12 text-sm pr-11 transition-all"
                 required
-                style={{ background: "#F8F9FB", border: "1px solid #E2E8F0", color: "#0F172A" }}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                className="absolute inset-y-0 right-0 inline-flex w-11 items-center justify-center transition-colors"
-                style={{ color: "#94A3B8" }}
+                className="absolute inset-y-0 right-0 px-3.5 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
               >
-                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
           </div>
+
           {error && (
-            <p role="alert" className="rounded-xl px-3 py-2.5 text-sm" style={{ background: "rgba(228,24,39,0.12)", border: "1px solid #E8EDF3", color: "#f87171" }}>
-              {error}
-            </p>
+            <div role="alert" className="rounded-xl p-3 text-xs font-medium bg-red-50/90 border border-red-200 text-red-700 flex items-start gap-2">
+              <span className="font-bold font-mono shrink-0">[ERROR]</span>
+              <span>{error}</span>
+            </div>
           )}
+
           {notice && (
-            <p role="status" className="rounded-xl px-3 py-2.5 text-sm border border-emerald-200 bg-emerald-50 text-emerald-700">
-              {notice}
-            </p>
+            <div role="status" className="rounded-xl p-3 text-xs font-medium bg-emerald-50/90 border border-emerald-200 text-emerald-700 flex items-start gap-2">
+              <span className="font-bold font-mono shrink-0">[INFO]</span>
+              <span>{notice}</span>
+            </div>
           )}
+
           <button
             type="submit"
             disabled={pending}
-            className="w-full rounded-xl py-3 text-sm font-bold font-mono tracking-widest text-white transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60"
-            style={{ background: "linear-gradient(135deg, #E41827, #B00D1A)", border: "1px solid rgba(228,24,39,0.5)", boxShadow: "0 6px 20px rgba(228,24,39,0.25)" }}
+            className="w-full h-11 sm:h-12 rounded-full bg-red-600 hover:bg-slate-950 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-md shadow-red-600/20 hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
           >
             {pending ? (
-              <span className="flex items-center justify-center gap-2">
-                <Loader2 className="size-4 animate-spin" /> Logging inâ€¦
+              <span className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" /> Authenticating Session...
               </span>
             ) : (
-              "LOG IN"
+              <>
+                Authenticate Access
+                <ArrowRight className="w-4 h-4" />
+              </>
             )}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm" style={{ color: "rgba(240,240,240,0.45)" }}>
-          Don&apos;t have an account?{" "}
-          <Link to="/register" className="font-semibold text-red-600 hover:text-red-700 transition-colors">
-            Register now
+        <div className="pt-4 text-center text-xs text-slate-500 border-t border-slate-100">
+          Do not have an account yet?{" "}
+          <Link to="/register" className="font-bold text-red-600 hover:text-slate-950 uppercase tracking-wider transition-colors">
+            Register Account
           </Link>
-        </p>
+        </div>
       </div>
     </AuthBackground>
   );
 }
-
-
-
-

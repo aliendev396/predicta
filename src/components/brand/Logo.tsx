@@ -9,13 +9,20 @@ const WORDMARK_LOGO_WHITE = "/predicta-wordmark-white.png";
 
 type LogoProps = {
   className?: string;
-  variant?: "dark" | "light";
+  variant?: "dark" | "light" | "white";
 } & Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src" | "alt">;
 
-export function LogoFull({ className, variant = "light", ...rest }: LogoProps) {
+export function LogoFull({ className, variant, ...rest }: LogoProps) {
+  // Use white logo on dark backgrounds (when explicitly requested as white, or className includes text-white)
+  // Default to dark navy logo (FULL_LOGO) so it is crisp and visible on white/light backgrounds
+  const isWhite =
+    variant === "white" ||
+    (variant === "light" && className?.includes("text-white")) ||
+    (!variant && className?.includes("text-white"));
+
   return (
     <img
-      src={variant === "dark" ? FULL_LOGO : FULL_LOGO_WHITE}
+      src={isWhite ? FULL_LOGO_WHITE : FULL_LOGO}
       alt="PREDICTA"
       loading="eager"
       decoding="async"
@@ -38,10 +45,15 @@ export function LogoSymbol({ className, ...rest }: Omit<LogoProps, "variant">) {
   );
 }
 
-export function LogoWordmark({ className, variant = "light", ...rest }: LogoProps) {
+export function LogoWordmark({ className, variant, ...rest }: LogoProps) {
+  const isWhite =
+    variant === "white" ||
+    (variant === "light" && className?.includes("text-white")) ||
+    (!variant && className?.includes("text-white"));
+
   return (
     <img
-      src={variant === "dark" ? WORDMARK_LOGO : WORDMARK_LOGO_WHITE}
+      src={isWhite ? WORDMARK_LOGO_WHITE : WORDMARK_LOGO}
       alt="PREDICTA"
       loading="eager"
       decoding="async"
