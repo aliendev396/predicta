@@ -22,7 +22,7 @@ import {
 import { PageHeader } from "@/components/app/AppShell";
 import { LogoSymbol } from "@/components/brand/Logo";
 import { supabase } from "@/integrations/supabase/client";
-import { adjustMemberSpent, deleteMember, explodePlatformData } from "@/lib/admin.functions";
+import { adjustMemberSpent, deleteMember, explodePlatformData, updatePaymentSettings } from "@/lib/admin.functions";
 import {
   cleanDisplayValue,
   displayEmailOrPhone,
@@ -3051,6 +3051,8 @@ const emptyDraft: PackageDraft = {
 function AdminSettingsManager() {
   const queryClient = useQueryClient();
   const { data: settings } = useQuery(paymentSettingsQuery());
+  const updateSettingsFn = useServerFn(updatePaymentSettings);
+
   const [draft, setDraft] = useState<{
     momo_number: string;
     recipient_name: string;
@@ -3085,39 +3087,30 @@ function AdminSettingsManager() {
       if (number.length < 6 || number.length > 30) throw new Error("Enter a valid payment phone number.");
       if (name.length < 2 || name.length > 80) throw new Error("Enter the recipient name.");
 
-      const updatePayload: Record<string, any> = {
-        momo_number: number,
-        recipient_name: name,
-        network: current.network.trim() || "MTN MoMo",
-        instructions: current.instructions.trim(),
-        registration_fee_ghs: fee,
-        developer_commission_rate: devRate,
-        admin_commission_rate: adminRate,
-        default_partner_commission_rate: partnerRate,
-        updated_at: new Date().toISOString(),
-      };
+      const res = await updateSettingsFn({
+        data: {
+          momoNumber: number,
+          recipientName: name,
+          network: current.network.trim() || "MTN MoMo",
+          instructions: current.instructions.trim(),
+          registrationFeeGhs: fee,
+          developerCommissionRate: devRate,
+          adminCommissionRate: adminRate,
+          defaultPartnerCommissionRate: partnerRate,
+        },
+      });
 
-      let { error } = await supabase
-        .from("payment_settings")
-        .update(updatePayload as any)
-        .eq("id", true);
-
-      if (error && (error.message?.includes("admin_commission_rate") || error.code === "PGRST204" || error.code === "42703")) {
-        delete updatePayload["admin_commission_rate"];
-        const retry = await supabase
-          .from("payment_settings")
-          .update(updatePayload as any)
-          .eq("id", true);
-        error = retry.error;
-      }
-
-      if (error) throw new Error(error.message);
+      return res;
     },
-    onSuccess: async () => {
+    onSuccess: async (res) => {
       setDraft(null);
+      if (res?.settings) {
+        queryClient.setQueryData(["payment-settings"], res.settings);
+      }
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["payment-settings"] }),
         queryClient.invalidateQueries({ queryKey: ["admin-daily-commission-snapshots"] }),
+        queryClient.invalidateQueries({ queryKey: ["admin-stats"] }),
       ]);
       toast.success("Platform settings updated successfully");
     },
