@@ -158,7 +158,37 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.admin_update_payment_settings(text, text, text, text, numeric, numeric, numeric, numeric) FROM public, anon;
-GRANT EXECUTE ON FUNCTION public.admin_update_payment_settings(text, text, text, text, numeric, numeric, numeric, numeric) TO authenticated, service_role;
+-- 5. Update admin_stats RPC to ensure accurate total revenue and bootstrap admin support
+CREATE OR REPLACE FUNCTION public.admin_stats()
+RETURNS JSONB LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  _r JSONB;
+  _is_admin boolean;
+BEGIN
+  _is_admin := public.has_role(auth.uid(), 'admin') OR EXISTS (
+    SELECT 1 FROM public.profiles p
+    JOIN public.admin_bootstrap_emails b ON lower(b.email) = lower(p.email)
+    WHERE p.id = auth.uid()
+  );
+
+  IF NOT _is_admin THEN
+    RAISE EXCEPTION 'FORBIDDEN: Admin access required';
+  END IF;
+
+  SELECT jsonb_build_object(
+    'members', (SELECT count(*) FROM public.profiles),
+    'analyses', (SELECT count(*) FROM public.analyses),
+    'pending_payments', (SELECT count(*) FROM public.payments WHERE status='pending'),
+    'partners', (SELECT count(*) FROM public.user_roles WHERE role='partner'),
+    'pending_partners', (SELECT count(*) FROM public.partner_applications WHERE status='pending'),
+    'revenue_ghs', (SELECT COALESCE(sum(amount_ghs), 0) FROM public.payments WHERE status='approved')
+  ) INTO _r;
+  RETURN _r;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.admin_stats() FROM anon;
+GRANT EXECUTE ON FUNCTION public.admin_stats() TO authenticated, service_role;
 
 NOTIFY pgrst, 'reload schema';
+

@@ -230,15 +230,61 @@ export const adminStatsQuery = () =>
   queryOptions({
     queryKey: ["admin-stats"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("admin_stats");
-      if (error) throw error;
-      return data as {
-        members: number;
-        analyses: number;
-        pending_payments: number;
-        pending_partners?: number;
-        partners: number;
-        revenue_ghs: number;
+      try {
+        const { data, error } = await supabase.rpc("admin_stats");
+        if (!error && data) {
+          const statsObj = data as {
+            members: number;
+            analyses: number;
+            pending_payments: number;
+            pending_partners?: number;
+            partners: number;
+            revenue_ghs: number;
+          };
+
+          // Verify with approved payments table to ensure true lifetime revenue is never missed
+          const { data: paymentsData } = await supabase
+            .from("payments")
+            .select("amount_ghs")
+            .eq("status", "approved");
+
+          if (paymentsData && paymentsData.length > 0) {
+            const sumRevenue = paymentsData.reduce((acc, p) => acc + Number(p.amount_ghs || 0), 0);
+            return {
+              ...statsObj,
+              revenue_ghs: Math.max(Number(statsObj.revenue_ghs || 0), sumRevenue),
+            };
+          }
+
+          return statsObj;
+        }
+      } catch {
+        // Fallback to direct query below
+      }
+
+      // Robust fallback if RPC fails or is forbidden
+      const [paymentsRes, profilesRes, analysesRes, appsRes, partnersRes] = await Promise.all([
+        supabase.from("payments").select("amount_ghs, status"),
+        supabase.from("profiles").select("id", { count: "exact", head: true }),
+        supabase.from("analyses").select("id", { count: "exact", head: true }),
+        supabase.from("partner_applications").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("user_roles").select("id", { count: "exact", head: true }).eq("role", "partner"),
+      ]);
+
+      const approvedRevenue = (paymentsRes.data ?? [])
+        .filter((p) => p.status === "approved")
+        .reduce((acc, p) => acc + Number(p.amount_ghs || 0), 0);
+
+      const pendingCount = (paymentsRes.data ?? [])
+        .filter((p) => p.status === "pending").length;
+
+      return {
+        members: profilesRes.count ?? 0,
+        analyses: analysesRes.count ?? 0,
+        pending_payments: pendingCount,
+        pending_partners: appsRes.count ?? 0,
+        partners: partnersRes.count ?? 0,
+        revenue_ghs: approvedRevenue,
       };
     },
   });

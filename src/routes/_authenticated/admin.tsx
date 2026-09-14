@@ -301,6 +301,14 @@ function AdminPage() {
     return Array.from(days).map((d) => new Date(d + "T00:00:00"));
   }, [payments]);
 
+  const totalAcceptedRevenue = useMemo(() => {
+    const statsRev = Number(stats?.revenue_ghs ?? 0);
+    const paymentsRev = (payments ?? [])
+      .filter((p) => p.status === "approved")
+      .reduce((acc, p) => acc + Number(p.amount_ghs || 0), 0);
+    return Math.max(statsRev, paymentsRev);
+  }, [stats?.revenue_ghs, payments]);
+
   const activeDateLabel = activeDate
     ? activeDate.toLocaleDateString("en-GB", { day: "numeric", month: "short" })
     : "Today";
@@ -364,9 +372,9 @@ function AdminPage() {
       <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-8">
         <Stat
           label="Total Revenue"
-          value={ghs(stats?.revenue_ghs ?? 0)}
+          value={ghs(totalAcceptedRevenue)}
           highlight
-          subtext="Lifetime verified"
+          subtext="Total ever accepted"
           icon={Wallet}
         />
         <Stat
