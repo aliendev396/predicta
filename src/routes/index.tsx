@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ShieldCheck,
-  Check,
   ArrowUpRight,
   Lock,
   Zap,
@@ -101,52 +100,6 @@ function LandingPage() {
       title: "99.8% Backtested Accuracy",
       description: "Rigorous daily validation across all major virtual football leagues and cup tournaments.",
       icon: Award,
-    },
-  ];
-
-  const plans = [
-    {
-      name: "STARTER ANALYST",
-      price: "$29",
-      period: "/week",
-      description: "For individual analysts testing real-time predictive outcome feeds.",
-      features: [
-        "V-League Standard Feed",
-        "85% - 90% Base Accuracy",
-        "Standard Processing Speed",
-        "Email & Priority Support",
-      ],
-      cta: "Activate Starter Tier",
-      popular: false,
-    },
-    {
-      name: "PRO TERMINAL",
-      price: "$79",
-      period: "/month",
-      description: "Complete analytical suite for professional match intelligence.",
-      features: [
-        "All Virtual Leagues & Cup Feeds",
-        "99.8% Maximum Precision Engine",
-        "Sub-Millisecond Processing Speed",
-        "Up to 5 Verdicts per Screenshot",
-        "Priority VIP Analyst Desk",
-      ],
-      cta: "Claim Pro Access",
-      popular: true,
-    },
-    {
-      name: "ENTERPRISE SYNDICATE",
-      price: "$199",
-      period: "/quarter",
-      description: "Unlimited high-frequency data pipelines for syndicates and partners.",
-      features: [
-        "Unlimited Screenshot Processing",
-        "Custom Machine Learning Models",
-        "Dedicated High-Capacity Node",
-        "Direct Engineer SLA Support",
-      ],
-      cta: "Request Enterprise",
-      popular: false,
     },
   ];
 
@@ -435,73 +388,7 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing Packages */}
-      <section id="pricing" className="py-20 sm:py-24 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-3 sm:space-y-4">
-          <span className="text-xs font-mono font-bold tracking-widest text-red-600 uppercase">
-            MEMBERSHIP TIERS
-          </span>
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-950 uppercase">
-            SELECT YOUR ACCESS LEVEL.
-          </h2>
-          <p className="text-slate-600 text-xs sm:text-sm">
-            Instant activation. Manage or upgrade your tier directly from your member dashboard.
-          </p>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch">
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className={`rounded-3xl p-6 sm:p-10 flex flex-col justify-between transition-all duration-300 ${
-                plan.popular
-                  ? "bg-gradient-to-b from-slate-900 to-slate-950 text-white border-2 border-red-600 shadow-[0_20px_50px_rgba(228,24,39,0.2)] scale-[1.02] sm:scale-[1.03] relative"
-                  : "bg-white text-slate-950 border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-0.5"
-              }`}
-            >
-              {plan.popular && (
-                <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-red-600 text-white font-mono text-[10px] sm:text-[11px] font-bold tracking-widest uppercase px-4 py-1 rounded-full shadow-md whitespace-nowrap">
-                  MOST POPULAR ACCESS
-                </span>
-              )}
-
-              <div>
-                <div className="space-y-2 pt-2 sm:pt-0">
-                  <h3 className="text-xs font-mono font-bold tracking-widest uppercase opacity-80">
-                    {plan.name}
-                  </h3>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-4xl sm:text-5xl font-black tracking-tight">{plan.price}</span>
-                    <span className="text-xs font-mono opacity-70">{plan.period}</span>
-                  </div>
-                  <p className="text-xs opacity-80 leading-relaxed pt-2">{plan.description}</p>
-                </div>
-
-                <div className="my-6 sm:my-8 border-t border-current/10 pt-6 space-y-3">
-                  {plan.features.map((feature) => (
-                    <div key={feature} className="flex items-center gap-3 text-xs font-medium">
-                      <Check className={`w-4 h-4 flex-shrink-0 ${plan.popular ? "text-red-500" : "text-red-600"}`} />
-                      <span>{feature}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <Link
-                to="/register"
-                className={`w-full py-3.5 sm:py-4 rounded-full font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                  plan.popular
-                    ? "bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-600/30"
-                    : "bg-slate-950 hover:bg-red-600 text-white"
-                }`}
-              >
-                {plan.cta}
-                <ArrowUpRight className="w-4 h-4" />
-              </Link>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* FAQ Accordion */}
       <section id="faq" className="py-20 sm:py-24 px-4 sm:px-8 lg:px-12 bg-slate-50 border-t border-slate-200">
