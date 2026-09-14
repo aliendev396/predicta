@@ -64,147 +64,163 @@ function PartnerPage() {
   };
 
   return (
-    <>
+    <div className="space-y-10 selection:bg-red-600 selection:text-white pb-12">
       <PageHeader
-        title="Partner hub"
-        description="Everything you need as a PREDICTA partner — your link, your members and your earnings."
+        badgeText="AFFILIATE NETWORK"
+        title="PARTNER HUB."
+        description="Monitor member signups, commission yields, and lifetime referral earnings in real time."
       />
 
-      <section className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary via-primary to-[#1D4ED8] p-6 text-primary-foreground shadow-[var(--shadow-soft)] sm:p-8">
-        <div className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-white/10 blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-24 -left-10 size-56 rounded-full bg-black/20 blur-3xl" />
-        <LogoWatermark />
-        <div className="relative">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
-            <Handshake className="size-3.5" /> Verified partner
-          </span>
-          <p className="mt-5 text-sm opacity-85">Pending payout balance</p>
-          <p className="mt-1 text-5xl font-extrabold leading-none tracking-tight">
-            {ghs(stats?.commissions_ghs ?? 0)}
-          </p>
-          <p className="mt-3 text-sm opacity-85">
-            {stats?.commission_rate ?? 10}% of every approved payment from members you bring to
-            PREDICTA.
-          </p>
+      {/* Hero Obsidian Payout Banner */}
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-slate-800 text-white p-8 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.25)]">
+        <div className="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-red-600/20 blur-[100px]" />
+        <LogoWatermark className="opacity-[0.06] text-white" />
+        <LogoSymbol
+          className="pointer-events-none absolute right-8 top-8 h-8 w-auto text-white opacity-25"
+          aria-hidden
+        />
 
-          <div className="mt-7 rounded-xl bg-white/12 p-4 backdrop-blur-[2px]">
-            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide opacity-90">
-              <Link2 className="size-3.5" /> Your referral link
+        <div className="relative z-10 space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-3.5 py-1 font-mono text-[11px] font-bold uppercase tracking-widest text-slate-200">
+              <Handshake className="size-3.5 text-red-500" /> VERIFIED PREDICTA PARTNER
+            </span>
+          </div>
+
+          <div className="space-y-1">
+            <p className="text-xs font-mono font-bold uppercase tracking-widest text-slate-400">PENDING PAYOUT BALANCE</p>
+            <p className="text-5xl sm:text-6xl font-black leading-none tracking-tight font-sans text-white">
+              {ghs(stats?.commissions_ghs ?? 0)}
             </p>
-            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+            <p className="text-xs font-mono text-slate-400 pt-1">
+              Yielding {stats?.commission_rate ?? 10}% commission on every approved member package top-up.
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white/10 border border-white/10 p-5 backdrop-blur-md space-y-3">
+            <p className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-widest text-slate-200">
+              <Link2 className="size-4 text-red-400" /> YOUR UNIQUE REFERRAL LINK
+            </p>
+            <div className="flex flex-col gap-3 sm:flex-row">
               <Input
                 readOnly
                 value={referralLink}
                 aria-label="Referral link"
-                className="border-white/25 bg-white/15 text-primary-foreground placeholder:text-primary-foreground/60"
+                className="h-12 border-white/20 bg-slate-900/80 text-white font-mono text-xs placeholder:text-slate-500 rounded-xl focus:ring-0"
               />
               <Button
                 type="button"
-                className="min-w-[105px] bg-white text-primary transition-all hover:bg-white/90"
                 onClick={handleCopy}
+                className="h-12 min-w-[120px] rounded-xl bg-red-600 hover:bg-white hover:text-slate-950 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-md shadow-red-600/20 transition-all cursor-pointer border-0"
               >
                 {copied ? (
-                  <span className="flex items-center gap-1.5 font-bold text-emerald-600 animate-in zoom-in-75 duration-200">
-                    <Check className="size-4 stroke-[3]" /> Copied!
+                  <span className="flex items-center gap-1.5 font-bold">
+                    <Check className="size-4" /> Copied!
                   </span>
                 ) : (
                   <span className="flex items-center gap-1.5">
-                    <Copy className="size-4" /> Copy
+                    <Copy className="size-4" /> Copy Link
                   </span>
                 )}
               </Button>
             </div>
-            <p className="mt-2 text-xs opacity-85">
-              Referral code: <span className="font-semibold">{profile?.referral_code}</span>
+            <p className="text-xs font-mono text-slate-400">
+              Referral Code: <span className="font-bold text-red-400">{profile?.referral_code}</span>
             </p>
           </div>
         </div>
       </section>
 
-      <div className="mt-5 grid gap-4 grid-cols-1 sm:grid-cols-3">
+      {/* 3 Stat Cards Grid */}
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-3">
         <Stat
-          label="Registrations"
+          label="REGISTRATIONS"
           value={String(stats?.registrations ?? 0)}
-          hint="Members who signed up with your code"
+          hint="Members who joined using your link"
           icon={<Users className="size-4" />}
         />
         <Stat
-          label="Lifetime Member Revenue"
+          label="LIFETIME MEMBER REVENUE"
           value={ghs(stats?.lifetime_revenue_ghs ?? stats?.revenue_ghs ?? 0)}
           hint="All-time approved package volume"
           icon={<TrendingUp className="size-4" />}
         />
         <Stat
-          label="Lifetime Commissions"
+          label="LIFETIME COMMISSIONS"
           value={ghs(stats?.lifetime_commissions_ghs ?? stats?.commissions_ghs ?? 0)}
-          hint="All-time earnings from referrals"
+          hint="Total cleared affiliate earnings"
           icon={<Wallet className="size-4" />}
         />
       </div>
 
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold text-foreground">Commission history</h2>
-        <div className="relative mt-3 overflow-hidden rounded-2xl border border-border bg-card">
-          <LogoSymbol
-            className="pointer-events-none absolute -right-6 -bottom-8 h-40 w-auto opacity-[0.05]"
-            aria-hidden
-          />
-          <div className="relative divide-y divide-border">
-            {(commissions ?? []).length === 0 && (
-              <p className="p-5 text-sm text-muted-foreground">
-                No commissions yet. They appear when a referred member&apos;s payment is approved.
-              </p>
-            )}
-            {(commissions ?? []).map((c) => (
-              <div key={c.id} className="flex items-center justify-between gap-3 px-4 py-3">
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-foreground">{ghs(c.amount_ghs)}</p>
-                  <p className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleString()}</p>
-                </div>
-                <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
-                  Earned
-                </span>
+      {/* Commission History */}
+      <section className="space-y-4">
+        <div className="space-y-1">
+          <span className="text-xs font-mono font-bold tracking-widest text-red-600 uppercase">
+            AFFILIATE YIELDS
+          </span>
+          <h2 className="text-2xl font-extrabold uppercase tracking-tight text-slate-950">
+            COMMISSION HISTORY
+          </h2>
+        </div>
+
+        <div className="divide-y divide-slate-100 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          {(commissions ?? []).length === 0 && (
+            <p className="p-8 text-center text-sm font-mono text-slate-400">
+              No commissions yet. Yields log automatically when referred members top up credits.
+            </p>
+          )}
+          {(commissions ?? []).map((c) => (
+            <div key={c.id} className="flex items-center justify-between gap-4 p-5 hover:bg-slate-50/80 transition-colors">
+              <div className="min-w-0 space-y-0.5">
+                <p className="text-base font-black text-slate-950 font-sans">{ghs(c.amount_ghs)}</p>
+                <p className="text-xs font-mono text-slate-400">{new Date(c.created_at).toLocaleString()}</p>
               </div>
-            ))}
-          </div>
+              <span className="shrink-0 rounded-full bg-slate-950 text-white font-mono text-[10px] font-bold uppercase tracking-widest px-3.5 py-1">
+                Earned
+              </span>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* Payout History */}
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold text-foreground">Payout history</h2>
-        <div className="relative mt-3 overflow-hidden rounded-2xl border border-border bg-card">
-          <LogoSymbol
-            className="pointer-events-none absolute -right-6 -bottom-8 h-40 w-auto opacity-[0.05]"
-            aria-hidden
-          />
-          <div className="relative divide-y divide-border">
-            {(payouts ?? []).length === 0 && (
-              <p className="p-5 text-sm text-muted-foreground">
-                No payouts yet. Your cleared balances from the admin will appear here.
-              </p>
-            )}
-            {(payouts ?? []).map((p) => (
-              <div key={p.id} className="flex items-center justify-between gap-3 px-4 py-3">
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-foreground">{ghs(p.amount_ghs)}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(p.cleared_at).toLocaleString()}
-                  </p>
-                  {p.note && (
-                    <p className="mt-0.5 text-xs text-muted-foreground/80 italic">"{p.note}"</p>
-                  )}
-                </div>
-                <span className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-600">
-                  <Banknote className="size-3.5" />
-                  Paid out
-                </span>
+      <section className="space-y-4">
+        <div className="space-y-1">
+          <span className="text-xs font-mono font-bold tracking-widest text-red-600 uppercase">
+            PAYOUT LEDGER
+          </span>
+          <h2 className="text-2xl font-extrabold uppercase tracking-tight text-slate-950">
+            PAYOUT HISTORY
+          </h2>
+        </div>
+
+        <div className="divide-y divide-slate-100 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          {(payouts ?? []).length === 0 && (
+            <p className="p-8 text-center text-sm font-mono text-slate-400">
+              No payouts recorded yet. Cleared balances from admin appear here.
+            </p>
+          )}
+          {(payouts ?? []).map((p) => (
+            <div key={p.id} className="flex items-center justify-between gap-4 p-5 hover:bg-slate-50/80 transition-colors">
+              <div className="min-w-0 space-y-0.5">
+                <p className="text-base font-black text-slate-950 font-sans">{ghs(p.amount_ghs)}</p>
+                <p className="text-xs font-mono text-slate-400">
+                  {new Date(p.cleared_at).toLocaleString()}
+                </p>
+                {p.note && (
+                  <p className="mt-1 text-xs text-slate-600 italic">"{p.note}"</p>
+                )}
               </div>
-            ))}
-          </div>
+              <span className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[10px] font-bold uppercase tracking-widest px-3.5 py-1">
+                <Banknote className="size-3.5 text-emerald-600" />
+                PAID OUT
+              </span>
+            </div>
+          ))}
         </div>
       </section>
-    </>
+    </div>
   );
 }
 
@@ -220,17 +236,20 @@ function Stat({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-5">
-      <LogoSymbol
-        className="pointer-events-none absolute -right-4 -bottom-6 h-28 w-auto opacity-[0.06]"
-        aria-hidden
-      />
-      <div className="relative flex min-w-0 items-center gap-2 text-primary">
-        {icon}
-        <p className="truncate text-sm text-muted-foreground">{label}</p>
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+      <div>
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-widest">
+            {label}
+          </span>
+          <div className="size-9 rounded-full bg-red-50 border border-red-200 flex items-center justify-center text-red-600">
+            {icon}
+          </div>
+        </div>
+        <p className="mt-5 text-4xl font-black tracking-tight text-slate-950 font-sans">{value}</p>
       </div>
-      <p className="relative mt-2 text-2xl font-bold tracking-tight text-foreground">{value}</p>
-      <p className="relative mt-1 text-xs text-muted-foreground">{hint}</p>
+      <p className="mt-4 text-xs font-mono text-slate-400 border-t border-slate-100 pt-3">{hint}</p>
     </div>
   );
 }
+

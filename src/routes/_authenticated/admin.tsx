@@ -303,7 +303,7 @@ function AdminPage() {
     <>
       <PageHeader title="Admin console" description="Review payments, partners, commission settings and platform activity." />
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-8">
+      <div className="grid grid-cols-2 gap-2 sm:gap-4 sm:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-8">
         <Stat label="Total Revenue" value={ghs(stats?.revenue_ghs ?? 0)} highlight />
         <Stat
           label={isHistoryMode ? `Revenue · ${activeDateLabel}` : "Today's Revenue"}
@@ -353,51 +353,26 @@ function AdminPage() {
       </div>
 
       <Tabs defaultValue="payments" className="mt-8 min-h-[600px]">
-        <div className="sticky top-14 sm:top-16 lg:top-0 z-30 -mx-3 px-3 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10 py-2.5 sm:py-3 bg-background/95 backdrop-blur-md border-b border-border/60 shadow-xs transition-all">
+        <div className="sticky top-14 sm:top-16 lg:top-0 z-30 -mx-3 px-3 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10 py-3 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs transition-all">
           <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <TabsList className="w-max min-w-full justify-start gap-1.5 bg-muted/60 p-1 rounded-xl">
-              <TabsTrigger
-                value="payments"
-                className="whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-all data-[state=active]:bg-primary/15 data-[state=active]:text-primary data-[state=active]:font-bold data-[state=active]:border-primary/40 border border-transparent shadow-none touch-manipulation select-none"
-              >
-                Payments
-              </TabsTrigger>
-              <TabsTrigger
-                value="settings"
-                className="whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-all data-[state=active]:bg-primary/15 data-[state=active]:text-primary data-[state=active]:font-bold data-[state=active]:border-primary/40 border border-transparent shadow-none touch-manipulation select-none"
-              >
-                Settings
-              </TabsTrigger>
-              <TabsTrigger
-                value="packages"
-                className="whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-all data-[state=active]:bg-primary/15 data-[state=active]:text-primary data-[state=active]:font-bold data-[state=active]:border-primary/40 border border-transparent shadow-none touch-manipulation select-none"
-              >
-                Packages &amp; credits
-              </TabsTrigger>
-              <TabsTrigger
-                value="partners"
-                className="whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-all data-[state=active]:bg-primary/15 data-[state=active]:text-primary data-[state=active]:font-bold data-[state=active]:border-primary/40 border border-transparent shadow-none touch-manipulation select-none"
-              >
-                Partners
-              </TabsTrigger>
-              <TabsTrigger
-                value="manage-partners"
-                className="whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-all data-[state=active]:bg-primary/15 data-[state=active]:text-primary data-[state=active]:font-bold data-[state=active]:border-primary/40 border border-transparent shadow-none touch-manipulation select-none"
-              >
-                Manage partners
-              </TabsTrigger>
-              <TabsTrigger
-                value="members"
-                className="whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-all data-[state=active]:bg-primary/15 data-[state=active]:text-primary data-[state=active]:font-bold data-[state=active]:border-primary/40 border border-transparent shadow-none touch-manipulation select-none"
-              >
-                Members
-              </TabsTrigger>
-              <TabsTrigger
-                value="audit"
-                className="whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-all data-[state=active]:bg-primary/15 data-[state=active]:text-primary data-[state=active]:font-bold data-[state=active]:border-primary/40 border border-transparent shadow-none touch-manipulation select-none"
-              >
-                Audit log
-              </TabsTrigger>
+            <TabsList className="w-max min-w-full justify-start gap-2 bg-slate-100 p-1.5 rounded-full border border-slate-200">
+              {[
+                { value: "payments", label: "Payments Queue" },
+                { value: "settings", label: "Gateway & Commissions" },
+                { value: "packages", label: "Packages & Tiers" },
+                { value: "partners", label: "Partner Payouts" },
+                { value: "manage-partners", label: "Partner Approvals" },
+                { value: "members", label: "Member Vault" },
+                { value: "audit", label: "Audit Logs" },
+              ].map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="whitespace-nowrap rounded-full px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider transition-all duration-200 data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-red-600/20 text-slate-600 hover:text-slate-950 border border-transparent touch-manipulation select-none cursor-pointer"
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
             </TabsList>
           </div>
         </div>
@@ -2397,8 +2372,8 @@ function CreditAdjusterInner({
       const { error } = await supabase.rpc("admin_adjust_credits" as never, {
         _user_id: userId,
         _delta: Math.trunc(delta),
+        _reason: note || "Admin credit adjustment",
         _max_verdicts: vNum,
-        ...(note ? { _reason: note } : {}),
       } as never);
       if (error) throw new Error(error.message);
     },
@@ -3053,19 +3028,90 @@ function MonetisationManager() {
         .split("\n")
         .map((p) => p.trim())
         .filter(Boolean);
-      const { error } = await supabase.rpc("admin_upsert_package", {
+
+      const name = d.name.trim();
+      const slug = d.slug.trim() || name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const price_ghs = Number(d.price_ghs);
+      const credits = Math.trunc(Number(d.credits));
+      const is_active = d.is_active;
+      const is_popular = d.is_popular;
+      const sort_order = Math.trunc(Number(d.sort_order) || 0);
+      const max_verdicts = Math.max(1, Math.trunc(Number(d.max_verdicts) || 1));
+
+      // Attempt 1: 10-parameter RPC (includes _is_popular)
+      const { error: err10 } = await supabase.rpc("admin_upsert_package" as never, {
         ...(d.id ? { _id: d.id } : {}),
-        _name: d.name,
-        _slug: d.slug.trim() || d.name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-        _price_ghs: Number(d.price_ghs),
-        _credits: Math.trunc(Number(d.credits)),
+        _name: name,
+        _slug: slug,
+        _price_ghs: price_ghs,
+        _credits: credits,
         _perks: perks,
-        _is_active: d.is_active,
-        _is_popular: d.is_popular,
-        _sort_order: Math.trunc(Number(d.sort_order) || 0),
-        _max_verdicts: Math.max(1, Math.trunc(Number(d.max_verdicts) || 1)),
-      });
-      if (error) throw new Error(error.message);
+        _is_active: is_active,
+        _is_popular: is_popular,
+        _sort_order: sort_order,
+        _max_verdicts: max_verdicts,
+      } as never);
+
+      if (!err10) return;
+
+      // If error is not a schema cache parameter mismatch, throw immediately
+      if (!err10.message.includes("Could not find the function") && !err10.message.includes("schema cache")) {
+        throw new Error(err10.message);
+      }
+
+      // Attempt 2: 9-parameter legacy RPC (omits _is_popular)
+      const { error: err9 } = await supabase.rpc("admin_upsert_package" as never, {
+        ...(d.id ? { _id: d.id } : {}),
+        _name: name,
+        _slug: slug,
+        _price_ghs: price_ghs,
+        _credits: credits,
+        _perks: perks,
+        _is_active: is_active,
+        _sort_order: sort_order,
+        _max_verdicts: max_verdicts,
+      } as never);
+
+      if (!err9) {
+        if (d.id) {
+          await supabase.from("packages").update({ is_popular: is_popular }).eq("id", d.id);
+        }
+        return;
+      }
+
+      // Attempt 3: Direct Table Update/Insert (fallback for admins)
+      if (d.id) {
+        const { error: directErr } = await supabase
+          .from("packages")
+          .update({
+            name,
+            slug,
+            price_ghs,
+            credits,
+            perks: perks as never,
+            is_active,
+            is_popular,
+            sort_order,
+            max_verdicts,
+          })
+          .eq("id", d.id);
+        if (directErr) throw new Error(directErr.message || err10.message);
+      } else {
+        const { error: directErr } = await supabase
+          .from("packages")
+          .insert({
+            name,
+            slug,
+            price_ghs,
+            credits,
+            perks: perks as never,
+            is_active,
+            is_popular,
+            sort_order,
+            max_verdicts,
+          });
+        if (directErr) throw new Error(directErr.message || err10.message);
+      }
     },
     onSuccess: async () => {
       setDraft(null);
@@ -3077,19 +3123,50 @@ function MonetisationManager() {
 
   const toggle = useMutation({
     mutationFn: async (p: PackageRow) => {
-      const { error } = await supabase.rpc("admin_upsert_package", {
+      const is_active = !p.is_active;
+
+      // Attempt 1: 10-parameter RPC
+      const { error: err10 } = await supabase.rpc("admin_upsert_package" as never, {
         _id: p.id,
         _name: p.name,
         _slug: p.slug,
         _price_ghs: Number(p.price_ghs),
         _credits: p.credits,
         _perks: (p.perks as string[]) ?? [],
-        _is_active: !p.is_active,
+        _is_active: is_active,
         _is_popular: p.is_popular,
         _sort_order: p.sort_order,
         _max_verdicts: p.max_verdicts,
-      });
-      if (error) throw new Error(error.message);
+      } as never);
+
+      if (!err10) return;
+
+      if (!err10.message.includes("Could not find the function") && !err10.message.includes("schema cache")) {
+        throw new Error(err10.message);
+      }
+
+      // Attempt 2: 9-parameter legacy RPC
+      const { error: err9 } = await supabase.rpc("admin_upsert_package" as never, {
+        _id: p.id,
+        _name: p.name,
+        _slug: p.slug,
+        _price_ghs: Number(p.price_ghs),
+        _credits: p.credits,
+        _perks: (p.perks as string[]) ?? [],
+        _is_active: is_active,
+        _sort_order: p.sort_order,
+        _max_verdicts: p.max_verdicts,
+      } as never);
+
+      if (!err9) return;
+
+      // Attempt 3: Direct table update
+      const { error: directErr } = await supabase
+        .from("packages")
+        .update({ is_active: is_active })
+        .eq("id", p.id);
+
+      if (directErr) throw new Error(directErr.message || err10.message);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries();

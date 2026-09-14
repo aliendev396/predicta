@@ -1,190 +1,119 @@
-import { useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { LogoFull } from "@/components/brand/Logo";
-import { Shield, Zap, ArrowUpRight, Twitter, Github, Mail } from "lucide-react";
-
-const groups = [
-  {
-    title: "Product",
-    items: [
-      { label: "How It Works", href: "#how-it-works", isHash: true },
-      { label: "Features", href: "#features", isHash: true },
-      { label: "Packages", href: "#packages", isHash: true },
-      { label: "Accuracy Reports", href: "#features", isHash: true },
-    ],
-  },
-  {
-    title: "Account",
-    items: [
-      { label: "Create Account", href: "/register" },
-      { label: "Member Login", href: "/login" },
-      { label: "Partner Program", href: "/partner-apply" },
-      { label: "Dashboard", href: "/dashboard" },
-    ],
-  },
-  {
-    title: "Support",
-    items: [
-      { label: "Help & FAQ", href: "#faq", isHash: true },
-      { label: "Getting Started", href: "/register" },
-      { label: "System Status", href: "/" },
-      { label: "Account Security", href: "/privacy" },
-    ],
-  },
-  {
-    title: "Legal",
-    items: [
-      { label: "Privacy Policy", href: "/privacy" },
-      { label: "Terms of Service", href: "/terms" },
-      { label: "Refund Policy", href: "/refund-policy" },
-      { label: "Acceptable Use", href: "/acceptable-use" },
-    ],
-  },
-];
+import { ArrowUpRight, ShieldCheck, Zap } from "lucide-react";
 
 export function SiteFooter() {
-  const navigate = useNavigate();
-  const [legalClicks, setLegalClicks] = useState<Record<string, number>>({});
+  const currentYear = new Date().getFullYear();
 
-  const handleLegalClick = (e: React.MouseEvent, href: string) => {
-    e.preventDefault();
-    const next = (legalClicks[href] ?? 0) + 1;
-    if (next >= 4) {
-      setLegalClicks((p) => ({ ...p, [href]: 0 }));
-      void navigate({ to: href as any });
-    } else {
-      setLegalClicks((p) => ({ ...p, [href]: next }));
-    }
-  };
+  const footerNav = [
+    {
+      title: "PLATFORM",
+      links: [
+        { label: "Predictive Engine", href: "#features" },
+        { label: "Algorithm Architecture", href: "#how-it-works" },
+        { label: "Verification Ledger", href: "#trust" },
+        { label: "Pricing & Access", href: "#pricing" },
+      ],
+    },
+    {
+      title: "PRODUCTS",
+      links: [
+        { label: "V-League Predictor", href: "/register" },
+        { label: "Instant Virtuals Decoder", href: "/register" },
+        { label: "Realtime API Feed", href: "/register" },
+        { label: "Enterprise Terminal", href: "/register" },
+      ],
+    },
+    {
+      title: "RESOURCES",
+      links: [
+        { label: "Documentation", href: "#faq" },
+        { label: "Frequently Asked", href: "#faq" },
+        { label: "System Status", href: "#" },
+        { label: "Compliance & Security", href: "#" },
+      ],
+    },
+    {
+      title: "COMPANY",
+      links: [
+        { label: "About PREDICTA", href: "#" },
+        { label: "Research Lab", href: "#" },
+        { label: "Contact Intelligence", href: "#" },
+        { label: "Terms of Service", href: "#" },
+      ],
+    },
+  ];
 
   return (
-    <footer className="bg-[#F8F9FB] border-t border-[#E8EDF3]">
-
-      {/* ── CTA band above footer ── */}
-      <div
-        className="relative overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg, #C50F1F 0%, #E41827 45%, #C50F1F 100%)",
-        }}
-      >
-        {/* Subtle dot grid overlay */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.06]"
-          style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "24px 24px" }}
-        />
-        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-12">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-            <div>
-              <p className="text-xs font-mono font-bold tracking-widest text-red-200 uppercase mb-1">
-                Ready to start?
-              </p>
-              <h3 className="text-xl sm:text-2xl font-bold text-white">
-                Expose your first instant virtual outcome today.
-              </h3>
-            </div>
-            <Link
-              to="/register"
-              className="inline-flex items-center gap-2 shrink-0 rounded-full bg-white px-6 py-3 text-sm font-bold text-red-700 shadow-lg hover:shadow-xl transition-all hover:scale-[1.03] active:scale-[0.98]"
-            >
-              Get Started Free
-              <ArrowUpRight className="size-4" />
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Main footer body ── */}
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-16">
-        {/* Top row — logo + tagline + status */}
-        <div
-          className="flex flex-col sm:flex-row sm:items-start justify-between gap-8 pb-10"
-          style={{ borderBottom: "1px solid #E8EDF3" }}
-        >
-          <div className="max-w-xs">
-            <Link to="/" aria-label="PREDICTA home" className="inline-block mb-3 hover:opacity-80 transition-opacity">
-              <LogoFull variant="dark" className="h-7 w-auto" />
-            </Link>
-            <p className="text-sm leading-relaxed text-slate-500">
-              High-precision breach intelligence for instant virtual simulation engines. Engineered for certainty.
+    <footer className="bg-slate-950 text-slate-400 border-t border-slate-900 pt-20 pb-12 font-sans">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+        {/* Top Editorial Banner */}
+        <div className="border-b border-slate-800 pb-12 sm:pb-16 mb-12 sm:mb-16 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 sm:gap-8">
+          <div className="max-w-2xl">
+            <span className="text-xs font-mono font-bold tracking-widest text-red-500 uppercase block mb-3">
+              INSTANT OUTCOME EXPOSURE
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+              Ready to eliminate outcome uncertainty?
+            </h2>
+            <p className="text-slate-400 mt-3 text-xs sm:text-sm leading-relaxed">
+              Gain instant access to real-time RNG decoders and predictive neural feeds.
             </p>
           </div>
-
-          <div className="flex flex-col gap-3">
-            {/* Live status */}
-            <div className="inline-flex items-center gap-2 self-start sm:self-end rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1.5 text-xs font-semibold text-emerald-700">
-              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-              Predicta Core 2.4 · Operational
-            </div>
-            {/* Trust badges */}
-            <div className="flex items-center gap-3 text-xs text-slate-400">
-              <span className="inline-flex items-center gap-1">
-                <Shield className="size-3.5 text-slate-400" />
-                256-bit Encryption
-              </span>
-              <span className="text-slate-200">·</span>
-              <span className="inline-flex items-center gap-1">
-                <Zap className="size-3.5 text-red-400" />
-                Real-time Engine
-              </span>
-            </div>
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            <Link
+              to="/register"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-full transition-all shadow-lg shadow-red-600/30 hover:scale-[1.02] max-w-full truncate"
+            >
+              Get Instant Access
+              <ArrowUpRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
 
-        {/* Link columns */}
-        <div className="grid grid-cols-2 gap-8 py-10 sm:grid-cols-4">
-          {groups.map((g) => (
-            <div key={g.title}>
-              <h3 className="mb-4 text-[11px] font-bold tracking-widest text-slate-900 uppercase">
-                {g.title}
-              </h3>
-              <ul className="space-y-2.5">
-                {g.items.map((item) => {
-                  const isLegal = g.title === "Legal";
-                  const cls = "text-sm text-slate-500 hover:text-red-600 transition-colors";
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 sm:gap-10 pb-12 sm:pb-16 border-b border-slate-800">
+          {/* Brand Info Column */}
+          <div className="col-span-1 sm:col-span-2 space-y-4 sm:space-y-6">
+            <LogoFull className="h-7 sm:h-8 w-auto text-white" />
+            <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
+              PREDICTA is the premier outcome analysis platform for instant virtuals. Operating at high precision with deterministic seed calculation protocols.
+            </p>
+            <div className="flex items-center gap-3 text-[10px] sm:text-[11px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-3 py-1.5 rounded-full w-fit">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              ALL SYSTEMS OPERATIONAL (99.98% ACCURACY)
+            </div>
+          </div>
 
-                  if (isLegal) {
-                    return (
-                      <li key={item.label}>
-                        <button
-                          type="button"
-                          onClick={(e) => handleLegalClick(e, item.href)}
-                          className={`${cls} text-left cursor-pointer select-none`}
-                        >
-                          {item.label}
-                        </button>
-                      </li>
-                    );
-                  }
-                  return (
-                    <li key={item.label}>
-                      {item.isHash ? (
-                        <a href={item.href} className={cls}>{item.label}</a>
-                      ) : (
-                        <Link to={item.href as any} className={cls}>{item.label}</Link>
-                      )}
-                    </li>
-                  );
-                })}
+          {/* Navigation Columns */}
+          {footerNav.map((col) => (
+            <div key={col.title} className="space-y-3 sm:space-y-4">
+              <h3 className="text-xs font-mono font-bold tracking-widest text-white uppercase">
+                {col.title}
+              </h3>
+              <ul className="space-y-2 font-sans">
+                {col.links.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="text-xs text-slate-400 hover:text-red-400 transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
           ))}
         </div>
 
-        {/* Bottom bar */}
-        <div
-          className="flex flex-col gap-3 pt-8 sm:flex-row sm:items-center sm:justify-between text-xs text-slate-400"
-          style={{ borderTop: "1px solid #E8EDF3" }}
-        >
-          <p>
-            © {new Date().getFullYear()} PREDICTA. All rights reserved. For entertainment and informational simulation analytics only.
-          </p>
-          <div className="flex items-center gap-2">
-            <span className="inline-flex size-7 items-center justify-center rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer">
-              <Twitter className="size-3.5" />
-            </span>
-            <span className="inline-flex size-7 items-center justify-center rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer">
-              <Mail className="size-3.5" />
-            </span>
+        {/* Bottom Legal / Copyright */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4 text-center sm:text-left">
+          <p>© {currentYear} PREDICTA PLATFORM. ALL RIGHTS RESERVED.</p>
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 font-mono text-[10px] sm:text-[11px]">
+            <Link to="/privacy" className="hover:text-slate-300 transition-colors">PRIVACY POLICY</Link>
+            <Link to="/terms" className="hover:text-slate-300 transition-colors">TERMS & CONDITIONS</Link>
+            <Link to="/acceptable-use" className="hover:text-slate-300 transition-colors">ACCEPTABLE USE</Link>
           </div>
         </div>
       </div>

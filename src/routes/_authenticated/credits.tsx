@@ -28,7 +28,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { PageHeader } from "@/components/app/AppShell";
 import { LogoSymbol, LogoWatermark } from "@/components/brand/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -46,15 +45,14 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/credits")({
   head: () => ({
     meta: [
-      { title: "Credits & Packages — PREDICTA" },
-      { name: "description", content: "Track your PREDICTA prediction credits and upgrade your plan with the Starter, Plus or Premium package." },
-      { property: "og:title", content: "Credits & Packages — PREDICTA" },
-      { property: "og:description", content: "Monitor your credit balance and upgrade your PREDICTA plan." },
+      { title: "Credits & Tiers — PREDICTA" },
+      { name: "description", content: "Track your PREDICTA prediction credits and upgrade your access plan." },
+      { property: "og:title", content: "Credits & Tiers — PREDICTA" },
+      { property: "og:description", content: "Monitor your credit balance and upgrade your PREDICTA access plan." },
     ],
   }),
   component: CreditsPage,
 });
-
 
 function CreditsPage() {
   const { user } = Route.useRouteContext();
@@ -105,59 +103,75 @@ function CreditsPage() {
   const low = credits <= 2;
 
   return (
-    <>
-      <PageHeader
-        title="Credits"
-        description="One credit powers one PREDICTA instant virtual football scan."
-      />
+    <div className="space-y-10 selection:bg-red-600 selection:text-white pb-12">
+      {/* Editorial Header */}
+      <div className="space-y-3">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-200 text-red-600 font-mono text-[11px] font-bold tracking-widest uppercase shadow-2xs">
+          <Coins className="size-3.5" />
+          PREDICTA CREDIT VAULT
+        </div>
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-950 uppercase tracking-tight">
+          CREDITS & ACCESS TIERS.
+        </h1>
+        <p className="text-slate-600 text-sm max-w-2xl font-normal leading-relaxed">
+          One credit powers one instant PREDICTA virtual match scan with real-time seed decoding.
+        </p>
+      </div>
 
-      <div className="grid gap-5 lg:grid-cols-3">
-        <section className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary via-primary to-[#1D4ED8] p-6 text-primary-foreground shadow-[var(--shadow-soft)] sm:p-8 lg:col-span-2">
-          <div className="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-white/10 blur-2xl" />
-          <div className="pointer-events-none absolute -bottom-20 -left-10 size-56 rounded-full bg-black/20 blur-3xl" />
-          <LogoWatermark />
+      {/* Top Section: Obsidian Balance Hero Card & Mini Stat */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <section className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-slate-800 text-white p-6 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.25)] lg:col-span-2">
+          {/* Ambient Red Glow */}
+          <div className="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-red-600/20 blur-[100px]" />
+          <div className="pointer-events-none absolute -bottom-20 -left-10 size-60 rounded-full bg-red-900/10 blur-[80px]" />
+          <LogoWatermark className="opacity-[0.06] text-white" />
           <LogoSymbol
-            className="pointer-events-none absolute right-5 top-5 h-7 w-auto opacity-70"
+            className="pointer-events-none absolute right-8 top-8 h-8 w-auto text-white opacity-25"
             aria-hidden
           />
 
-          <div className="relative">
-            <div className="flex items-center justify-between gap-3">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
-                <Coins className="size-3.5" /> PREDICTA balance
+          <div className="relative z-10 space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-3.5 py-1 font-mono text-[11px] font-bold uppercase tracking-widest text-slate-200">
+                <Coins className="size-3.5 text-red-500" /> AVAILABLE BALANCE
               </span>
-              {low && <Badge className="bg-white text-primary hover:bg-white">Running low</Badge>}
+              {low && (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-red-600 text-white px-3 py-1 font-mono text-[11px] font-bold uppercase tracking-widest animate-pulse shadow-md">
+                  <Sparkles className="size-3" /> TOP-UP RECOMMENDED
+                </span>
+              )}
             </div>
 
-            <div className="mt-6 flex flex-wrap items-end gap-3">
-              <p className="text-6xl font-extrabold leading-none tracking-tight">{credits}</p>
-              <div className="pb-1">
-                <p className="text-sm font-semibold">scans / credits available</p>
-                <p className="text-xs opacity-75">1 credit deducted per screenshot analyzed</p>
+            <div className="flex flex-wrap items-baseline gap-3 sm:gap-4 pt-2">
+              <p className="text-5xl sm:text-7xl font-black leading-none tracking-tight font-sans text-white">{credits}</p>
+              <div className="space-y-0.5">
+                <p className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-slate-300">Scan Credits Active</p>
+                <p className="text-xs text-slate-400">1 credit deducted per screenshot match scan</p>
               </div>
             </div>
 
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/20 px-2.5 py-1 text-xs font-semibold backdrop-blur-xs">
-                Active Plan: {verdictLimit ?? 2} verdicts / predictions per scan
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-2 rounded-xl bg-white/10 border border-white/10 px-3.5 py-1.5 text-xs font-semibold text-slate-200 backdrop-blur-md">
+                Active Tier: <span className="font-mono font-bold text-red-400">{verdictLimit ?? 2} verdicts</span> per screenshot
               </span>
             </div>
 
-            <div className="mt-6">
+            <div className="space-y-2 pt-2">
               <Progress
                 value={pct}
-                className="h-3 bg-white/20 [&>div]:bg-white [&>div]:transition-all [&>div]:duration-700"
+                className="h-3 bg-slate-800/80 rounded-full [&>div]:bg-gradient-to-r [&>div]:from-red-600 [&>div]:to-red-500 [&>div]:transition-all [&>div]:duration-700"
               />
-              <div className="mt-2 flex justify-between text-xs opacity-85">
-                <span>{pct}% of a {capacity}-credit top-up</span>
-                <span>{capacity} max</span>
+              <div className="flex justify-between text-xs font-mono text-slate-400 pt-1">
+                <span>{pct}% OF TOP-UP CAPACITY</span>
+                <span>{capacity} MAX CREDITS</span>
               </div>
             </div>
 
-            <div className="mt-7 flex flex-wrap items-center gap-3">
+            <div className="pt-4 flex flex-wrap items-center gap-4">
               <UpgradeDialog />
               {pending > 0 && (
-                <span className="text-xs opacity-85">
+                <span className="inline-flex items-center gap-2 text-xs font-mono font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3.5 py-1.5 rounded-full">
+                  <Clock className="size-3.5 animate-spin" />
                   {pending} payment{pending === 1 ? "" : "s"} awaiting approval
                 </span>
               )}
@@ -165,42 +179,92 @@ function CreditsPage() {
           </div>
         </section>
 
-        <div className="grid gap-5">
-          <MiniStat icon={Zap} label="Credits used" value={String(spent)} hint="Verdicts delivered so far" />
+        {/* Mini Stat Card */}
+        <div className="flex flex-col justify-between rounded-3xl bg-white border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow">
+          <div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest">
+                CREDITS CONSUMED
+              </span>
+              <div className="size-9 rounded-full bg-red-50 border border-red-200 flex items-center justify-center text-red-600">
+                <Zap className="size-4" />
+              </div>
+            </div>
+            <p className="mt-6 text-5xl font-black tracking-tight text-slate-950 font-sans">{spent}</p>
+            <p className="mt-2 text-xs text-slate-500 leading-relaxed font-normal">
+              Total verdict calculations delivered to your account since activation.
+            </p>
+          </div>
+
+          <div className="pt-8 border-t border-slate-100 flex items-center justify-between text-xs font-mono text-slate-500">
+            <span>CONSUMPTION RATE</span>
+            <span className="font-bold text-slate-950">1 CREDIT / SCAN</span>
+          </div>
         </div>
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        <section>
-          <h2 className="text-lg font-semibold text-foreground">Payment requests</h2>
-          <div className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
+      {/* Bottom Log Tables Grid */}
+      <div className="grid gap-8 lg:grid-cols-2">
+        {/* Payment Requests Section */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <span className="text-xs font-mono font-bold tracking-widest text-red-600 uppercase">
+                TRANSACTION AUDIT
+              </span>
+              <h2 className="text-xl font-bold uppercase tracking-tight text-slate-950">
+                PAYMENT REQUESTS
+              </h2>
+            </div>
+            {(payments ?? []).length > 0 && (
+              <span className="text-xs font-mono font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                {(payments ?? []).length} TOTAL
+              </span>
+            )}
+          </div>
+
+          <div className="divide-y divide-slate-100 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
             {(payments ?? []).length === 0 && (
-              <p className="p-5 text-sm text-muted-foreground">No payments submitted yet.</p>
+              <div className="p-8 text-center space-y-2">
+                <Coins className="mx-auto size-8 text-slate-300" />
+                <p className="text-sm font-medium text-slate-950">No payments submitted yet</p>
+                <p className="text-xs text-slate-500 max-w-xs mx-auto">
+                  Select a package above to purchase prediction scan credits via Mobile Money.
+                </p>
+              </div>
             )}
             {(payments ?? []).map((p) => (
-              <div key={p.id} className="flex items-start justify-between gap-3 p-4">
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    {ghs(p.amount_ghs)} · {p.credits} credits
-                  </p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
+              <div key={p.id} className="flex flex-wrap items-start justify-between gap-4 p-5 hover:bg-slate-50/80 transition-colors">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-base font-extrabold text-slate-950 font-sans">
+                      {ghs(p.amount_ghs)}
+                    </p>
+                    <span className="text-xs font-mono font-semibold text-red-600 bg-red-50 px-2.5 py-0.5 rounded-full border border-red-100">
+                      +{p.credits} CREDITS
+                    </span>
+                  </div>
+                  <p className="text-xs font-mono text-slate-500">
                     {p.method} · {p.reference}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-[11px] text-slate-400">
                     {new Date(p.created_at).toLocaleString()}
                   </p>
                   {p.admin_note && (
-                    <p className="mt-1 text-xs text-muted-foreground">Note: {p.admin_note}</p>
+                    <p className="mt-1 text-xs text-slate-600 bg-slate-50 border border-slate-200 p-2 rounded-xl">
+                      <span className="font-semibold text-slate-900">Admin Note:</span> {p.admin_note}
+                    </p>
                   )}
                 </div>
+
                 <Badge
                   className={cn(
-                    "font-bold uppercase tracking-wider text-[11px] px-2.5 py-0.5 shadow-xs border-transparent",
+                    "font-mono text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-2xs border-0",
                     p.status === "approved"
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      ? "bg-slate-950 text-white"
                       : p.status === "rejected"
-                        ? "bg-red-600 text-white hover:bg-red-700"
-                        : "bg-amber-500 text-white hover:bg-amber-600"
+                        ? "bg-red-600 text-white"
+                        : "bg-amber-500 text-white"
                   )}
                 >
                   {p.status}
@@ -210,24 +274,46 @@ function CreditsPage() {
           </div>
         </section>
 
-        <section>
-          <h2 className="text-lg font-semibold text-foreground">Credit ledger</h2>
-          <div className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
+        {/* Credit Ledger Section */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <span className="text-xs font-mono font-bold tracking-widest text-red-600 uppercase">
+                REALTIME LEDGER
+              </span>
+              <h2 className="text-xl font-bold uppercase tracking-tight text-slate-950">
+                CREDIT LEDGER
+              </h2>
+            </div>
+            {(history ?? []).length > 0 && (
+              <span className="text-xs font-mono font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                {(history ?? []).length} ENTRIES
+              </span>
+            )}
+          </div>
+
+          <div className="divide-y divide-slate-100 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
             {(history ?? []).length === 0 && (
-              <p className="p-5 text-sm text-muted-foreground">No credit activity yet.</p>
+              <div className="p-8 text-center space-y-2">
+                <Zap className="mx-auto size-8 text-slate-300" />
+                <p className="text-sm font-medium text-slate-950">No credit activity logged</p>
+                <p className="text-xs text-slate-500 max-w-xs mx-auto">
+                  Your credit additions and match scan deductions will appear here in real time.
+                </p>
+              </div>
             )}
             {(history ?? []).map((t) => (
-              <div key={t.id} className="flex items-center justify-between gap-3 p-4">
-                <div>
-                  <p className="text-sm text-foreground">{t.reason}</p>
-                  <p className="text-xs text-muted-foreground">
+              <div key={t.id} className="flex items-center justify-between gap-4 p-5 hover:bg-slate-50/80 transition-colors">
+                <div className="space-y-0.5">
+                  <p className="text-sm font-medium text-slate-900">{t.reason}</p>
+                  <p className="text-[11px] font-mono text-slate-400">
                     {new Date(t.created_at).toLocaleString()}
                   </p>
                 </div>
                 <span
                   className={cn(
-                    "text-sm font-semibold",
-                    t.delta > 0 ? "text-primary" : "text-muted-foreground",
+                    "text-base font-mono font-black",
+                    t.delta > 0 ? "text-red-600" : "text-slate-400",
                   )}
                 >
                   {t.delta > 0 ? "+" : ""}
@@ -238,29 +324,6 @@ function CreditsPage() {
           </div>
         </section>
       </div>
-    </>
-  );
-}
-
-function MiniStat({
-  icon: Icon,
-  label,
-  value,
-  hint,
-}: {
-  icon: typeof Zap;
-  label: string;
-  value: string;
-  hint: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-border bg-card p-5">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">{label}</p>
-        <Icon className="size-4 text-primary" />
-      </div>
-      <p className="mt-3 text-2xl font-bold tracking-tight text-foreground">{value}</p>
-      <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
     </div>
   );
 }
@@ -376,255 +439,293 @@ function UpgradeDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button size="lg" className="bg-white text-primary shadow-sm hover:bg-white/90">
-          Upgrade plan
-          <ArrowUpRight className="ml-1 size-4" />
+        <Button
+          size="lg"
+          className="bg-red-600 hover:bg-red-700 text-white rounded-full px-7 py-3.5 font-bold uppercase tracking-wider text-xs shadow-lg shadow-red-600/30 hover:shadow-xl hover:scale-[1.02] transition-all flex items-center gap-2 border-0 cursor-pointer"
+        >
+          Upgrade Plan Tiers
+          <ArrowUpRight className="size-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
-        <DialogHeader>
-          <DialogTitle>
-            {step === 1 ? "Choose your PREDICTA package" : step === 2 ? "Make your payment" : "Payment pending approval"}
+      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-4xl lg:max-w-5xl rounded-3xl bg-white border border-slate-200 p-6 sm:p-10 selection:bg-red-600 selection:text-white">
+        <DialogHeader className="space-y-2 text-left">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-200 text-red-600 font-mono text-[10px] font-bold tracking-widest uppercase w-fit">
+            PREDICTA BILLING CHECKOUT
+          </div>
+          <DialogTitle className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-slate-950">
+            {step === 1 ? "SELECT YOUR ACCESS TIER" : step === 2 ? "CONFIRM PAYMENT DETAILS" : "VERIFICATION IN PROGRESS"}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-slate-600 text-sm font-normal">
             {step === 1
-              ? "Step 1 of 3 — pick the plan that matches how many verdicts you want per screenshot."
+              ? "Step 1 of 3 — Pick the prediction scan capacity that fits your daily match frequency."
               : step === 2
-                ? "Step 2 of 3 — send the exact amount to the number below, then confirm your details."
-                : "Step 3 of 3 — we have received your submission."}
+                ? "Step 2 of 3 — Send exact amount via Mobile Money and enter your account sender name."
+                : "Step 3 of 3 — Payment logged and queued for instant admin approval."}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="mb-1 flex items-center gap-2">
+        {/* Step Indicator Bar */}
+        <div className="my-4 flex items-center gap-2">
           {[1, 2, 3].map((s) => (
-            <span
+            <div
               key={s}
               className={cn(
-                "h-1.5 flex-1 rounded-full transition-colors",
-                s <= step ? "bg-primary" : "bg-muted",
+                "h-2 flex-1 rounded-full transition-all duration-500",
+                s <= step ? "bg-red-600" : "bg-slate-100",
               )}
             />
           ))}
         </div>
 
+        {/* Step 1: Package Selection Cards Replicating Homepage Design */}
         {step === 1 && (
-        <div className="grid gap-4 sm:grid-cols-3">
-          {(packages ?? []).map((pkg) => {
-            const popular = pkg.is_popular === true;
-            return (
-              <button
-                key={pkg.id}
-                type="button"
-                onClick={() => {
-                  setSelected(pkg.id);
-                  setStep(2);
-                }}
-                className={cn(
-                  "group relative overflow-hidden rounded-2xl border-2 p-5 text-left transition-shadow duration-300",
-                  popular
-                    ? "border-primary/50 bg-gradient-to-br from-primary via-primary to-[#1D4ED8] text-primary-foreground shadow-[var(--shadow-soft)] hover:shadow-lg"
-                    : "border-border bg-card hover:border-primary/50 hover:shadow-[var(--shadow-soft)]",
-                )}
-              >
-                {popular && (
-                  <span className="pointer-events-none absolute -right-14 -top-14 size-40 rounded-full bg-white/15 blur-2xl" />
-                )}
-                <LogoSymbol
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch pt-4">
+            {(packages ?? []).map((pkg) => {
+              const popular = pkg.is_popular === true;
+              return (
+                <div
+                  key={pkg.id}
+                  onClick={() => {
+                    setSelected(pkg.id);
+                    setStep(2);
+                  }}
                   className={cn(
-                    "pointer-events-none absolute -right-5 -bottom-7 h-36 w-auto",
-                    popular ? "opacity-[0.16]" : "opacity-[0.07]",
+                    "rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 group cursor-pointer text-left relative",
+                    popular
+                      ? "bg-gradient-to-b from-slate-900 to-slate-950 text-white border-2 border-red-600 shadow-[0_20px_50px_rgba(228,24,39,0.25)] scale-[1.02]"
+                      : "bg-white text-slate-950 border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-slate-300"
                   )}
-                  aria-hidden
-                />
-                <div className="relative">
-                  <div className="flex items-center justify-between gap-2">
-                    <h3 className={cn("font-bold", popular ? "" : "text-foreground")}>{pkg.name}</h3>
-                    {popular && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
-                        <Sparkles className="size-3" /> Popular
-                      </span>
-                    )}
+                >
+                  {popular && (
+                    <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-red-600 text-white font-mono text-[10px] sm:text-[11px] font-bold tracking-widest uppercase px-4 py-1 rounded-full shadow-md whitespace-nowrap z-10">
+                      MOST POPULAR ACCESS
+                    </span>
+                  )}
+
+                  <div>
+                    <div className="space-y-2 pt-2">
+                      <h3 className="text-xs font-mono font-bold tracking-widest uppercase opacity-80">
+                        {pkg.name}
+                      </h3>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-4xl sm:text-5xl font-black tracking-tight font-sans">
+                          {ghs(pkg.price_ghs)}
+                        </span>
+                      </div>
+                      <p className="text-xs opacity-80 pt-1 font-mono">
+                        {pkg.credits} match scan credits
+                      </p>
+                    </div>
+
+                    <div
+                      className={cn(
+                        "mt-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-mono font-semibold",
+                        popular
+                          ? "bg-red-500/20 border border-red-500/30 text-red-300"
+                          : "bg-slate-100 border border-slate-200 text-slate-700"
+                      )}
+                    >
+                      <Zap className={cn("size-3.5", popular ? "text-red-400" : "text-red-600")} />
+                      {pkg.max_verdicts} verdict{pkg.max_verdicts === 1 ? "" : "s"} per scan
+                    </div>
+
+                    <div className={cn("my-6 border-t pt-5 space-y-2.5", popular ? "border-white/10" : "border-slate-100")}>
+                      {((pkg.perks as string[]) ?? []).map((perk) => (
+                        <div key={perk} className="flex items-center gap-2.5 text-xs font-medium">
+                          <Check className={cn("size-4 shrink-0", popular ? "text-red-500" : "text-red-600")} />
+                          <span className={popular ? "opacity-90" : "text-slate-600"}>{perk}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <p className={cn("mt-2 text-2xl font-extrabold tracking-tight", popular ? "" : "text-foreground")}>
-                    {ghs(pkg.price_ghs)}
-                  </p>
-                  <p className={cn("mt-1 text-sm", popular ? "opacity-85" : "text-muted-foreground")}>
-                    {pkg.credits} scan credits
-                  </p>
-                  <p
+
+                  <button
+                    type="button"
                     className={cn(
-                      "mt-2 inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
-                      popular ? "bg-white/20" : "bg-primary/10 text-primary",
+                      "w-full py-3.5 rounded-full font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 mt-4 cursor-pointer",
+                      popular
+                        ? "bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-600/30 group-hover:scale-[1.02]"
+                        : "bg-slate-950 group-hover:bg-red-600 text-white shadow-md"
                     )}
                   >
-                    {pkg.max_verdicts} verdict{pkg.max_verdicts === 1 ? "" : "s"} per screenshot
-                  </p>
-                  <ul className="mt-3 space-y-1.5">
-                    {((pkg.perks as string[]) ?? []).map((perk) => (
-                      <li
-                        key={perk}
-                        className={cn("flex gap-2 text-xs", popular ? "opacity-90" : "text-muted-foreground")}
-                      >
-                        <Check className={cn("mt-0.5 size-3.5 shrink-0", popular ? "" : "text-primary")} />
-                        {perk}
-                      </li>
-                    ))}
-                  </ul>
-                  <span
-                    className={cn(
-                      "mt-4 inline-flex items-center gap-1 text-xs font-semibold",
-                      popular ? "" : "text-primary",
-                    )}
-                  >
-                    Choose {pkg.name} <ArrowUpRight className="size-3.5" />
-                  </span>
+                    Choose {pkg.name}
+                    <ArrowUpRight className="size-4" />
+                  </button>
                 </div>
-              </button>
-            );
-          })}
-          {(packages ?? []).length === 0 && (
-            <p className="text-sm text-muted-foreground">No packages available right now.</p>
-          )}
-        </div>
-        )}
-
-        {step === 2 && pkg && (
-        <form
-          className="mt-2 grid gap-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            submit.mutate();
-          }}
-        >
-          <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary to-[#1D4ED8] p-5 text-primary-foreground">
-            <LogoWatermark className="h-52 sm:h-60" />
-            <div className="relative flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide opacity-80">{pkg.name} plan</p>
-                <p className="mt-1 text-3xl font-extrabold tracking-tight">{ghs(pkg.price_ghs)}</p>
-              </div>
-              <p className="text-xs opacity-90">
-                {pkg.credits} credits · {pkg.max_verdicts} verdict{pkg.max_verdicts === 1 ? "" : "s"} per screenshot
+              );
+            })}
+            {(packages ?? []).length === 0 && (
+              <p className="text-sm text-slate-500 col-span-3 text-center py-8">
+                No access packages configured in backend.
               </p>
-            </div>
-          </div>
-
-          <div className="relative grid gap-3 overflow-hidden rounded-2xl border border-border bg-card p-5">
-            <LogoSymbol
-              className="pointer-events-none absolute -right-4 -bottom-6 h-28 w-auto opacity-[0.06]"
-              aria-hidden
-            />
-            <div className="relative flex items-center justify-between gap-3 rounded-xl bg-secondary/50 p-3">
-              <div>
-                <p className="text-xs text-muted-foreground">Pay to ({settings?.network ?? "MoMo"})</p>
-                <p className="text-lg font-bold tracking-tight text-foreground">
-                  {settings?.momo_number ?? "—"}
-                </p>
-              </div>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                className="min-w-[90px] transition-all"
-                onClick={handleCopyMomo}
-              >
-                {momoCopied ? (
-                  <span className="flex items-center gap-1.5 font-bold text-emerald-600 animate-in zoom-in-75 duration-200">
-                    <Check className="size-3.5 stroke-[3]" /> Copied!
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1.5">
-                    <Copy className="size-3.5" /> Copy
-                  </span>
-                )}
-              </Button>
-            </div>
-            <div className="relative">
-              <p className="text-xs text-muted-foreground">Recipient name</p>
-              <p className="text-sm font-medium text-foreground">{settings?.recipient_name ?? "—"}</p>
-            </div>
-            {settings?.instructions && (
-              <p className="relative text-xs text-muted-foreground">{settings.instructions}</p>
             )}
           </div>
-
-          <div className="grid gap-4 rounded-2xl border border-border bg-muted/30 p-5 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Payment method</Label>
-              <div className="flex h-10 items-center rounded-lg border border-border bg-secondary/60 px-3">
-                <span className="text-sm font-semibold text-foreground">{method}</span>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="sender">Your MoMo name</Label>
-              <Input
-                id="sender"
-                value={senderName}
-                maxLength={80}
-                onChange={(e) => setSenderName(e.target.value)}
-                placeholder="Name on the account you paid from"
-                required
-              />
-            </div>
-
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Button type="button" variant="outline" onClick={() => setStep(1)}>
-              <ArrowLeft className="mr-1 size-4" /> Previous
-            </Button>
-            <Button type="submit" className="flex-1" disabled={submit.isPending}>
-              {submit.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
-              I have paid
-            </Button>
-          </div>
-        </form>
         )}
 
-        {step === 3 && (
-          <div className="animate-verdict relative mt-2 overflow-hidden rounded-2xl border border-border bg-card p-6 text-center">
-            <LogoSymbol
-              className="pointer-events-none absolute -right-6 -bottom-8 h-40 w-auto opacity-[0.06]"
-              aria-hidden
-            />
-            <span className="relative mx-auto flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
-              {!approved && !rejected && (
-                <span className="absolute inset-0 rounded-full bg-primary/20 animate-pulse-ring" aria-hidden />
-              )}
-              {approved ? <Check className="relative size-7" /> : <Clock className="relative size-7" />}
-            </span>
-            <h3 className="relative mt-4 text-lg font-bold text-foreground">
-              {approved
-                ? "Payment approved"
-                : rejected
-                  ? "Payment declined"
-                  : "Waiting approval"}
-            </h3>
-            <p className="relative mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-              {approved
-                ? "Your credits have landed. Taking you to a new analysis…"
-                : rejected
-                  ? livePayment?.admin_note || "Please check your payment details and submit again."
-                  : "Your payment is being verified against the MoMo name you provided. This updates live — no need to reload."}
-            </p>
+        {/* Step 2: Payment Details Form */}
+        {step === 2 && pkg && (
+          <form
+            className="mt-4 space-y-6"
+            onSubmit={(e) => {
+              e.preventDefault();
+              submit.mutate();
+            }}
+          >
+            {/* Selected Package Banner */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white p-6 border border-slate-800 shadow-md">
+              <LogoWatermark className="opacity-[0.05] text-white" />
+              <div className="relative z-10 flex flex-wrap items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono font-bold tracking-widest text-red-500 uppercase">
+                    SELECTED PACKAGE
+                  </span>
+                  <h3 className="text-2xl font-black tracking-tight text-white uppercase">{pkg.name} ACCESS</h3>
+                  <p className="text-xs text-slate-400 font-mono">
+                    {pkg.credits} scan credits · Up to {pkg.max_verdicts} verdicts per scan
+                  </p>
+                </div>
+                <div className="text-right">
+                  <span className="text-3xl font-black tracking-tight text-white">{ghs(pkg.price_ghs)}</span>
+                </div>
+              </div>
+            </div>
 
-            <dl className="relative mx-auto mt-6 grid max-w-md gap-2 rounded-xl border border-border bg-muted/30 p-4 text-left text-sm">
-              <Row label="Package" value={pkg ? `${pkg.name} · ${ghs(pkg.price_ghs)}` : "—"} />
-              <Row label="Credits" value={pkg ? `${pkg.credits} credits` : "—"} />
+            {/* Payment Recipient Info Box */}
+            <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-6 space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200">
+                <div>
+                  <p className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest">
+                    PAY TO ({settings?.network ?? "MOBILE MONEY"})
+                  </p>
+                  <p className="text-2xl font-black tracking-tight text-slate-950 font-mono mt-0.5">
+                    {settings?.momo_number ?? "—"}
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  onClick={handleCopyMomo}
+                  className="bg-red-600 hover:bg-slate-950 text-white font-mono text-xs font-bold rounded-full px-5 py-2.5 flex items-center gap-2 shadow-md shadow-red-600/20 transition-all cursor-pointer border-0"
+                >
+                  {momoCopied ? (
+                    <span className="flex items-center gap-1.5 font-bold">
+                      <Check className="size-4" /> Copied!
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5">
+                      <Copy className="size-4" /> Copy Number
+                    </span>
+                  )}
+                </Button>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4 pt-1">
+                <div>
+                  <p className="text-xs font-mono text-slate-500 uppercase tracking-widest">ACCOUNT NAME</p>
+                  <p className="text-sm font-extrabold text-slate-950 mt-0.5">{settings?.recipient_name ?? "—"}</p>
+                </div>
+                {settings?.instructions && (
+                  <div>
+                    <p className="text-xs font-mono text-slate-500 uppercase tracking-widest">INSTRUCTIONS</p>
+                    <p className="text-xs text-slate-600 mt-0.5">{settings.instructions}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* User Input Section */}
+            <div className="grid gap-4 sm:grid-cols-2 rounded-3xl border border-slate-200 bg-white p-6">
+              <div className="space-y-2">
+                <Label className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
+                  Payment Method
+                </Label>
+                <div className="flex h-12 items-center rounded-xl border border-slate-200 bg-slate-50 px-4">
+                  <span className="text-sm font-bold text-slate-900 font-mono">{method}</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="sender" className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
+                  Your MoMo Account Name
+                </Label>
+                <Input
+                  id="sender"
+                  value={senderName}
+                  maxLength={80}
+                  onChange={(e) => setSenderName(e.target.value)}
+                  placeholder="Name registered on the paying MoMo account"
+                  className="h-12 rounded-xl border-slate-200 focus:border-red-600 focus:ring-red-600/20 text-sm font-medium"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-4 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setStep(1)}
+                className="rounded-full border-slate-300 font-bold uppercase tracking-wider text-xs px-6 py-3.5 h-auto hover:bg-slate-100"
+              >
+                <ArrowLeft className="mr-1.5 size-4" /> Change Package
+              </Button>
+              <Button
+                type="submit"
+                disabled={submit.isPending}
+                className="flex-1 rounded-full bg-red-600 hover:bg-slate-950 text-white font-bold uppercase tracking-wider text-xs px-8 py-3.5 h-auto shadow-lg shadow-red-600/25 transition-all border-0 cursor-pointer"
+              >
+                {submit.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
+                Confirm & Submit Payment
+              </Button>
+            </div>
+          </form>
+        )}
+
+        {/* Step 3: Status / Verification Box */}
+        {step === 3 && (
+          <div className="mt-4 rounded-3xl border border-slate-200 bg-slate-50 p-8 text-center space-y-6 relative overflow-hidden">
+            <LogoSymbol className="pointer-events-none absolute right-4 bottom-4 h-32 w-auto opacity-[0.04] text-slate-950" aria-hidden />
+
+            <div className="relative mx-auto flex size-16 items-center justify-center rounded-full bg-red-50 text-red-600 border border-red-200 shadow-sm">
+              {!approved && !rejected && (
+                <span className="absolute inset-0 rounded-full bg-red-600/20 animate-ping" aria-hidden />
+              )}
+              {approved ? <Check className="relative size-8 text-emerald-600" /> : <Clock className="relative size-8 text-red-600" />}
+            </div>
+
+            <div className="space-y-2 max-w-md mx-auto">
+              <h3 className="text-2xl font-black uppercase tracking-tight text-slate-950">
+                {approved
+                  ? "PAYMENT APPROVED!"
+                  : rejected
+                    ? "PAYMENT DECLINED"
+                    : "VERIFYING PAYMENT"}
+              </h3>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                {approved
+                  ? "Your credits have been credited to your vault. Redirecting to analysis..."
+                  : rejected
+                    ? livePayment?.admin_note || "Please check your transaction details and re-submit."
+                    : "Your MoMo transaction is being matched against our admin ledger. This status updates automatically."}
+              </p>
+            </div>
+
+            <dl className="mx-auto max-w-md gap-3 rounded-2xl border border-slate-200 bg-white p-5 text-left text-xs space-y-3 shadow-2xs font-mono">
+              <Row label="PACKAGE" value={pkg ? `${pkg.name} (${ghs(pkg.price_ghs)})` : "—"} />
+              <Row label="CREDITS TO ADD" value={pkg ? `+${pkg.credits} Credits` : "—"} />
+              <Row label="PAYMENT METHOD" value={method} />
+              <Row label="MOMO SENDER" value={senderName} />
               <Row
-                label="Verdicts / scan"
-                value={pkg ? String(pkg.max_verdicts) : "—"}
-              />
-              <Row label="Method" value={method} />
-              <Row label="MoMo name" value={senderName} />
-              <Row
-                label="Status"
-                value={approved ? "Approved" : rejected ? "Declined" : "Pending approval"}
+                label="VERIFICATION STATUS"
+                value={approved ? "APPROVED" : rejected ? "DECLINED" : "PENDING ADMIN MATCH"}
               />
             </dl>
 
             {rejected && (
-              <Button className="relative mt-6" onClick={() => reset()}>
-                <ArrowLeft className="mr-1 size-4" /> Choose a package again
+              <Button
+                onClick={() => reset()}
+                className="rounded-full bg-slate-950 hover:bg-red-600 text-white font-bold uppercase tracking-wider text-xs px-8 py-3.5 border-0 cursor-pointer shadow-md"
+              >
+                <ArrowLeft className="mr-2 size-4" /> Try Again
               </Button>
             )}
           </div>
@@ -636,9 +737,10 @@ function UpgradeDialog() {
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-start justify-between gap-3">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className="text-right font-medium text-foreground">{value || "—"}</dd>
+    <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-2 last:border-0 last:pb-0">
+      <dt className="text-slate-400 font-bold">{label}</dt>
+      <dd className="text-right font-bold text-slate-900">{value || "—"}</dd>
     </div>
   );
 }
+

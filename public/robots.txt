@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://virtu-iq.lovable.app/sitemap.xml
+Sitemap: https://predicta.live/sitemap.xml

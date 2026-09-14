@@ -1,4 +1,4 @@
-﻿import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
@@ -11,7 +11,7 @@ import { Component, useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { SplashScreen } from "../components/SplashScreen";
+
 import { Toaster } from "../components/ui/sonner";
 import { supabase } from "../integrations/supabase/client";
 
@@ -85,8 +85,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "PREDICTA â€” AI Visual Analytics" },
+      { name: "viewport", content: "width=device-width, initial-scale=1.0, viewport-fit=cover" },
+      { title: "PREDICTA — AI Visual Analytics" },
       {
         name: "description",
         content:
@@ -155,6 +155,77 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        {/* Splash screen: pure HTML/CSS/JS — no React dependency, no hydration issues */}
+        <div
+          id="predicta-splash"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 99999,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#ffffff",
+            transition: "opacity 0.3s ease-out, transform 0.3s ease-out",
+            cursor: "pointer",
+          }}
+        >
+          <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
+            <div style={{ position: "relative", overflow: "hidden", padding: "8px 16px", borderRadius: "12px" }}>
+              <img
+                src="/predicta-wordmark.png"
+                alt="PREDICTA"
+                style={{ height: "40px", width: "auto", objectFit: "contain", userSelect: "none" }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "linear-gradient(to right, transparent, rgba(255,255,255,0.85), rgba(220,38,38,0.15), transparent)",
+                  animation: "shimmer-wave 4s cubic-bezier(0.4,0,0.2,1) infinite",
+                  transform: "translateX(-160%) skewX(-25deg)",
+                  pointerEvents: "none",
+                }}
+              />
+            </div>
+            <div style={{ position: "relative", height: "2px", width: "160px", overflow: "hidden", borderRadius: "9999px", backgroundColor: "#f1f5f9", marginTop: "4px" }}>
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, transparent, #dc2626, transparent)", animation: "shimmer-wave 4s cubic-bezier(0.4,0,0.2,1) infinite" }} />
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
+              <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#dc2626", boxShadow: "0 0 8px #e41827", animation: "pulse 2s ease-in-out infinite" }} />
+              <span style={{ fontSize: "10px", fontFamily: "monospace", letterSpacing: "0.25em", color: "#94a3b8", textTransform: "uppercase", fontWeight: 600 }}>
+                AI VISION ENGINE
+              </span>
+            </div>
+          </div>
+        </div>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+(function(){
+  var el = document.getElementById('predicta-splash');
+  if (!el) return;
+  // Already seen: hide immediately before paint
+  try { if (localStorage.getItem('predicta-splash') === '1') { el.style.display = 'none'; return; } } catch(e) {}
+  // First visit: show for 1.2s, fade out, then remove
+  function dismiss() {
+    if (el._done) return;
+    el._done = true;
+    el.style.opacity = '0';
+    el.style.transform = 'scale(1.02)';
+    el.style.pointerEvents = 'none';
+    setTimeout(function() { el.style.display = 'none'; }, 350);
+    try { localStorage.setItem('predicta-splash', '1'); } catch(e) {}
+  }
+  el.addEventListener('click', dismiss);
+  setTimeout(dismiss, 1200);
+  // Hard safety fallback
+  setTimeout(function() { el.style.display = 'none'; }, 3000);
+})();
+`,
+          }}
+        />
         {children}
         <Scripts />
       </body>
@@ -177,7 +248,6 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SplashScreen />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <AppErrorBoundary>
         <Outlet />

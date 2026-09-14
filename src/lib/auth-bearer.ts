@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 
-const LEGACY_BACKEND_URL = "https://qxpbmeebpydrhltgbwn.supabase.co";
+const LEGACY_BACKEND_URL = "https://qxpbmeebpjdrhlthgbwn.supabase.co";
 const LEGACY_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4cGJtZWVicGpkcmhsdGhnYnduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxNDY4OTYsImV4cCI6MjEwNDcyMjg5Nn0.CxTgclaRhnU4f6ZmZI4pE2rQGH-hJkbHLvoCLmgPF-8";
 
 /**
@@ -37,7 +37,15 @@ function readTokenIssuer(token: string): string | null {
     const payloadPart = token.split(".")[1];
     if (!payloadPart) return null;
     const normalized = payloadPart.replace(/-/g, "+").replace(/_/g, "/");
-    const payload = JSON.parse(Buffer.from(normalized, "base64").toString("utf8")) as { iss?: unknown };
+    let jsonStr = "";
+    if (typeof atob !== "undefined") {
+      jsonStr = atob(normalized);
+    } else if (typeof Buffer !== "undefined") {
+      jsonStr = Buffer.from(normalized, "base64").toString("utf8");
+    } else {
+      return null;
+    }
+    const payload = JSON.parse(jsonStr) as { iss?: unknown };
     return typeof payload.iss === "string" ? payload.iss.replace(/\/auth\/v1\/?$/, "") : null;
   } catch {
     return null;
@@ -60,7 +68,7 @@ export const requireAnalysisAuth = createMiddleware({ type: "function" })
     if (token.split(".").length !== 3) throw new Error("Your session has expired. Please sign in again.");
 
     const issuerUrl = readTokenIssuer(token);
-    const configuredUrl = process.env["SUPABASE_URL"] || process.env["VITE_SUPABASE_URL"] || "https://qxpbmeebpydrhltgbwn.supabase.co";
+    const configuredUrl = process.env["SUPABASE_URL"] || process.env["VITE_SUPABASE_URL"] || "https://qxpbmeebpjdrhlthgbwn.supabase.co";
     const configuredKey =
       process.env["SUPABASE_PUBLISHABLE_KEY"] || process.env["VITE_SUPABASE_PUBLISHABLE_KEY"] || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4cGJtZWVicGpkcmhsdGhnYnduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxNDY4OTYsImV4cCI6MjEwNDcyMjg5Nn0.CxTgclaRhnU4f6ZmZI4pE2rQGH-hJkbHLvoCLmgPF-8";
     const backendUrl = issuerUrl === LEGACY_BACKEND_URL ? LEGACY_BACKEND_URL : configuredUrl;

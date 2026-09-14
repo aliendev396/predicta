@@ -96,83 +96,83 @@ function PartnerApplyPage() {
   });
 
   return (
-    <main className="mx-auto w-full max-w-xl">
-      <div className="flex justify-center">
-        <LogoFull className="h-7" />
+    <main className="mx-auto w-full max-w-2xl py-8 selection:bg-red-600 selection:text-white">
+      <div className="flex justify-center mb-6">
+        <LogoFull className="h-8 w-auto" />
       </div>
 
       {status === "rejected" ? (
-        <section className="relative mt-8 overflow-hidden rounded-2xl border border-destructive/30 bg-card p-8 text-center">
-          <ShieldX className="mx-auto size-12 text-destructive" />
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-destructive">REJECTED</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Sorry, you can&apos;t be a partner.
+        <section className="relative mt-6 overflow-hidden rounded-3xl border-2 border-red-200 bg-red-50 p-8 sm:p-10 text-center space-y-4 shadow-sm">
+          <ShieldX className="mx-auto size-12 text-red-600" />
+          <h1 className="text-3xl font-black uppercase tracking-tight text-red-900">APPLICATION DECLINED</h1>
+          <p className="text-sm text-red-700 max-w-md mx-auto">
+            Unfortunately, your partner application could not be approved at this time.
           </p>
           {application?.admin_note && (
-            <p className="mt-3 rounded-lg bg-secondary/60 px-3 py-2 text-xs text-muted-foreground">
-              {application.admin_note}
+            <p className="mt-2 rounded-2xl bg-white border border-red-200 p-4 text-xs font-mono text-slate-700 max-w-md mx-auto">
+              <span className="font-bold text-red-900">Admin Note:</span> {application.admin_note}
             </p>
           )}
           <Button
             variant="outline"
-            className="mt-6"
+            className="mt-4 rounded-full border-red-300 text-red-900 hover:bg-red-600 hover:text-white font-mono text-xs font-bold uppercase tracking-wider px-8 py-3"
             onClick={() => void supabase.auth.signOut().then(() => navigate({ to: "/login" }))}
           >
-            Sign out
+            Sign Out
           </Button>
         </section>
       ) : status === "approved" ? (
-        <section className="relative mt-8 overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary via-primary to-[#1D4ED8] p-8 text-center text-primary-foreground">
-          <LogoWatermark className="h-52 sm:h-64" />
-          <CheckCircle2 className="relative mx-auto size-12" />
-          <h1 className="relative mt-4 text-2xl font-bold tracking-tight">Accepted</h1>
-          <p className="relative mt-2 text-sm opacity-90">
-            Welcome aboard — opening your partner dashboard…
+        <section className="relative mt-6 overflow-hidden rounded-3xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-slate-800 p-8 sm:p-10 text-center text-white shadow-2xl space-y-4">
+          <LogoWatermark className="opacity-[0.05] text-white" />
+          <CheckCircle2 className="relative mx-auto size-12 text-emerald-400" />
+          <h1 className="relative text-3xl font-black uppercase tracking-tight">APPLICATION APPROVED!</h1>
+          <p className="relative text-sm text-slate-300 font-mono">
+            Welcome to the PREDICTA Partner Network — launching your dashboard…
           </p>
         </section>
       ) : status === "pending" ? (
-        <section className="relative mt-8 overflow-hidden rounded-2xl border border-amber-200 bg-amber-50/60 dark:border-amber-900/40 dark:bg-amber-950/20 p-8 text-center">
-          <LogoSymbol className="pointer-events-none absolute -right-6 -bottom-8 h-40 w-auto opacity-[0.06]" aria-hidden />
-          {/* Animated waiting indicator */}
-          <div className="relative mx-auto mb-5 flex size-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/40">
-            <Loader2 className="size-8 animate-spin text-amber-600 dark:text-amber-400" />
+        <section className="relative mt-6 overflow-hidden rounded-3xl border border-amber-200 bg-amber-50/80 p-8 sm:p-10 text-center space-y-6 shadow-sm">
+          <LogoSymbol className="pointer-events-none absolute -right-6 -bottom-8 h-44 w-auto opacity-[0.04] text-amber-950" aria-hidden />
+
+          <div className="relative mx-auto flex size-16 items-center justify-center rounded-full bg-amber-100 border border-amber-200 shadow-2xs text-amber-700">
+            <Loader2 className="size-8 animate-spin" />
           </div>
-          <h1 className="relative text-xl font-bold tracking-tight text-amber-800 dark:text-amber-300">
-            Application under review
-          </h1>
-          <p className="relative mt-2 text-sm leading-relaxed text-amber-700/80 dark:text-amber-400/80">
-            Your partner application has been submitted and is being reviewed by our team.
-            You&apos;ll get instant access to your partner dashboard the moment you&apos;re approved —
-            no need to refresh this page.
-          </p>
-          {/* What happens next */}
-          <div className="relative mt-6 space-y-3 rounded-xl border border-amber-200 bg-white/70 dark:border-amber-800/40 dark:bg-amber-950/30 p-4 text-left">
-            <p className="text-xs font-semibold uppercase tracking-widest text-amber-700 dark:text-amber-400">
-              What happens next
+
+          <div className="space-y-2 max-w-md mx-auto">
+            <span className="inline-flex items-center gap-2 rounded-full bg-amber-100 border border-amber-200 px-3.5 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-amber-900">
+              REAL-TIME APPROVAL QUEUE
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-amber-950">
+              APPLICATION UNDER REVIEW
+            </h1>
+            <p className="text-xs text-amber-800 leading-relaxed font-normal">
+              Your partner application is logged and pending admin verification. Access unlocks automatically upon approval — no need to refresh.
+            </p>
+          </div>
+
+          <div className="relative max-w-md mx-auto space-y-3 rounded-2xl border border-amber-200 bg-white p-5 text-left font-mono">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-amber-900">
+              APPROVAL PROGRESSION
             </p>
             <div className="space-y-2.5">
               {[
                 { done: true, label: "Account created & fee waived" },
-                { done: true, label: "Application submitted for review" },
-                { done: false, label: "Admin approves your application" },
-                { done: false, label: "Partner dashboard unlocked automatically" },
+                { done: true, label: "Application submitted to queue" },
+                { done: false, label: "Admin approves application" },
+                { done: false, label: "Partner hub unlocked" },
               ].map(({ done, label }, i) => (
-                <div key={i} className="flex items-center gap-3 text-sm">
+                <div key={i} className="flex items-center gap-3 text-xs">
                   <span
                     className={cn(
                       "flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold",
-                      done
-                        ? "bg-emerald-500 text-white"
-                        : "bg-amber-200 text-amber-700 dark:bg-amber-800 dark:text-amber-300",
+                      done ? "bg-slate-950 text-white" : "bg-amber-100 text-amber-800 border border-amber-300",
                     )}
                   >
                     {done ? "✓" : i + 1}
                   </span>
                   <span
                     className={cn(
-                      done
-                        ? "text-emerald-700 dark:text-emerald-400 line-through"
-                        : "text-foreground font-medium",
+                      done ? "text-slate-400 line-through" : "text-slate-900 font-bold",
                     )}
                   >
                     {label}
@@ -181,81 +181,100 @@ function PartnerApplyPage() {
               ))}
             </div>
           </div>
-          <p className="relative mt-5 text-xs text-muted-foreground">
-            This page updates in real time. You can safely leave and come back.
-          </p>
         </section>
       ) : (
-        <section className="relative mt-8 overflow-hidden rounded-2xl border border-border bg-card p-6 sm:p-8">
-          <LogoSymbol className="pointer-events-none absolute -right-6 -bottom-10 h-44 w-auto opacity-[0.05]" aria-hidden />
-          <div className="relative">
-            <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
-              <Handshake className="size-3.5" /> Partner application
-            </span>
-            <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">
-              Apply to partner with PREDICTA
-            </h1>
-            <p className="mt-1.5 text-sm text-muted-foreground">
-              No registration fee for partners. Once approved you get your own referral link and dashboard.
-            </p>
+        <section className="relative mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 sm:p-10 shadow-sm space-y-6">
+          <LogoSymbol className="pointer-events-none absolute -right-6 -bottom-10 h-44 w-auto opacity-[0.04] text-slate-950" aria-hidden />
 
-            <form
-              className="mt-6 space-y-4"
-              onSubmit={(e) => {
-                e.preventDefault();
-                submit.mutate();
-              }}
-            >
-              <div className="space-y-2">
-                <Label htmlFor="audience">Your audience</Label>
-                <Input
-                  id="audience"
-                  value={audience}
-                  onChange={(e) => setAudience(e.target.value)}
-                  placeholder="e.g. 4,000 followers on a football tips channel"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="motivation">Why do you want to be a partner?</Label>
-                <Textarea
-                  id="motivation"
-                  rows={4}
-                  value={motivation}
-                  onChange={(e) => setMotivation(e.target.value)}
-                  placeholder="How you plan to introduce PREDICTA to your people"
-                  required
-                />
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="payout-method">Payout method</Label>
-                  <Input
-                    id="payout-method"
-                    value={payoutMethod}
-                    onChange={(e) => setPayoutMethod(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="payout-details">Payout number / account</Label>
-                  <Input
-                    id="payout-details"
-                    value={payoutDetails}
-                    onChange={(e) => setPayoutDetails(e.target.value)}
-                    placeholder="024 000 0000"
-                    required
-                  />
-                </div>
-              </div>
-              <Button type="submit" className="w-full" disabled={submit.isPending || isLoading}>
-                {submit.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
-                Submit application
-              </Button>
-            </form>
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-2 rounded-full bg-red-50 border border-red-200 px-3.5 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-red-600">
+              <Handshake className="size-3.5" /> AFFILIATE ONBOARDING
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-slate-950">
+              APPLY FOR PREDICTA PARTNERSHIP
+            </h1>
+            <p className="text-xs text-slate-500 leading-relaxed font-normal">
+              No registration fee required. Earn ongoing commission for every member you refer to PREDICTA.
+            </p>
           </div>
+
+          <form
+            className="space-y-5"
+            onSubmit={(e) => {
+              e.preventDefault();
+              submit.mutate();
+            }}
+          >
+            <div className="space-y-2">
+              <Label className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
+                Your Audience & Platform
+              </Label>
+              <Input
+                id="audience"
+                value={audience}
+                onChange={(e) => setAudience(e.target.value)}
+                placeholder="e.g. 5,000 members in Telegram virtual tips group"
+                className="h-12 rounded-xl border-slate-200 focus:border-red-600 focus:ring-red-600/20 text-sm font-medium"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
+                Promotion Plan & Strategy
+              </Label>
+              <Textarea
+                id="motivation"
+                rows={4}
+                value={motivation}
+                onChange={(e) => setMotivation(e.target.value)}
+                placeholder="Describe how you plan to introduce PREDICTA to your audience"
+                className="rounded-xl border-slate-200 focus:border-red-600 focus:ring-red-600/20 text-sm font-medium"
+                required
+              />
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
+                  Preferred Payout Method
+                </Label>
+                <Input
+                  id="payout-method"
+                  value={payoutMethod}
+                  onChange={(e) => setPayoutMethod(e.target.value)}
+                  className="h-12 rounded-xl border-slate-200 focus:border-red-600 focus:ring-red-600/20 text-sm font-mono font-bold"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
+                  Payout Mobile Money Number
+                </Label>
+                <Input
+                  id="payout-details"
+                  value={payoutDetails}
+                  onChange={(e) => setPayoutDetails(e.target.value)}
+                  placeholder="e.g. 059 000 0000"
+                  className="h-12 rounded-xl border-slate-200 focus:border-red-600 focus:ring-red-600/20 text-sm font-mono font-bold"
+                  required
+                />
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={submit.isPending || isLoading}
+              className="w-full rounded-full bg-red-600 hover:bg-slate-950 text-white font-bold uppercase tracking-wider text-xs py-4 shadow-lg shadow-red-600/25 transition-all border-0 cursor-pointer"
+            >
+              {submit.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
+              Submit Partner Application
+            </Button>
+          </form>
         </section>
       )}
     </main>
   );
 }
+

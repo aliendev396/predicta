@@ -19,97 +19,44 @@ export function LegalHeroBanner({
   description,
 }: LegalHeroBannerProps) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#B50D19] via-[#E41827] to-[#7F0A12] py-14 sm:py-20 text-white border-b border-red-900/60 shadow-inner">
-      {/* Dynamic Animated Grid Pattern */}
+    <section className="relative overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-16 sm:py-24 text-white border-b border-slate-800 shadow-2xl">
+      {/* Ambient Red Glow Blur */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.14] bg-[radial-gradient(#ffffff_1.2px,transparent_1.2px)] [background-size:28px_28px] animate-grid-drift"
+        className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 size-96 rounded-full bg-red-600/15 blur-[120px]"
         aria-hidden="true"
       />
 
-      {/* Floating Glowing Ambient Orbs */}
+      {/* Decorative Logo Watermark */}
       <div
-        className="pointer-events-none absolute -top-24 -left-24 size-96 rounded-full bg-white/20 blur-3xl animate-pulse"
-        style={{ animationDuration: "7s" }}
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute top-1/2 -right-32 size-96 rounded-full bg-black/40 blur-3xl animate-pulse"
-        style={{ animationDuration: "9s" }}
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute -bottom-20 left-1/4 size-80 rounded-full bg-white/15 blur-2xl animate-pulse"
-        style={{ animationDuration: "6s" }}
-        aria-hidden="true"
-      />
-
-      {/* Large Decorative Faint Logo Watermark with Drift Animation */}
-      <div
-        className="pointer-events-none absolute -top-12 -right-12 h-96 w-96 opacity-[0.08] animate-logo-drift select-none"
+        className="pointer-events-none absolute -top-12 -right-12 h-96 w-96 opacity-[0.06] select-none"
         aria-hidden="true"
       >
-        <LogoSymbol className="h-full w-full brightness-0 invert" />
-      </div>
-      <div
-        className="pointer-events-none absolute -bottom-16 -left-12 h-80 w-80 opacity-[0.06] -rotate-12 select-none"
-        aria-hidden="true"
-      >
-        <LogoSymbol className="h-full w-full brightness-0 invert" />
-      </div>
-
-      {/* Ambient Glowing Tech Rings */}
-      <div
-        className="pointer-events-none absolute top-1/3 left-1/10 size-64 rounded-full border border-white/10 opacity-30 animate-pulse-ring"
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute bottom-1/4 right-1/10 size-72 rounded-full border border-white/10 opacity-20 animate-pulse-ring"
-        style={{ animationDelay: "1s" }}
-        aria-hidden="true"
-      />
-
-      {/* Futuristic Floating Particles / Sparkles */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <span
-          className="absolute top-1/4 left-[15%] size-2 rounded-full bg-white/50 blur-[1px] animate-ping"
-          style={{ animationDuration: "3s" }}
-        />
-        <span
-          className="absolute top-3/4 left-[10%] size-1.5 rounded-full bg-white/60 blur-[1px] animate-ping"
-          style={{ animationDuration: "4.5s" }}
-        />
-        <span
-          className="absolute top-1/3 right-[18%] size-2 rounded-full bg-white/50 blur-[1px] animate-ping"
-          style={{ animationDuration: "3.8s" }}
-        />
-        <span
-          className="absolute top-2/3 right-[12%] size-1.5 rounded-full bg-white/40 blur-[1px] animate-ping"
-          style={{ animationDuration: "5s" }}
-        />
+        <LogoSymbol className="h-full w-full text-white" />
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6">
+      <div className="relative z-10 mx-auto max-w-4xl px-5 sm:px-8">
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-white/80 hover:text-white mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-widest text-slate-400 hover:text-red-500 mb-8 transition-colors"
         >
-          <ArrowLeft className="size-3.5" /> Back to Home
+          <ArrowLeft className="size-3.5" /> Back to PREDICTA Home
         </Link>
-        <div className="flex flex-wrap items-center gap-2 mb-3">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 border border-white/30 px-3 py-1 text-xs font-mono font-bold text-white shadow-sm backdrop-blur-xs">
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          <span className="inline-flex items-center gap-2 rounded-full bg-red-600/15 border border-red-500/30 px-3.5 py-1 text-[10px] font-mono font-bold text-red-400 uppercase tracking-widest">
             {badgeIcon}
             {badgeText}
           </span>
-          <span className="text-xs text-white/70 font-mono">{lastUpdated}</span>
+          <span className="text-xs text-slate-400 font-mono">{lastUpdated}</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white drop-shadow-md">
+        <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white font-sans">
           {title}
         </h1>
-        <p className="mt-3 text-sm sm:text-base text-white/90 max-w-2xl leading-relaxed">
+        <p className="mt-4 text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed font-normal">
           {description}
         </p>
       </div>
     </section>
   );
 }
+

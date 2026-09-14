@@ -1,18 +1,18 @@
-# Virtu-IQ Insights
+# PREDICTA Platform
 
-Virtu-IQ — Complete Lovable PWA Build Prompt
+PREDICTA — Instant Virtuals Outcome Engine
 
-Build a production-quality Progressive Web App called Virtu-IQ.
+Build a production-quality Progressive Web App called PREDICTA.
 
-Virtu-IQ is a modern AI-powered visual analytics platform. Users can upload screenshots containing structured visual information, and the system uses AI image analysis to extract and organize information into a clear, easy-to-understand report.
+PREDICTA is a modern AI-powered instant virtual sports outcome exposure engine. Users can upload screenshots containing structured visual information, and the system uses AI image analysis to extract and organize information into a clear, easy-to-understand report.
 
-The product must feel like a premium technology startup rather than a gambling, casino, or betting website.
+The product must feel like a premium technology platform.
 
 1. BRAND IDENTITY
 
 The official brand name is:
 
-Virtu-IQ
+PREDICTA
 
 The supplied logo assets are the source of truth for the visual identity.
 
@@ -22,7 +22,7 @@ Full Logo
 
 The full logo contains:
 
-Virtu-IQ
+PREDICTA
 
 Use this version on:
 

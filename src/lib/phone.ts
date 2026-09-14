@@ -132,7 +132,7 @@ export function validateMobileNumber(
         nationalNumber: cleanDigits,
         formattedDisplay: formatGhanaNumber(cleanDigits),
         e164Digits: "233" + cleanDigits.slice(1),
-        syntheticEmail: `233${cleanDigits.slice(1)}@phone.virtu-iq.live`,
+        syntheticEmail: `233${cleanDigits.slice(1)}@phone.PREDICTA.live`,
         telco: null,
         error: "Ghana phone numbers must have 10 digits (e.g. 024 123 4567).",
       };
@@ -149,7 +149,7 @@ export function validateMobileNumber(
         nationalNumber: national10,
         formattedDisplay: formatGhanaNumber(national10),
         e164Digits: "233" + national10.slice(1),
-        syntheticEmail: `233${national10.slice(1)}@phone.virtu-iq.live`,
+        syntheticEmail: `233${national10.slice(1)}@phone.PREDICTA.live`,
         telco: null,
         error: `Prefix "${prefix3}" is not a recognized Ghana mobile network (MTN, Telecel, AT).`,
       };
@@ -162,7 +162,7 @@ export function validateMobileNumber(
       nationalNumber: national10,
       formattedDisplay: formatGhanaNumber(national10),
       e164Digits: e164,
-      syntheticEmail: `${e164}@phone.virtu-iq.live`,
+      syntheticEmail: `${e164}@phone.PREDICTA.live`,
       telco,
     };
   } else {
@@ -174,7 +174,7 @@ export function validateMobileNumber(
         nationalNumber: cleanDigits,
         formattedDisplay: formatNigeriaNumber(cleanDigits),
         e164Digits: "234" + cleanDigits.slice(1),
-        syntheticEmail: `234${cleanDigits.slice(1)}@phone.virtu-iq.live`,
+        syntheticEmail: `234${cleanDigits.slice(1)}@phone.PREDICTA.live`,
         telco: null,
         error: "Nigeria phone numbers must have 11 digits (e.g. 0803 123 4567).",
       };
@@ -191,7 +191,7 @@ export function validateMobileNumber(
         nationalNumber: national11,
         formattedDisplay: formatNigeriaNumber(national11),
         e164Digits: "234" + national11.slice(1),
-        syntheticEmail: `234${national11.slice(1)}@phone.virtu-iq.live`,
+        syntheticEmail: `234${national11.slice(1)}@phone.PREDICTA.live`,
         telco: null,
         error: `Prefix "${prefix4}" is not a recognized Nigeria mobile network (MTN, Airtel, Glo, 9mobile).`,
       };
@@ -204,7 +204,7 @@ export function validateMobileNumber(
       nationalNumber: national11,
       formattedDisplay: formatNigeriaNumber(national11),
       e164Digits: e164,
-      syntheticEmail: `${e164}@phone.virtu-iq.live`,
+      syntheticEmail: `${e164}@phone.PREDICTA.live`,
       telco,
     };
   }
@@ -237,17 +237,20 @@ export function isSyntheticPhoneEmail(email?: string | null): boolean {
   if (!email || typeof email !== "string") return false;
   const clean = email.trim().toLowerCase();
   if (
+    clean.includes("@phone.predicta.live") ||
+    clean.includes("@predicta.live") ||
+    clean.includes("@phone.predicta") ||
     clean.includes("@phone.virtu-iq.live") ||
     clean.includes("@virtu-iq.live") ||
     clean.includes("@virtu.live") ||
     clean.includes("@phone.virtu.live") ||
     clean.includes("@phone.virtu-iq") ||
-    clean.includes("@virtu")
+    clean.includes("@virtu") ||
+    clean.includes("@predicta")
   ) {
     return true;
   }
-  // Any email where the part before @ is purely numbers and domain has 'phone' or 'virtu'
-  return /^(\+?\d{7,15})@.*(virtu|phone).*/i.test(clean);
+  return /^(\+?\d{7,15})@.*(predicta|virtu|phone).*/i.test(clean);
 }
 
 /**

@@ -1,12 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, Clock, Copy, Loader2, ShieldCheck, XCircle } from "lucide-react";
+import { Check, Clock, Copy, Loader2, ShieldCheck, XCircle, ArrowUpRight, Lock, Zap } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LogoFull, LogoSymbol, LogoWatermark } from "@/components/brand/Logo";
+import { LogoFull } from "@/components/brand/Logo";
 import { usePaymentRealtime } from "@/hooks/usePaymentRealtime";
 import { supabase } from "@/integrations/supabase/client";
 import { ghs, paymentSettingsQuery, profileQuery, registrationPaymentQuery } from "@/lib/data";
@@ -21,8 +20,6 @@ export const Route = createFileRoute("/_authenticated/registration")({
         content:
           "Complete your one-time PREDICTA registration fee to unlock credits and instant virtual football verdicts.",
       },
-      { property: "og:title", content: "Registration Fee — PREDICTA" },
-      { property: "og:description", content: "Pay your one-time PREDICTA registration fee to activate your account." },
     ],
   }),
   component: RegistrationFeePage,
@@ -105,7 +102,7 @@ function RegistrationFeePage() {
     mutationFn: async () => {
       const rl = checkPaymentRateLimit(user.id);
       if (!rl.allowed) {
-        throw new Error(`Submission limit reached (max 7 per hour). Please wait ${formatRetryAfter(rl.retryAfterSeconds)} before submitting again.`);
+        throw new Error(`Submission limit reached. Please wait before submitting again.`);
       }
 
       const name = senderName.trim();
@@ -124,9 +121,6 @@ function RegistrationFeePage() {
         reference: ref || "Not provided",
       });
       if (error) {
-        if (error.message.includes("RATE_LIMITED")) {
-          throw new Error("Too many payment submissions (max 7 per hour). Please wait before trying again.");
-        }
         throw new Error(error.message);
       }
     },
@@ -143,145 +137,208 @@ function RegistrationFeePage() {
   });
 
   return (
-    <main className="mx-auto w-full max-w-2xl">
-      <div className="flex justify-center">
-        <LogoFull className="h-7" />
-      </div>
+    <main className="min-h-screen bg-slate-50/60 text-slate-950 font-sans selection:bg-red-600 selection:text-white py-12 px-4 sm:px-6 lg:px-8 flex flex-col justify-between relative overflow-hidden">
+      {/* Background Red Ambient Top Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[350px] bg-red-500/10 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="relative mt-6 overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary to-[#1D4ED8] p-6 text-primary-foreground">
-        <LogoWatermark className="h-52 sm:h-64" />
-        <div className="relative">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide">
-            <ShieldCheck className="size-3.5" /> One-time activation
-          </span>
-          <h1 className="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl">Registration fee</h1>
-          <p className="mt-1.5 max-w-md text-sm opacity-90">
-            Pay {ghs(fee)} once to activate your PREDICTA account. Once an admin confirms your payment
-            your credits page unlocks instantly.
-          </p>
-          <p className="mt-4 text-4xl font-extrabold tracking-tight">{ghs(fee)}</p>
+      <div className="max-w-xl mx-auto w-full relative z-10 space-y-6">
+        {/* Brand Header */}
+        <div className="flex flex-col items-center text-center space-y-3">
+          <LogoFull className="h-8 w-auto text-slate-950" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-slate-200 text-slate-900 text-[11px] font-mono font-semibold uppercase tracking-widest shadow-sm">
+            <Zap className="w-3 h-3 text-red-600 animate-pulse" />
+            <span>ACCOUNT ACTIVATION</span>
+          </div>
         </div>
-      </div>
 
-      {showDeclined ? (
-        <div className="animate-verdict relative mt-5 overflow-hidden rounded-2xl border border-destructive/40 bg-card p-6 text-center">
-          <LogoSymbol className="pointer-events-none absolute -right-6 -bottom-8 h-40 w-auto opacity-[0.06]" aria-hidden />
-          <span className="relative mx-auto flex size-14 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-            <XCircle className="relative size-7" />
-          </span>
-          <h2 className="relative mt-4 text-lg font-bold text-foreground">Payment declined</h2>
-          <p className="relative mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-            {pending?.admin_note
-              ? pending.admin_note
-              : "We could not verify this payment. Pay again and resubmit your MoMo details."}
-          </p>
-          <dl className="relative mx-auto mt-6 grid max-w-sm gap-2 rounded-xl border border-border bg-muted/30 p-4 text-left text-sm">
-            <Row label="Amount" value={ghs(pending!.amount_ghs)} />
-            <Row label="Method" value={pending!.method} />
-            <Row label="MoMo name" value={pending!.sender_name ?? "—"} />
-            <Row label="Status" value="Declined" />
-          </dl>
-          <Button className="relative mt-6" onClick={() => setDismissedDecline(true)}>
-            Submit payment again
-          </Button>
-        </div>
-      ) : submitted ? (
-        <div className="animate-verdict relative mt-5 overflow-hidden rounded-2xl border border-border bg-card p-6 text-center">
-          <LogoSymbol className="pointer-events-none absolute -right-6 -bottom-8 h-40 w-auto opacity-[0.06]" aria-hidden />
-          <span className="relative mx-auto flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
-            {approved ? <Check className="relative size-7" /> : <Clock className="relative size-7" />}
-          </span>
-          <h2 className="relative mt-4 text-lg font-bold text-foreground">
-            {approved ? "Registration approved" : "Waiting approval"}
-          </h2>
-          <p className="relative mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-            {approved
-              ? "You are all set — taking you to your credits now…"
-              : `We are verifying your ${ghs(pending.amount_ghs)} payment against the MoMo name “${pending.sender_name ?? "—"}”. This page unlocks automatically once approved — no reload needed.`}
-          </p>
-          <dl className="relative mx-auto mt-6 grid max-w-sm gap-2 rounded-xl border border-border bg-muted/30 p-4 text-left text-sm">
-            <Row label="Amount" value={ghs(pending.amount_ghs)} />
-            <Row label="Method" value={pending.method} />
-            <Row label="MoMo name" value={pending.sender_name ?? "—"} />
-            <Row label="Reference" value={pending.reference} />
-            <Row label="Status" value={approved ? "Approved" : "Pending approval"} />
-          </dl>
-        </div>
-      ) : (
-        <form
-          className="mt-5 grid gap-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            submit.mutate();
-          }}
-        >
-          {rejected && (
-            <p role="alert" className="rounded-xl bg-destructive/10 px-4 py-3 text-sm text-destructive">
-              Your previous submission was rejected{pending.admin_note ? `: ${pending.admin_note}` : "."} Please
-              pay again and resubmit your MoMo details.
+        {/* Hero Card — Clean Light Editorial White Style */}
+        <div className="rounded-3xl bg-white text-slate-950 p-6 sm:p-8 border border-slate-200/90 shadow-xl relative overflow-hidden space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 border border-red-200 text-red-700 text-[10px] font-mono font-bold uppercase tracking-wider">
+              <ShieldCheck className="w-3.5 h-3.5 text-red-600" /> ONE-TIME PLATFORM FEE
+            </span>
+            <span className="text-[11px] font-mono font-semibold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
+              UNPAID
+            </span>
+          </div>
+
+          <div className="space-y-1.5">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight uppercase text-slate-950">
+              ACTIVATION REQUIRED
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-md">
+              Pay {ghs(fee)} once to activate your PREDICTA workspace. Once approved, your account unlocks instant seed feeds.
             </p>
-          )}
+          </div>
 
-          <div className="relative grid gap-3 overflow-hidden rounded-2xl border border-border bg-card p-5">
-            <LogoSymbol className="pointer-events-none absolute -right-4 -bottom-6 h-28 w-auto opacity-[0.06]" aria-hidden />
-            <div className="relative flex items-center justify-between gap-3 rounded-xl bg-secondary/50 p-3">
-              <div>
-                <p className="text-xs text-muted-foreground">Pay to ({settings?.network ?? "MoMo"})</p>
-                <p className="text-lg font-bold tracking-tight text-foreground">{settings?.momo_number ?? "—"}</p>
+          <div className="pt-3 flex items-baseline gap-2 border-t border-slate-100">
+            <span className="text-4xl sm:text-5xl font-black font-mono text-red-600 tracking-tight">
+              {ghs(fee)}
+            </span>
+            <span className="text-xs font-mono text-slate-500 uppercase font-semibold">One-Time Fee</span>
+          </div>
+        </div>
+
+        {/* State Content */}
+        {showDeclined ? (
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-red-200 shadow-xl text-center space-y-5">
+            <div className="w-12 h-12 rounded-full bg-red-50 border border-red-200 flex items-center justify-center text-red-600 mx-auto">
+              <XCircle className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-xl font-bold text-slate-950 uppercase">PAYMENT DECLINED</h2>
+              <p className="text-xs text-slate-600 max-w-sm mx-auto">
+                {pending?.admin_note
+                  ? pending.admin_note
+                  : "We could not verify this payment. Please pay again and resubmit your MoMo details."}
+              </p>
+            </div>
+
+            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-left text-xs font-mono space-y-2">
+              <Row label="Amount" value={ghs(pending!.amount_ghs)} />
+              <Row label="Method" value={pending!.method} />
+              <Row label="MoMo Sender" value={pending!.sender_name ?? "—"} />
+              <Row label="Status" value="Declined" />
+            </div>
+
+            <button
+              onClick={() => setDismissedDecline(true)}
+              className="w-full py-3.5 rounded-full bg-slate-950 hover:bg-red-600 text-white font-bold text-xs uppercase tracking-wider transition-all"
+            >
+              Re-submit Payment Verification
+            </button>
+          </div>
+        ) : submitted ? (
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl text-center space-y-5">
+            <div className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 mx-auto">
+              {approved ? <Check className="w-6 h-6 text-emerald-600" /> : <Clock className="w-6 h-6 text-red-600 animate-spin" />}
+            </div>
+
+            <div className="space-y-1">
+              <h2 className="text-xl font-bold text-slate-950 uppercase">
+                {approved ? "ACTIVATION APPROVED" : "VERIFICATION IN PROGRESS"}
+              </h2>
+              <p className="text-xs text-slate-600 max-w-md mx-auto">
+                {approved
+                  ? "Your registration fee has been verified! Redirecting to workspace..."
+                  : `Verifying ${ghs(pending.amount_ghs)} sent via MoMo name "${pending.sender_name ?? "—"}". Page unlocks automatically once confirmed.`}
+              </p>
+            </div>
+
+            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-left text-xs font-mono space-y-2">
+              <Row label="Amount" value={ghs(pending.amount_ghs)} />
+              <Row label="Method" value={pending.method} />
+              <Row label="MoMo Sender" value={pending.sender_name ?? "—"} />
+              <Row label="Reference" value={pending.reference} />
+              <Row label="Status" value={approved ? "Approved" : "Pending Admin Review"} />
+            </div>
+          </div>
+        ) : (
+          <form
+            className="space-y-5"
+            onSubmit={(e) => {
+              e.preventDefault();
+              submit.mutate();
+            }}
+          >
+            {/* Copy Payment Info Card — Clean White/Slate */}
+            <div className="bg-white text-slate-950 rounded-3xl p-6 border border-slate-200/90 space-y-4 shadow-xl">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold block">PAYMENT DESTINATION</span>
+                  <span className="text-sm font-bold text-slate-900">{settings?.network ?? "MTN Mobile Money"}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyMomo}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-red-600 hover:bg-slate-950 text-white font-mono text-xs font-bold transition-all shadow-sm"
+                >
+                  {momoCopied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" /> COPIED!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" /> COPY NUMBER
+                    </>
+                  )}
+                </button>
               </div>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                className="min-w-[90px] transition-all"
-                onClick={handleCopyMomo}
+
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono text-slate-500 font-semibold uppercase">MOMO NUMBER:</span>
+                <span className="text-xl font-mono font-extrabold text-red-600 tracking-wider">
+                  {settings?.momo_number ?? "0551234567"}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                <span className="text-xs font-mono text-slate-500 font-semibold uppercase">RECIPIENT NAME:</span>
+                <span className="text-xs font-bold text-slate-900 uppercase">{settings?.recipient_name ?? "PREDICTA PLATFORM"}</span>
+              </div>
+
+              {settings?.instructions && (
+                <p className="text-[11px] text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+                  {settings.instructions}
+                </p>
+              )}
+            </div>
+
+            {/* Input Submission Card */}
+            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-md space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="sender" className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
+                  Mobile Money Account Name
+                </Label>
+                <Input
+                  id="sender"
+                  value={senderName}
+                  maxLength={80}
+                  onChange={(e) => setSenderName(e.target.value)}
+                  placeholder="Name on the MoMo account you paid from"
+                  required
+                  className="bg-slate-50 border-slate-200 text-slate-950 focus:border-red-600 focus:ring-1 focus:ring-red-600 rounded-xl h-12 text-sm"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="ref" className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
+                  Transaction Reference (Optional)
+                </Label>
+                <Input
+                  id="ref"
+                  value={reference}
+                  maxLength={80}
+                  onChange={(e) => setReference(e.target.value)}
+                  placeholder="e.g. Transaction ID / Ref number"
+                  className="bg-slate-50 border-slate-200 text-slate-950 focus:border-red-600 focus:ring-1 focus:ring-red-600 rounded-xl h-12 text-sm"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={submit.isPending}
+                className="w-full h-12 rounded-full bg-red-600 hover:bg-slate-950 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-md shadow-red-600/20 hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-60 mt-4"
               >
-                {momoCopied ? (
-                  <span className="flex items-center gap-1.5 font-bold text-emerald-600 animate-in zoom-in-75 duration-200">
-                    <Check className="size-3.5 stroke-[3]" /> Copied!
+                {submit.isPending ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Submitting Verification...
                   </span>
                 ) : (
-                  <span className="flex items-center gap-1.5">
-                    <Copy className="size-3.5" /> Copy
-                  </span>
+                  <>
+                    Confirm Payment of {ghs(fee)}
+                    <ArrowUpRight className="w-4 h-4" />
+                  </>
                 )}
-              </Button>
+              </button>
             </div>
-            <div className="relative">
-              <p className="text-xs text-muted-foreground">Recipient name</p>
-              <p className="text-sm font-medium text-foreground">{settings?.recipient_name ?? "—"}</p>
-            </div>
-            {settings?.instructions && (
-              <p className="relative text-xs text-muted-foreground">{settings.instructions}</p>
-            )}
-          </div>
+          </form>
+        )}
+      </div>
 
-          <div className="grid gap-4 rounded-2xl border border-border bg-muted/30 p-5 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Payment method</Label>
-              <div className="flex h-10 items-center rounded-lg border border-border bg-secondary/60 px-3">
-                <span className="text-sm font-semibold text-foreground">{method}</span>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="sender">Your MoMo name</Label>
-              <Input
-                id="sender"
-                value={senderName}
-                maxLength={80}
-                onChange={(e) => setSenderName(e.target.value)}
-                placeholder="Name on the account you paid from"
-                required
-              />
-            </div>
-          </div>
-
-          <Button type="submit" size="lg" disabled={submit.isPending}>
-            {submit.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Check className="mr-2 size-4" />}
-            I have paid {ghs(fee)}
-          </Button>
-        </form>
-      )}
+      <div className="text-center text-xs text-slate-400 mt-8 font-mono">
+        © PREDICTA PLATFORM · 256-BIT ENCRYPTED SESSION
+      </div>
     </main>
   );
 }
@@ -289,8 +346,8 @@ function RegistrationFeePage() {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className="font-medium text-foreground">{value}</dd>
+      <dt className="text-slate-500 uppercase font-semibold">{label}</dt>
+      <dd className="font-bold text-slate-900">{value}</dd>
     </div>
   );
 }

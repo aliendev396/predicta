@@ -52,47 +52,58 @@ export const runAnalysis = createServerFn({ method: "POST" })
       throw new Error(message);
     };
 
-    const { data: signed, error: signError } = await supabase.storage
-      .from("screenshots")
-      .createSignedUrl(analysis.image_path, 600);
-    if (signError || !signed?.signedUrl) return fail("Could not read the uploaded screenshot.");
-
     // Retrieve image data for AI processing
     let base64Image = "";
-    const extGuess = (analysis.image_path.split(".").pop() || "png").toLowerCase();
-    let mimeType =
-      extGuess === "jpg" || extGuess === "jpeg"
-        ? "image/jpeg"
-        : extGuess === "webp"
-          ? "image/webp"
-          : extGuess === "avif"
-            ? "image/avif"
-            : "image/png";
-    try {
-      const { data: fileBlob } = await supabase.storage
-        .from("screenshots")
-        .download(analysis.image_path);
-      if (fileBlob && fileBlob.size > 0) {
-        if (fileBlob.type) mimeType = fileBlob.type;
-        const buffer = await fileBlob.arrayBuffer();
-        base64Image = Buffer.from(buffer).toString("base64");
+    let mimeType = "image/png";
+
+    if (analysis.image_path && analysis.image_path.startsWith("data:")) {
+      const match = analysis.image_path.match(/^data:([^;]+);base64,(.+)$/);
+      if (match && match[2]) {
+        mimeType = match[1] || "image/png";
+        base64Image = match[2];
       }
-    } catch {
-      // handled by the signed-URL fallback below
     }
 
     if (!base64Image) {
-      // Fallback: pull the bytes over the signed URL.
+      const { data: signed, error: signError } = await supabase.storage
+        .from("screenshots")
+        .createSignedUrl(analysis.image_path, 600);
+
+      const extGuess = (analysis.image_path.split(".").pop() || "png").toLowerCase();
+      mimeType =
+        extGuess === "jpg" || extGuess === "jpeg"
+          ? "image/jpeg"
+          : extGuess === "webp"
+            ? "image/webp"
+            : extGuess === "avif"
+              ? "image/avif"
+              : "image/png";
+
       try {
-        const fetchRes = await fetch(signed.signedUrl);
-        if (fetchRes.ok) {
-          const contentType = fetchRes.headers.get("content-type");
-          if (contentType && contentType.startsWith("image/")) mimeType = contentType;
-          const buffer = await fetchRes.arrayBuffer();
-          if (buffer.byteLength > 0) base64Image = Buffer.from(buffer).toString("base64");
+        const { data: fileBlob } = await supabase.storage
+          .from("screenshots")
+          .download(analysis.image_path);
+        if (fileBlob && fileBlob.size > 0) {
+          if (fileBlob.type) mimeType = fileBlob.type;
+          const buffer = await fileBlob.arrayBuffer();
+          base64Image = Buffer.from(buffer).toString("base64");
         }
       } catch {
-        // fall through to the guard below
+        // handled by signed-URL fallback below
+      }
+
+      if (!base64Image && signed?.signedUrl) {
+        try {
+          const fetchRes = await fetch(signed.signedUrl);
+          if (fetchRes.ok) {
+            const contentType = fetchRes.headers.get("content-type");
+            if (contentType && contentType.startsWith("image/")) mimeType = contentType;
+            const buffer = await fetchRes.arrayBuffer();
+            if (buffer.byteLength > 0) base64Image = Buffer.from(buffer).toString("base64");
+          }
+        } catch {
+          // handled by guard below
+        }
       }
     }
 
@@ -108,7 +119,7 @@ export const runAnalysis = createServerFn({ method: "POST" })
     const { data: limitData } = await supabase.rpc("my_verdict_limit");
     const verdictLimit = Math.max(1, Number(limitData ?? 1));
     const promptText = buildAnalysisSystemPrompt(verdictLimit);
-    const userPrompt = `Apply 1X2 Poisson regression statistical analysis to this instant virtual football screenshot. Return strictly Home Win, Away Win, or Draw for your top ${verdictLimit} fixture(s). Apply relevance gate first.`;
+    const userPrompt = `Apply 1X2 Poisson regression statistical analysis to this instant virtual football screenshot. Extract and return predictions for EXACTLY ${verdictLimit} fixture(s) visible in the screenshot (strictly Home Win, Away Win, or Draw). Apply relevance gate first.`;
 
     let raw = "";
 
@@ -248,7 +259,7 @@ export const runAnalysis = createServerFn({ method: "POST" })
       }
     } else if (lovableKey) {
       // Lovable AI Gateway (OpenAI-compatible chat completions)
-      const imageUrl = base64Image ? `data:${mimeType};base64,${base64Image}` : signed.signedUrl;
+      const imageUrl = `data:${mimeType};base64,${base64Image}`;
       let response: Response;
       try {
         response = await fetchWithTimeout("https://ai.gateway.lovable.dev/v1/chat/completions", {
