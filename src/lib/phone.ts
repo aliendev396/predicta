@@ -93,7 +93,7 @@ export interface PhoneValidationResult {
   nationalNumber: string; // e.g. "0552231466" or "08031234567"
   formattedDisplay: string; // e.g. "055 223 1466" or "0803 123 4567"
   e164Digits: string; // e.g. "233552231466" or "2348031234567"
-  syntheticEmail: string; // e.g. "233552231466@phone.virtu-iq.live"
+  syntheticEmail: string; // e.g. "233552231466@phone.predicta.live"
   telco: string | null;
   error?: string;
 }
@@ -255,10 +255,10 @@ export function isSyntheticPhoneEmail(email?: string | null): boolean {
 
 /**
  * Extracts and formats the phone number from a synthetic email or raw phone string.
- * e.g. "233552231466@phone.virtu-iq.live" -> "055 223 1466"
- * e.g. "0552231466@phone.virtu-iq.live" -> "055 223 1466"
- * e.g. "552231466@phone.virtu-iq.live" -> "055 223 1466"
- * e.g. "2348031234567@phone.virtu-iq.live" -> "0803 123 4567"
+ * e.g. "233552231466@phone.predicta.live" -> "055 223 1466"
+ * e.g. "0552231466@phone.predicta.live" -> "055 223 1466"
+ * e.g. "552231466@phone.predicta.live" -> "055 223 1466"
+ * e.g. "2348031234567@phone.predicta.live" -> "0803 123 4567"
  * Returns null if the input is not a synthetic phone email.
  */
 export function extractPhoneFromSyntheticEmail(email?: string | null): string | null {
@@ -321,7 +321,7 @@ export function displayEmailOrPhone(
 
 /**
  * Returns a clean user display label from full_name, email, phone, or default.
- * If the name is missing and email is synthetic, formats it as the phone number instead of displaying "@virtu.live".
+ * If the name is missing and email is synthetic, formats it as the phone number instead of displaying "@predicta.live".
  */
 export function displayUserName(
   fullName?: string | null,

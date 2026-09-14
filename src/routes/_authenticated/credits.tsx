@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { LogoSymbol, LogoWatermark } from "@/components/brand/Logo";
+import { PaymentVerificationView } from "@/components/payment/PaymentVerificationView";
 import { supabase } from "@/integrations/supabase/client";
 import {
   creditHistoryQuery,
@@ -330,6 +331,7 @@ function CreditsPage() {
 
 function UpgradeDialog() {
   const { user } = Route.useRouteContext();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: packages } = useQuery(packagesQuery());
   const { data: settings } = useQuery(paymentSettingsQuery());
@@ -447,15 +449,15 @@ function UpgradeDialog() {
           <ArrowUpRight className="size-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-4xl lg:max-w-5xl rounded-3xl bg-white border border-slate-200 p-6 sm:p-10 selection:bg-red-600 selection:text-white">
-        <DialogHeader className="space-y-2 text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-200 text-red-600 font-mono text-[10px] font-bold tracking-widest uppercase w-fit">
+      <DialogContent className="w-[95vw] sm:w-full max-h-[92vh] overflow-y-auto sm:max-w-4xl lg:max-w-5xl rounded-2xl sm:rounded-3xl bg-white border border-slate-200 p-4 sm:p-8 lg:p-10 selection:bg-red-600 selection:text-white mobile-contain">
+        <DialogHeader className="space-y-1.5 sm:space-y-2 text-left">
+          <div className="inline-flex items-center gap-2 px-3 py-0.5 sm:py-1 rounded-full bg-red-50 border border-red-200 text-red-600 font-mono text-[9px] sm:text-[10px] font-bold tracking-widest uppercase w-fit">
             PREDICTA BILLING CHECKOUT
           </div>
-          <DialogTitle className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-slate-950">
-            {step === 1 ? "SELECT YOUR ACCESS TIER" : step === 2 ? "CONFIRM PAYMENT DETAILS" : "VERIFICATION IN PROGRESS"}
+          <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-extrabold uppercase tracking-tight text-slate-950">
+            {step === 1 ? "SELECT ACCESS TIER" : step === 2 ? "CONFIRM PAYMENT DETAILS" : "VERIFICATION IN PROGRESS"}
           </DialogTitle>
-          <DialogDescription className="text-slate-600 text-sm font-normal">
+          <DialogDescription className="text-slate-600 text-xs sm:text-sm font-normal">
             {step === 1
               ? "Step 1 of 3 — Pick the prediction scan capacity that fits your daily match frequency."
               : step === 2
@@ -680,54 +682,29 @@ function UpgradeDialog() {
           </form>
         )}
 
-        {/* Step 3: Status / Verification Box */}
+        {/* Step 3: Redesigned High-Artistry Verification & Slide-in Popups */}
         {step === 3 && (
-          <div className="mt-4 rounded-3xl border border-slate-200 bg-slate-50 p-8 text-center space-y-6 relative overflow-hidden">
-            <LogoSymbol className="pointer-events-none absolute right-4 bottom-4 h-32 w-auto opacity-[0.04] text-slate-950" aria-hidden />
-
-            <div className="relative mx-auto flex size-16 items-center justify-center rounded-full bg-red-50 text-red-600 border border-red-200 shadow-sm">
-              {!approved && !rejected && (
-                <span className="absolute inset-0 rounded-full bg-red-600/20 animate-ping" aria-hidden />
-              )}
-              {approved ? <Check className="relative size-8 text-emerald-600" /> : <Clock className="relative size-8 text-red-600" />}
-            </div>
-
-            <div className="space-y-2 max-w-md mx-auto">
-              <h3 className="text-2xl font-black uppercase tracking-tight text-slate-950">
-                {approved
-                  ? "PAYMENT APPROVED!"
-                  : rejected
-                    ? "PAYMENT DECLINED"
-                    : "VERIFYING PAYMENT"}
-              </h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                {approved
-                  ? "Your credits have been credited to your vault. Redirecting to analysis..."
-                  : rejected
-                    ? livePayment?.admin_note || "Please check your transaction details and re-submit."
-                    : "Your MoMo transaction is being matched against our admin ledger. This status updates automatically."}
-              </p>
-            </div>
-
-            <dl className="mx-auto max-w-md gap-3 rounded-2xl border border-slate-200 bg-white p-5 text-left text-xs space-y-3 shadow-2xs font-mono">
-              <Row label="PACKAGE" value={pkg ? `${pkg.name} (${ghs(pkg.price_ghs)})` : "—"} />
-              <Row label="CREDITS TO ADD" value={pkg ? `+${pkg.credits} Credits` : "—"} />
-              <Row label="PAYMENT METHOD" value={method} />
-              <Row label="MOMO SENDER" value={senderName} />
-              <Row
-                label="VERIFICATION STATUS"
-                value={approved ? "APPROVED" : rejected ? "DECLINED" : "PENDING ADMIN MATCH"}
-              />
-            </dl>
-
-            {rejected && (
-              <Button
-                onClick={() => reset()}
-                className="rounded-full bg-slate-950 hover:bg-red-600 text-white font-bold uppercase tracking-wider text-xs px-8 py-3.5 border-0 cursor-pointer shadow-md"
-              >
-                <ArrowLeft className="mr-2 size-4" /> Try Again
-              </Button>
-            )}
+          <div className="mt-2 sm:mt-4">
+            <PaymentVerificationView
+              embedded={true}
+              status={approved ? "approved" : rejected ? "rejected" : "pending"}
+              amountGhs={pkg?.price_ghs ?? 0}
+              credits={pkg?.credits ?? 0}
+              packageName={pkg?.name}
+              senderName={senderName}
+              reference={livePayment?.reference ?? "Not provided"}
+              method={method}
+              adminNote={livePayment?.admin_note}
+              onRetry={() => {
+                setStep(2);
+              }}
+              onContinue={() => {
+                setOpen(false);
+                reset();
+                void navigate({ to: "/analyze" });
+              }}
+              redirectCountdownSeconds={4}
+            />
           </div>
         )}
       </DialogContent>

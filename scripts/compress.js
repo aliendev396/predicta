@@ -7,40 +7,40 @@ const publicDir = path.resolve("public");
 async function run() {
   console.log("Compressing images in public/...");
 
-  // 1. virtu-iq-symbol.png (Currently 961 KB) -> resize to 256x256 png + webp
-  const symbolPath = path.join(publicDir, "virtu-iq-symbol.png");
+  // 1. predicta-symbol.png -> resize to 256x256 png + webp
+  const symbolPath = path.join(publicDir, "predicta-symbol.png");
   if (fs.existsSync(symbolPath)) {
     const symbolBuf = fs.readFileSync(symbolPath);
     await sharp(symbolBuf)
       .resize(256, 256, { fit: "inside" })
       .png({ compressionLevel: 9, quality: 85 })
-      .toFile(path.join(publicDir, "virtu-iq-symbol.png.tmp"));
+      .toFile(path.join(publicDir, "predicta-symbol.png.tmp"));
     
     await sharp(symbolBuf)
       .resize(256, 256, { fit: "inside" })
       .webp({ quality: 85 })
-      .toFile(path.join(publicDir, "virtu-iq-symbol.webp"));
+      .toFile(path.join(publicDir, "predicta-symbol.webp"));
     
-    fs.renameSync(path.join(publicDir, "virtu-iq-symbol.png.tmp"), symbolPath);
-    console.log("Compressed virtu-iq-symbol.png & .webp");
+    fs.renameSync(path.join(publicDir, "predicta-symbol.png.tmp"), symbolPath);
+    console.log("Compressed predicta-symbol.png & .webp");
   }
 
-  // 2. virtu-iq-full.png (Currently 120 KB) -> optimize png + webp
-  const fullPath = path.join(publicDir, "virtu-iq-full.png");
+  // 2. predicta-full.png -> optimize png + webp
+  const fullPath = path.join(publicDir, "predicta-full.png");
   if (fs.existsSync(fullPath)) {
     const fullBuf = fs.readFileSync(fullPath);
     await sharp(fullBuf)
       .resize(500, null, { fit: "inside", withoutEnlargement: true })
       .png({ compressionLevel: 9, quality: 85 })
-      .toFile(path.join(publicDir, "virtu-iq-full.png.tmp"));
+      .toFile(path.join(publicDir, "predicta-full.png.tmp"));
 
     await sharp(fullBuf)
       .resize(500, null, { fit: "inside", withoutEnlargement: true })
       .webp({ quality: 85 })
-      .toFile(path.join(publicDir, "virtu-iq-full.webp"));
+      .toFile(path.join(publicDir, "predicta-full.webp"));
     
-    fs.renameSync(path.join(publicDir, "virtu-iq-full.png.tmp"), fullPath);
-    console.log("Compressed virtu-iq-full.png & .webp");
+    fs.renameSync(path.join(publicDir, "predicta-full.png.tmp"), fullPath);
+    console.log("Compressed predicta-full.png & .webp");
   }
 
   // 3. favicon-32x32.png (Currently 2.15 MB!) -> resize to 32x32

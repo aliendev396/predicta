@@ -74,7 +74,7 @@ Maintain sufficient clear space around both logo variations.
 
 2. BRAND COLOURS
 
-Use only the Virtu-IQ brand palette.
+Use only the PREDICTA brand palette.
 
 Primary Blue:
 #2563EB
@@ -345,7 +345,7 @@ Create a premium landing page.
 Navbar:
 
 Left:
-Full Virtu-IQ logo.
+Full PREDICTA logo.
 
 Center/right:
 
@@ -379,7 +379,7 @@ Headline:
 
 Supporting text:
 
-"Upload visual information and let Virtu-IQ's AI analyze, organize, and explain what it sees."
+"Upload visual information and let PREDICTA's AI analyze, organize, and explain what it sees."
 
 Primary CTA:
 
@@ -423,7 +423,7 @@ Upload a supported screenshot.
 
 02 — Analyze
 
-Virtu-IQ processes the image using AI.
+PREDICTA processes the image using AI.
 
 03 — Review
 
@@ -481,7 +481,7 @@ Analysis history
 
 Footer
 
-Full Virtu-IQ logo.
+Full PREDICTA logo.
 
 Footer navigation:
 
@@ -552,7 +552,7 @@ Account menu
 
 Sidebar:
 
-Show the full Virtu-IQ logo at the top.
+Show the full PREDICTA logo at the top.
 
 Navigation:
 
@@ -564,7 +564,7 @@ Payments
 Account
 Settings
 
-When the sidebar collapses, replace the full logo with the Virtu-IQ symbol.
+When the sidebar collapses, replace the full logo with the PREDICTA symbol.
 
 Dashboard Header
 
@@ -619,7 +619,7 @@ Page title:
 
 Supporting text:
 
-"Upload a clear screenshot and Virtu-IQ will extract and organize the information it detects."
+"Upload a clear screenshot and PREDICTA will extract and organize the information it detects."
 
 Upload area should support:
 
@@ -786,7 +786,7 @@ Analysis Activity
 Audit Logs
 Settings
 
-Use the full Virtu-IQ logo in the desktop admin sidebar.
+Use the full PREDICTA logo in the desktop admin sidebar.
 
 Use the symbol when collapsed.
 
@@ -1155,7 +1155,7 @@ Offline-friendly shell
 
 Mobile navigation
 
-Use the Virtu-IQ symbol as the primary PWA icon.
+Use the PREDICTA symbol as the primary PWA icon.
 
 Use the full logo inside the application where space allows.
 
@@ -1327,7 +1327,7 @@ The application should feel similar in quality to a premium modern SaaS product.
 
 The user should immediately understand:
 
-What Virtu-IQ does.
+What PREDICTA does.
 
 How to create an account.
 
@@ -1431,7 +1431,7 @@ Final UI polish
 
 Before moving between major sections, ensure the previous section works correctly.
 
-Start by creating the complete design system and landing page using the supplied Virtu-IQ logo assets, then progressively build the authenticated application.
+Start by creating the complete design system and landing page using the supplied PREDICTA logo assets, then progressively build the authenticated application.
 
 The finished product should look like a cohesive, polished product from one company—not a collection of separate dashboard templates.
 

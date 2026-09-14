@@ -253,6 +253,29 @@
   0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
   20%, 24%, 55% { opacity: 0.6; }
 }
+@keyframes radar-sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes radar-ping-custom {
+  0% { transform: scale(0.6); opacity: 0.8; }
+  50% { opacity: 0.4; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+@keyframes slide-in-bottom-smooth {
+  0% { transform: translateY(40px) scale(0.95); opacity: 0; }
+  60% { transform: translateY(-4px) scale(1.01); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes emerald-glow-pulse {
+  0%, 100% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.2), inset 0 0 15px rgba(16, 185, 129, 0.1); }
+  50% { box-shadow: 0 0 45px rgba(16, 185, 129, 0.45), inset 0 0 25px rgba(16, 185, 129, 0.25); }
+}
+@keyframes badge-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
 
 /* ── UTILITIES ── */
 @utility animate-rise { animation: rise-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }

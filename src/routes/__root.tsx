@@ -19,8 +19,8 @@ function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <img src="/PREDICTA-symbol.png" alt="" className="mx-auto h-14 w-auto animate-pulse mb-6" />
-        <h2 className="text-lg font-semibold text-foreground">Taking you homeâ€¦</h2>
+        <img src="/predicta-symbol.png" alt="" className="mx-auto h-14 w-auto animate-pulse mb-6" />
+        <h2 className="text-lg font-semibold text-foreground">Taking you home...</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           This page doesn't exist. Redirecting you automatically.
         </p>
@@ -52,9 +52,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <img src="/PREDICTA-symbol.png" alt="" className="mx-auto h-14 w-auto animate-pulse mb-6" />
+        <img src="/predicta-symbol.png" alt="" className="mx-auto h-14 w-auto animate-pulse mb-6" />
         <h1 className="text-lg font-semibold tracking-tight text-foreground">
-          Loading PREDICTAâ€¦
+          Loading PREDICTA...
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Reconnecting to the server. This should only take a moment.
@@ -94,7 +94,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "author", content: "PREDICTA" },
       { name: "theme-color", content: "#ffffff" },
-      { property: "og:title", content: "PREDICTA â€” AI Visual Analytics" },
+      { property: "og:title", content: "PREDICTA — AI Visual Analytics" },
       {
         property: "og:description",
         content: "Upload visual information and let PREDICTA's AI analyze and explain what it sees.",
@@ -134,8 +134,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "preload", href: "/PREDICTA-symbol.png", as: "image", type: "image/png" },
-      { rel: "preload", href: "/PREDICTA-full.png", as: "image", type: "image/png" },
+      { rel: "preload", href: "/predicta-symbol.png", as: "image", type: "image/png" },
+      { rel: "preload", href: "/predicta-full.png", as: "image", type: "image/png" },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
@@ -278,9 +278,9 @@ class AppErrorBoundary extends Component<{ children: ReactNode }, { crashed: boo
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <div className="max-w-md text-center">
-          <img src="/PREDICTA-symbol.png" alt="" className="mx-auto h-14 w-auto animate-pulse mb-6" />
+          <img src="/predicta-symbol.png" alt="" className="mx-auto h-14 w-auto animate-pulse mb-6" />
           <h1 className="text-lg font-semibold tracking-tight text-foreground">
-            Loading PREDICTAâ€¦
+            Loading PREDICTA...
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Please wait while we reconnect.
