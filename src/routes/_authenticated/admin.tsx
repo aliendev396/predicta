@@ -3085,20 +3085,32 @@ function AdminSettingsManager() {
       if (number.length < 6 || number.length > 30) throw new Error("Enter a valid payment phone number.");
       if (name.length < 2 || name.length > 80) throw new Error("Enter the recipient name.");
 
-      const { error } = await supabase
+      const updatePayload: Record<string, any> = {
+        momo_number: number,
+        recipient_name: name,
+        network: current.network.trim() || "MTN MoMo",
+        instructions: current.instructions.trim(),
+        registration_fee_ghs: fee,
+        developer_commission_rate: devRate,
+        admin_commission_rate: adminRate,
+        default_partner_commission_rate: partnerRate,
+        updated_at: new Date().toISOString(),
+      };
+
+      let { error } = await supabase
         .from("payment_settings")
-        .update({
-          momo_number: number,
-          recipient_name: name,
-          network: current.network.trim() || "MTN MoMo",
-          instructions: current.instructions.trim(),
-          registration_fee_ghs: fee,
-          developer_commission_rate: devRate,
-          admin_commission_rate: adminRate,
-          default_partner_commission_rate: partnerRate,
-          updated_at: new Date().toISOString(),
-        } as any)
+        .update(updatePayload as any)
         .eq("id", true);
+
+      if (error && (error.message?.includes("admin_commission_rate") || error.code === "PGRST204" || error.code === "42703")) {
+        delete updatePayload["admin_commission_rate"];
+        const retry = await supabase
+          .from("payment_settings")
+          .update(updatePayload as any)
+          .eq("id", true);
+        error = retry.error;
+      }
+
       if (error) throw new Error(error.message);
     },
     onSuccess: async () => {

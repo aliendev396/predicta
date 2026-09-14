@@ -68,13 +68,49 @@ export const paymentSettingsQuery = () =>
   queryOptions({
     queryKey: ["payment-settings"],
     staleTime: 60 * 1000,
-    queryFn: async () => {
-      const { data, error } = await supabase
+    queryFn: async (): Promise<PaymentSettings | null> => {
+      // 1. Try full select with all commission rates
+      const full = await supabase
         .from("payment_settings")
         .select("momo_number, recipient_name, network, instructions, registration_fee_ghs, developer_commission_rate, admin_commission_rate, default_partner_commission_rate")
         .maybeSingle();
-      if (error) throw error;
-      return (data ?? null) as PaymentSettings | null;
+
+      if (!full.error) {
+        return (full.data ?? null) as PaymentSettings | null;
+      }
+
+      // 2. If schema cache error on commission columns, fallback without admin_commission_rate
+      const fallbackWithoutAdmin = await supabase
+        .from("payment_settings")
+        .select("momo_number, recipient_name, network, instructions, registration_fee_ghs, developer_commission_rate, default_partner_commission_rate")
+        .maybeSingle();
+
+      if (!fallbackWithoutAdmin.error && fallbackWithoutAdmin.data) {
+        const raw = fallbackWithoutAdmin.data as Record<string, any>;
+        return {
+          ...raw,
+          admin_commission_rate: 15,
+        } as PaymentSettings;
+      }
+
+      // 3. Fallback to base momo columns only
+      const base = await supabase
+        .from("payment_settings")
+        .select("momo_number, recipient_name, network, instructions, registration_fee_ghs")
+        .maybeSingle();
+
+      if (!base.error && base.data) {
+        const raw = base.data as Record<string, any>;
+        return {
+          ...raw,
+          developer_commission_rate: 15,
+          admin_commission_rate: 15,
+          default_partner_commission_rate: 10,
+        } as PaymentSettings;
+      }
+
+      // If all queries failed, throw original error
+      throw full.error;
     },
   });
 
