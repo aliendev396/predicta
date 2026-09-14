@@ -79,7 +79,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
-  adminCreditOverviewQuery,
   adminDailyCommissionSnapshotsQuery,
   adminMemberListQuery,
   adminPackagesQuery,
@@ -1871,18 +1870,31 @@ function PartnerPayouts() {
           const lifetimeRev = Number(p.lifetime_revenue_ghs ?? p.revenue_ghs);
           const lifetimeComm = Number(p.lifetime_commissions_ghs ?? p.commissions_ghs);
           const unpaidComm = Number(p.commissions_ghs ?? 0);
+          const hasRequested = Boolean(p.payout_requested_at);
 
           return (
             <div
               key={p.id}
-              className="flex flex-col justify-between rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs transition-all hover:border-slate-300 hover:shadow-md gap-4"
+              className={cn(
+                "flex flex-col justify-between rounded-2xl sm:rounded-3xl border bg-white p-5 shadow-xs transition-all hover:shadow-md gap-4",
+                hasRequested
+                  ? "border-amber-300 ring-2 ring-amber-200/60 shadow-amber-100"
+                  : "border-slate-200/90 hover:border-slate-300"
+              )}
             >
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-base font-bold text-slate-950 font-sans">
-                      {displayUserName(p.full_name, p.email, undefined, "Partner")}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="truncate text-base font-bold text-slate-950 font-sans">
+                        {displayUserName(p.full_name, p.email, undefined, "Partner")}
+                      </p>
+                      {hasRequested && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 border border-amber-300 px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest text-amber-800 animate-pulse">
+                          💸 PAYOUT REQUESTED
+                        </span>
+                      )}
+                    </div>
                     <p className="break-all text-xs text-slate-500 font-mono mt-0.5">{displayEmailOrPhone(p.email)}</p>
                     <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
                       <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-800 border border-slate-200">
@@ -1909,7 +1921,7 @@ function PartnerPayouts() {
                     <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">Period Rev</p>
                     <p className="mt-0.5 truncate text-sm font-bold text-slate-950 font-sans">{ghs(p.revenue_ghs)}</p>
                   </div>
-                  <div className="rounded-xl border border-red-200 bg-red-50/50 p-2.5">
+                  <div className={cn("rounded-xl border p-2.5", unpaidComm > 0 ? "border-red-200 bg-red-50/50" : "border-slate-200 bg-white")}>
                     <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-red-600">Unpaid Balance</p>
                     <p className="mt-0.5 truncate text-sm font-black text-red-600 font-sans">{ghs(unpaidComm)}</p>
                   </div>
@@ -1950,12 +1962,20 @@ function PartnerPayouts() {
                   variant={unpaidComm > 0 ? "default" : "outline"}
                   className={cn(
                     "w-full font-bold rounded-xl text-xs",
-                    unpaidComm > 0 ? "bg-red-600 hover:bg-red-700 text-white shadow-xs shadow-red-600/20" : "border-slate-200 text-slate-700"
+                    hasRequested && unpaidComm > 0
+                      ? "bg-amber-500 hover:bg-amber-600 text-white shadow-xs shadow-amber-500/25"
+                      : unpaidComm > 0
+                        ? "bg-red-600 hover:bg-red-700 text-white shadow-xs shadow-red-600/20"
+                        : "border-slate-200 text-slate-700"
                   )}
                   disabled={clearPayout.isPending}
                   onClick={() => clearPayout.mutate({ id: p.id })}
                 >
-                  {unpaidComm > 0 ? `Mark ${ghs(unpaidComm)} as paid` : "Clear current period"}
+                  {hasRequested && unpaidComm > 0
+                    ? `✓ Pay ${ghs(unpaidComm)} (Requested)`
+                    : unpaidComm > 0
+                      ? `Mark ${ghs(unpaidComm)} as paid`
+                      : "Clear current period"}
                 </Button>
                 <Button
                   size="sm"
@@ -3291,7 +3311,6 @@ function AdminSettingsManager() {
 
 function MonetisationManager() {
   const queryClient = useQueryClient();
-  const { data: overview } = useQuery(adminCreditOverviewQuery());
   const { data: packages } = useQuery(adminPackagesQuery());
   const [draft, setDraft] = useState<PackageDraft | null>(null);
 
@@ -3455,13 +3474,6 @@ function MonetisationManager() {
 
   return (
     <div className="space-y-6">
-      {/* Overview Stat Cards */}
-      <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
-        <Stat label="Credit Revenue" value={ghs(overview?.credit_revenue_ghs ?? 0)} subtext="Total credit sales" icon={Wallet} />
-        <Stat label="Credits Sold" value={String(overview?.credits_sold ?? 0)} subtext="Tokens delivered" icon={Coins} />
-        <Stat label="Active Packages" value={String(overview?.active_packages ?? 0)} subtext="Live in catalog" icon={Layers} />
-      </div>
-
       <div className="flex items-center justify-between gap-3 pt-2">
         <div>
           <h3 className="text-lg font-bold text-slate-950 uppercase tracking-tight font-sans">

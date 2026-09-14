@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Banknote, Check, Copy, Handshake, Link2, TrendingUp, Users, Wallet } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Banknote, Bell, BellOff, Check, Copy, Handshake, Link2, Loader2, TrendingUp, Users, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/app/AppShell";
 import { LogoSymbol, LogoWatermark } from "@/components/brand/Logo";
+import { supabase } from "@/integrations/supabase/client";
 import { commissionsQuery, ghs, partnerPayoutsQuery, partnerStatsQuery, profileQuery } from "@/lib/data";
 
 export const Route = createFileRoute("/_authenticated/partner")({
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/_authenticated/partner")({
 function PartnerPage() {
   const { user } = Route.useRouteContext();
   const [copied, setCopied] = useState(false);
+  const queryClient = useQueryClient();
   const { data: profile } = useQuery(profileQuery(user.id));
   const { data: stats } = useQuery({ ...partnerStatsQuery(user.id), staleTime: 30_000, refetchOnWindowFocus: true });
   const { data: commissions } = useQuery(commissionsQuery(user.id));
@@ -63,6 +65,33 @@ function PartnerPage() {
     }
   };
 
+  const unpaidBalance = Number(stats?.commissions_ghs ?? 0);
+  const payoutRequested = Boolean(stats?.payout_requested_at);
+
+  const requestPayout = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.rpc("request_partner_payout" as never);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["partner-stats", user.id] });
+      toast.success("Payout request sent — admin will process it shortly.");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const cancelRequest = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.rpc("cancel_partner_payout_request" as never);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["partner-stats", user.id] });
+      toast.success("Payout request cancelled.");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <div className="space-y-10 selection:bg-red-600 selection:text-white pb-12">
       <PageHeader
@@ -90,12 +119,61 @@ function PartnerPage() {
           <div className="space-y-1">
             <p className="text-xs font-mono font-bold uppercase tracking-widest text-slate-400">PENDING PAYOUT BALANCE</p>
             <p className="text-5xl sm:text-6xl font-black leading-none tracking-tight font-sans text-white">
-              {ghs(stats?.commissions_ghs ?? 0)}
+              {ghs(unpaidBalance)}
             </p>
             <p className="text-xs font-mono text-slate-400 pt-1">
               Yielding {stats?.commission_rate ?? 10}% commission on every approved member package top-up.
             </p>
           </div>
+
+          {/* Payout Request CTA */}
+          {unpaidBalance > 0 && (
+            <div className="rounded-2xl bg-white/10 border border-white/10 p-4 backdrop-blur-md space-y-3">
+              {payoutRequested ? (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-amber-400/20 border border-amber-400/30">
+                      <Bell className="size-4 text-amber-300 animate-pulse" />
+                    </span>
+                    <div>
+                      <p className="text-sm font-bold text-amber-300 font-sans">Payout Requested</p>
+                      <p className="text-[11px] font-mono text-slate-400">Admin has been notified — payment will be sent to your registered MoMo number.</p>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => cancelRequest.mutate()}
+                    disabled={cancelRequest.isPending}
+                    className="w-full h-10 rounded-xl border border-white/15 text-slate-300 hover:bg-white/10 hover:text-white font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                  >
+                    {cancelRequest.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : <BellOff className="mr-2 size-4" />}
+                    Cancel Request
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-xs font-mono text-slate-300">Ready to withdraw your balance? Notify admin to process your MoMo payout.</p>
+                  <Button
+                    type="button"
+                    onClick={() => requestPayout.mutate()}
+                    disabled={requestPayout.isPending}
+                    className="w-full h-12 rounded-xl bg-red-600 hover:bg-white hover:text-slate-950 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-md shadow-red-600/20 transition-all cursor-pointer border-0"
+                  >
+                    {requestPayout.isPending ? (
+                      <span className="flex items-center gap-1.5 font-bold">
+                        <Loader2 className="size-4 animate-spin" /> Requesting…
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1.5">
+                        <Bell className="size-4" /> Request Payout — {ghs(unpaidBalance)}
+                      </span>
+                    )}
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="rounded-2xl bg-white/10 border border-white/10 p-5 backdrop-blur-md space-y-3">
             <p className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-widest text-slate-200">

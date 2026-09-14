@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { createFileRoute, Outlet, redirect, useRouterState, useRouter } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
@@ -49,20 +49,21 @@ export const Route = createFileRoute("/_authenticated")({
       authUser.user_metadata?.["partner_applicant"] === true ||
       Boolean(partnerAppRes.data?.id);
 
-    // Invited partner applicants live entirely on the application screen
-    // until an admin approves them (no registration fee for them).
+    // Invited partner applicants (and any user who visits /partner-apply) wait on the
+    // application screen until admin approves them (no registration fee for them).
     if (!isAdmin && !isPartner && isPartnerApplicant) {
       if (path !== "/partner-apply") throw redirect({ to: "/partner-apply" });
       return { user: authUser, roles, isAdmin, isPartner, registrationPaid: true };
     }
     if (isPartner && path === "/partner-apply") throw redirect({ to: "/partner" });
-    if (isAdmin === false && !isPartner && !isPartnerApplicant && path === "/partner-apply") {
-      throw redirect({ to: "/dashboard" });
+    // Non-partner, non-applicant trying to access /partner-apply → let them through so they can apply
+    // Non-partner, non-applicant trying to access /partner → send to /partner-apply so they can apply
+    if (!isAdmin && !isPartner && !isPartnerApplicant && path.startsWith("/partner")) {
+      throw redirect({ to: "/partner-apply" });
     }
 
     if (!isAdmin) {
       if (isPartner && !path.startsWith("/partner")) throw redirect({ to: "/partner" });
-      if (!isPartner && path.startsWith("/partner")) throw redirect({ to: "/dashboard" });
       if (path.startsWith("/admin")) throw redirect({ to: isPartner ? "/partner" : "/dashboard" });
     }
 

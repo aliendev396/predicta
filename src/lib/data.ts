@@ -459,6 +459,7 @@ export const partnerStatsQuery = (userId: string) =>
         lifetime_revenue_ghs: number;
         lifetime_commissions_ghs: number;
         commission_rate?: number;
+        payout_requested_at?: string | null;
       };
     },
   });
@@ -470,6 +471,7 @@ export type AdminPartnerRow = {
   referral_code: string;
   commission_rate: number;
   payout_cleared_at: string | null;
+  payout_requested_at: string | null;
   referral_count: number;
   revenue_ghs: number;
   commissions_ghs: number;
