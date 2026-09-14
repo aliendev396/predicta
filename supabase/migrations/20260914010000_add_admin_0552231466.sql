@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 -- ADD ADMIN: 0552231466 with password Billgateaaron1$
 -- Adds this phone as a co-admin alongside existing admin 0596842918.
 -- Copy and paste into your Supabase SQL Editor and click RUN.
@@ -153,12 +153,13 @@ BEGIN
     );
 
     INSERT INTO auth.identities (
-      id, user_id, identity_data, provider,
+      id, user_id, identity_data, provider, provider_id,
       last_sign_in_at, created_at, updated_at
     ) VALUES (
       _new_id, _new_id,
       jsonb_build_object('sub', _new_id::text, 'email', _synthetic_email),
-      'email', now(), now(), now()
+      'email', _synthetic_email,
+      now(), now(), now()
     );
   END IF;
 END $$;
