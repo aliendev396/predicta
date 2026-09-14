@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { LogoFull } from "@/components/brand/Logo";
 import { Link } from "@tanstack/react-router";
-import { ShieldCheck, ArrowLeft, Cpu, Activity, Lock } from "lucide-react";
+import { ShieldCheck, Cpu, Activity, Lock } from "lucide-react";
 
 interface AuthBackgroundProps {
   children: ReactNode;
@@ -92,20 +92,11 @@ export function AuthBackground({ children }: AuthBackgroundProps) {
         {/* Ambient Top Glow */}
         <div className="absolute top-0 right-1/4 w-80 h-80 bg-red-500/5 rounded-full blur-[90px] pointer-events-none" />
 
-        {/* Top Header Bar */}
-        <div className="flex items-center justify-between relative z-10 mb-6 sm:mb-8">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-600 hover:text-slate-950 transition-colors py-1.5 px-3 rounded-full hover:bg-slate-200/60"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Back to PREDICTA Home
-          </Link>
-
-          {/* Brand Logo on Mobile / Small screens */}
-          <Link to="/" className="lg:hidden flex items-center gap-2">
-            <LogoFull variant="dark" className="h-7 w-auto object-contain" />
-            <span className="text-[9px] font-mono font-semibold tracking-widest text-red-600 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded-full uppercase">
+        {/* Top Centered Brand Logo */}
+        <div className="flex justify-center items-center relative z-10 mb-4 sm:mb-6">
+          <Link to="/" className="flex items-center gap-2 group" aria-label="PREDICTA Home">
+            <LogoFull variant="dark" className="h-8 sm:h-9 w-auto object-contain transition-transform group-hover:scale-[1.02]" />
+            <span className="text-[10px] font-mono font-semibold tracking-widest text-red-600 bg-red-50 border border-red-200/80 px-2 py-0.5 rounded-full uppercase">
               v4.2 PRO
             </span>
           </Link>
