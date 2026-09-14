@@ -2,630 +2,548 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ShieldCheck,
   Check,
-  ArrowRight,
-  Lock,
-  Receipt,
-  Zap,
-  Trophy,
-  TrendingUp,
-  CheckCircle2,
-  Terminal,
-  Cpu,
-  Activity,
-  Eye,
-  Wifi,
-  Database,
-  AlertTriangle,
-  ScanSearch,
   ArrowUpRight,
+  Lock,
+  Zap,
+  ChevronDown,
+  Activity,
+  Terminal as TerminalIcon,
+  Cpu,
+  Eye,
+  TrendingUp,
+  Award,
+  Layers,
+  Sparkles,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { useState } from "react";
+import { LiveTicker } from "@/components/site/LiveTicker";
 import { SiteNavbar } from "@/components/site/SiteNavbar";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { LiveTicker } from "@/components/site/LiveTicker";
-import { FloatingParticles } from "@/components/site/FloatingParticles";
-import { GlitchText } from "@/components/site/GlitchText";
-import { AnimatedCounter } from "@/components/site/AnimatedCounter";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "PREDICTA — Instant Virtuals Outcome Exposed" },
-      {
-        name: "description",
-        content:
-          "PREDICTA exposes the next SportyBet instant virtual outcome before the game loads. Upload your screenshot, hack the result, play with certainty.",
-      },
-      { property: "og:title", content: "PREDICTA — Instant Virtuals Outcome Exposed" },
-      {
-        property: "og:description",
-        content:
-          "Our algorithm penetrates the SportyBet instant virtual engine and delivers the next outcome — no guesswork, just exposed results.",
-      },
-    ],
-    links: [{ rel: "canonical", href: "https://predicta.lovable.app/" }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "ItemList",
-          name: "PREDICTA packages",
-          itemListElement: [
-            { name: "Starter", description: "2 scan credits.", price: "250" },
-            { name: "Plus", description: "3 scan credits.", price: "350" },
-            { name: "Premium", description: "5 scan credits.", price: "500" },
-          ].map((p, i) => ({
-            "@type": "ListItem",
-            position: i + 1,
-            item: {
-              "@type": "Product",
-              name: `PREDICTA ${p.name}`,
-              description: p.description,
-              brand: { "@type": "Brand", name: "PREDICTA" },
-              offers: {
-                "@type": "Offer",
-                price: p.price,
-                priceCurrency: "GHS",
-                availability: "https://schema.org/InStock",
-                url: "https://predicta.lovable.app/#packages",
-              },
-            },
-          })),
-        }),
-      },
-    ],
-  }),
-  component: Index,
+  component: LandingPage,
 });
 
-const features = [
-  {
-    icon: Cpu,
-    title: "Algorithm Precision",
-    body: "Our proprietary breach engine decodes each virtual match frame with machine-level accuracy. Results are locked — zero second-guessing.",
-    iconBg: "bg-red-50",
-    iconColor: "text-red-600",
-  },
-  {
-    icon: Trophy,
-    title: "Proven Strikes",
-    body: "Thousands of users have already exposed outcomes daily. Numbers don't lie — our track record proves it.",
-    iconBg: "bg-amber-50",
-    iconColor: "text-amber-600",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Zero Traces",
-    body: "All breach operations are encrypted end-to-end. Your account, uploads, and exposed outcomes leave no trail.",
-    iconBg: "bg-emerald-50",
-    iconColor: "text-emerald-600",
-  },
-  {
-    icon: Zap,
-    title: "Instant Delivery",
-    body: "Upload your screenshot. Our system penetrates the virtual feed and returns the exposed outcome in seconds.",
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-600",
-  },
-];
+function LandingPage() {
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-const steps = [
-  {
-    n: "01",
-    title: "Upload",
-    body: "Drop your SportyBet instant virtual screenshot — PNG, JPG or WEBP. Our system reads the game identifier.",
-    accent: "text-red-600",
-    accentBg: "bg-red-50",
-    accentBorder: "border-red-100",
-  },
-  {
-    n: "02",
-    title: "Penetrate",
-    body: "The algorithm breaches the virtual engine feed, cross-references the match ID, and locks the next outcome.",
-    accent: "text-emerald-600",
-    accentBg: "bg-emerald-50",
-    accentBorder: "border-emerald-100",
-  },
-  {
-    n: "03",
-    title: "Expose",
-    body: "Receive your certified outcome — confirmed before the game loads. Bet with certainty, not chance.",
-    accent: "text-red-600",
-    accentBg: "bg-red-50",
-    accentBorder: "border-red-100",
-  },
-];
+  const toggleFaq = (index: number) => {
+    setOpenFaq(openFaq === index ? null : index);
+  };
 
-const packages = [
-  {
-    name: "Starter",
-    price: "GH₵250",
-    credits: "2 outcomes per screenshot",
-    perks: ["2 scan credits", "Instant Virtual Football only", "Outcome history", "Email support"],
-    popular: false,
-    badge: null,
-  },
-  {
-    name: "Plus",
-    price: "GH₵350",
-    credits: "4 outcomes per screenshot",
-    perks: ["3 scan credits", "Instant Virtual Football only", "Outcome history", "Priority email support"],
-    popular: false,
-    badge: "🔥 Best Value",
-  },
-  {
-    name: "Premium",
-    price: "GH₵500",
-    credits: "8 outcomes per screenshot",
-    perks: ["5 scan credits", "Instant Virtual Football only", "Outcome history", "Priority support"],
-    popular: true,
-    badge: "⚡ Most Popular",
-  },
-];
+  const features = [
+    {
+      code: "01 // VISION OCR",
+      title: "Real-Time Frame Analytics",
+      description:
+        "High-resolution visual recognition parsing match parameters, team lineups, and live odds instantly from uploaded screenshots.",
+      badge: "SUB-SECOND VISION",
+    },
+    {
+      code: "02 // NEURAL",
+      title: "Multi-Factor Probability Matrix",
+      description:
+        "Multi-layered prediction engine cross-referencing over 14 million historical outcome cycles and team scoring distributions.",
+      badge: "99.8% PRECISION",
+    },
+    {
+      code: "03 // VERIFICATION",
+      title: "Immutable Audit Ledger",
+      description:
+        "Transparent timestamped record verifying outcome predictions prior to public match completion.",
+      badge: "VERIFIED PROOF",
+    },
+    {
+      code: "04 // TELEMETRY",
+      title: "Automated Signal Dispatch",
+      description:
+        "High-velocity delivery pushing decisive match verdicts directly to your personal dashboard workspace.",
+      badge: "REALTIME FEED",
+    },
+  ];
 
-const trust = [
-  { icon: Lock, title: "Fully encrypted", body: "Every breach operation runs over 256-bit encrypted tunnels. Nothing leaks.", color: "text-red-600", bg: "bg-red-50" },
-  { icon: ShieldCheck, title: "Verified outcomes", body: "Every exposed result passes through our multi-layer verification engine.", color: "text-emerald-600", bg: "bg-emerald-50" },
-  { icon: TrendingUp, title: "Consistent delivery", body: "Tens of thousands of outcomes delivered with zero downtime.", color: "text-blue-600", bg: "bg-blue-50" },
-  { icon: Receipt, title: "Transparent pricing", body: "Clear credit packages, visible history — no hidden fees, ever.", color: "text-amber-600", bg: "bg-amber-50" },
-];
+  const methodologySteps = [
+    {
+      number: "01",
+      title: "Visual Screenshot Ingestion",
+      subtitle: "IMAGE OCR PARSING",
+      description:
+        "Upload any instant or virtual football match screenshot. PREDICTA's visual engine parses raw fixture data and team lines in milliseconds.",
+    },
+    {
+      number: "02",
+      title: "Probability Reconstruction",
+      subtitle: "PATTERN MATCHING",
+      description:
+        "Extracted parameters run through PREDICTA's neural engine, mapping statistical goal expectations and market probabilities.",
+    },
+    {
+      number: "03",
+      title: "Decisive Verdict Dispatch",
+      subtitle: "INSTANT VERDICT",
+      description:
+        "Receive clear, high-confidence match recommendations directly on your screen before public graphics finish rendering.",
+    },
+  ];
 
-const faqs = [
-  {
-    q: "How does the outcome exposure system work?",
-    a: "You upload a SportyBet instant virtual screenshot. PREDICTA's algorithm reads the game ID, penetrates the virtual engine's outcome feed, and delivers the result before the match is rendered.",
-  },
-  {
-    q: "Which image formats are supported?",
-    a: "PNG, JPG, JPEG and WEBP screenshots. Clear, high-resolution images produce the most accurate outcome exposures.",
-  },
-  {
-    q: "What are scan credits?",
-    a: "Each package includes scan credits. One credit processes one screenshot and delivers your exposed instant virtual outcome. Credits are consumed per scan.",
-  },
-  {
-    q: "Is my account secure?",
-    a: "Accounts use managed authentication with enterprise-grade access controls. Your profile, payments, outcomes and notifications are only visible to you.",
-  },
-  {
-    q: "How is payment verified?",
-    a: "Submit your payment with its reference. It is recorded as pending, reviewed by an administrator, and credits are added only once the payment is approved.",
-  },
-  {
-    q: "Can I review past exposed outcomes?",
-    a: "Yes. Every completed exposure is saved to your history with its ID, date, image and status — and can be reopened or downloaded at any time.",
-  },
-];
+  const trustPillars = [
+    {
+      title: "Deterministic Auditing",
+      description: "Every verdict is timestamped and logged onto our public ledger prior to kickoff.",
+      icon: ShieldCheck,
+    },
+    {
+      title: "Direct Visual Feeds",
+      description: "Low-latency streaming endpoints engineered for rapid visual outcome analysis.",
+      icon: Cpu,
+    },
+    {
+      title: "99.8% Backtested Accuracy",
+      description: "Rigorous daily validation across all major virtual football leagues and cup tournaments.",
+      icon: Award,
+    },
+  ];
 
-/* ── Terminal hack card ── */
-function TerminalHackCard() {
-  const outcomes = [
-    { game: "SPBET-VIRT #3291", match: "Lions FC vs Eagles Utd", result: "HOME WIN", odds: "1.85" },
-    { game: "SPBET-VIRT #3292", match: "Storm City vs Thunder FC", result: "OVER 2.5 GOALS", odds: "1.72" },
-    { game: "SPBET-VIRT #3293", match: "Phoenix FC vs Red Devils", result: "BTTS — YES", odds: "1.90" },
+  const plans = [
+    {
+      name: "STARTER ANALYST",
+      price: "$29",
+      period: "/week",
+      description: "For individual analysts testing real-time predictive outcome feeds.",
+      features: [
+        "V-League Standard Feed",
+        "85% - 90% Base Accuracy",
+        "Standard Processing Speed",
+        "Email & Priority Support",
+      ],
+      cta: "Activate Starter Tier",
+      popular: false,
+    },
+    {
+      name: "PRO TERMINAL",
+      price: "$79",
+      period: "/month",
+      description: "Complete analytical suite for professional match intelligence.",
+      features: [
+        "All Virtual Leagues & Cup Feeds",
+        "99.8% Maximum Precision Engine",
+        "Sub-Millisecond Processing Speed",
+        "Up to 5 Verdicts per Screenshot",
+        "Priority VIP Analyst Desk",
+      ],
+      cta: "Claim Pro Access",
+      popular: true,
+    },
+    {
+      name: "ENTERPRISE SYNDICATE",
+      price: "$199",
+      period: "/quarter",
+      description: "Unlimited high-frequency data pipelines for syndicates and partners.",
+      features: [
+        "Unlimited Screenshot Processing",
+        "Custom Machine Learning Models",
+        "Dedicated High-Capacity Node",
+        "Direct Engineer SLA Support",
+      ],
+      cta: "Request Enterprise",
+      popular: false,
+    },
+  ];
+
+  const faqs = [
+    {
+      q: "How does PREDICTA calculate match outcomes from screenshots?",
+      a: "PREDICTA uses advanced OCR computer vision and neural pattern recognition to extract fixture details, league parameters, and odds distributions from uploaded screenshots. The data is cross-referenced against historical match matrices to deliver 99.8% accurate picks.",
+    },
+    {
+      q: "Which virtual leagues and platforms are supported?",
+      a: "PREDICTA supports all major instant virtual football leagues (V-League, Premier Virtual, Spanish Virtual), instant cups, and high-frequency virtual match engines across major international bookmakers.",
+    },
+    {
+      q: "How fast is the screenshot analysis process?",
+      a: "Visual frame parsing and outcome calculation complete within seconds, providing clear, high-confidence recommendations before match graphics finish rendering.",
+    },
+    {
+      q: "Can I test the platform before choosing a long-term plan?",
+      a: "Yes. Our Starter Analyst tier grants full access to test predictive screenshot scans with zero long-term commitment.",
+    },
+    {
+      q: "What payment options are supported?",
+      a: "We accept Mobile Money (MoMo) and major debit/credit cards via our secure 256-bit encrypted checkout gateway.",
+    },
   ];
 
   return (
-    <div
-      className="rounded-2xl overflow-hidden shadow-2xl font-mono"
-      style={{ boxShadow: "0 24px 64px rgba(228,24,39,0.15), 0 8px 24px rgba(0,0,0,0.12)" }}
-    >
-      {/* Header bar */}
-      <div className="flex items-center gap-1.5 px-4 py-3 bg-[#1A0E16]">
-        <span className="size-3 rounded-full bg-red-500" />
-        <span className="size-3 rounded-full bg-yellow-500" />
-        <span className="size-3 rounded-full bg-emerald-500" />
-        <span className="ml-3 text-[10px] tracking-wider text-emerald-400 flex-1 truncate">
-          root@predicta:~$ ./breach_sportybet.sh
-        </span>
-        <span className="inline-block w-1.5 h-3.5 bg-emerald-400 animate-terminal-cursor" />
-      </div>
+    <div className="min-h-screen bg-white text-slate-950 font-sans selection:bg-red-600 selection:text-white">
+      {/* Navigation */}
+      <SiteNavbar />
 
-      {/* Body */}
-      <div className="bg-[#0F0A0D] p-4 sm:p-5 relative">
-        {/* scan line */}
-        <div className="animate-scan-line" />
+      {/* Hero Section — Refined Institutional Visual AI */}
+      <section className="relative pt-28 sm:pt-36 pb-16 sm:pb-24 px-5 sm:px-8 lg:px-12 max-w-7xl mx-auto overflow-hidden">
+        {/* Ambient Glow Accent */}
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[350px] sm:w-[550px] h-[350px] sm:h-[550px] bg-red-500/10 rounded-full blur-[100px] pointer-events-none" />
 
-        {/* Status */}
-        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-          <div className="flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-emerald-400 animate-status-blink" />
-            <span className="text-[10px] font-bold tracking-widest text-emerald-400">BREACH ACTIVE</span>
+        <div className="relative z-10 flex flex-col items-center text-center space-y-6 sm:space-y-8 max-w-4xl mx-auto animate-fade-in">
+          {/* Status Badge */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 text-white text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-widest border border-slate-800 shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#e41827]" />
+            <span>AI VISION ENGINE · V4.2 LIVE</span>
           </div>
-          <span
-            className="text-[10px] font-bold rounded-md px-2 py-0.5 font-mono"
-            style={{ background: "rgba(228,24,39,0.15)", border: "1px solid rgba(228,24,39,0.35)", color: "#f87171" }}
-          >
-            3 OUTCOMES EXPOSED
+
+          {/* Headline - Clean & Powerful */}
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-950 uppercase leading-[1.08] max-w-4xl">
+            VISUAL ANALYTICS FOR <span className="text-red-600 underline decoration-red-600/30 decoration-wavy decoration-2">INSTANT VIRTUALS OUTCOMES</span>.
+          </h1>
+
+          {/* Subheading */}
+          <p className="text-sm sm:text-lg text-slate-600 max-w-2xl font-normal leading-relaxed px-2">
+            Transform virtual match screenshots into high-confidence outcome intelligence. PREDICTA combines visual pattern recognition with historical probability models before kickoff.
+          </p>
+
+          {/* Primary CTA Group */}
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-2 w-full max-w-full px-2 sm:px-4">
+            <Link
+              to="/register"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-[11px] sm:text-xs md:text-sm font-bold uppercase tracking-wider bg-red-600 hover:bg-slate-950 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-full transition-all duration-300 shadow-md shadow-red-600/25 hover:shadow-lg max-w-full truncate cursor-pointer"
+            >
+              Analyze Match Screenshot
+              <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
+            </Link>
+            <a
+              href="#how-it-works"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-[11px] sm:text-xs md:text-sm font-semibold uppercase tracking-wider text-slate-700 hover:text-slate-950 border border-slate-300 hover:border-slate-950 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full transition-all bg-white max-w-full truncate cursor-pointer"
+            >
+              Explore Methodology
+            </a>
+          </div>
+
+          {/* Live Outcome Terminal Preview Card */}
+          <div className="w-full mt-8 sm:mt-12 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 rounded-2xl p-5 sm:p-8 text-left shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-slate-700/70 border-t-2 border-t-red-500/80 relative overflow-hidden">
+            {/* Background Accent Glow */}
+            <div className="absolute top-0 right-0 w-80 h-80 bg-red-600/10 rounded-full blur-[90px] pointer-events-none" />
+
+            {/* Terminal Header */}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3.5 mb-5 relative z-10">
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                <div className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                <span className="ml-2 font-mono text-[10px] sm:text-xs font-bold text-slate-300 truncate max-w-[160px] sm:max-w-none">
+                  predicta-neural-vision // real-time visual feed
+                </span>
+              </div>
+              <span className="text-[10px] sm:text-[11px] font-mono font-bold text-emerald-400 bg-emerald-950/80 border border-emerald-800/80 px-2.5 py-1 rounded-md shadow-sm">
+                LIVE VISION STREAM
+              </span>
+            </div>
+
+            {/* Live Ticker Items */}
+            <div className="space-y-3 font-mono text-xs text-slate-300 relative z-10">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl bg-slate-900/90 border border-slate-700/80 shadow-md gap-2">
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <span className="text-red-400 font-bold text-[10px] bg-red-950/90 border border-red-800/80 px-2 py-0.5 rounded-md uppercase tracking-wider">[ANALYSIS VERIFIED]</span>
+                  <span className="text-white font-bold">ARSENAL vs CHELSEA</span>
+                  <span className="text-slate-400 text-[11px]">(V-LEAGUE R402)</span>
+                </div>
+                <div className="flex items-center justify-between w-full sm:w-auto gap-3 pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+                  <span className="text-emerald-400 font-bold text-xs sm:text-sm">HOME WIN (3-1)</span>
+                  <span className="text-[10px] text-slate-300 bg-slate-800/90 border border-slate-700 px-2 py-0.5 rounded font-bold">99.4% CONF.</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 shadow-md gap-2">
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <span className="text-emerald-400 font-bold text-[10px] bg-emerald-950/90 border border-emerald-800/80 px-2 py-0.5 rounded-md uppercase tracking-wider">[MATCHED RESULT]</span>
+                  <span className="text-white font-bold">REAL MADRID vs BARCELONA</span>
+                  <span className="text-slate-400 text-[11px]">(INSTANT CUP #882)</span>
+                </div>
+                <div className="flex items-center justify-between w-full sm:w-auto gap-3 pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+                  <span className="text-slate-100 font-bold text-xs sm:text-sm">OVER 2.5 GOALS</span>
+                  <span className="text-[10px] text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-2 py-0.5 rounded font-bold">VERIFIED ✅</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Marquee Banner */}
+      <LiveTicker />
+
+      {/* Stat Values Banner — Sleek Gradient & Institutional Micro-Cards */}
+      <section className="bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white py-10 sm:py-16 px-4 sm:px-8 lg:px-12 border-b border-slate-800/80 relative overflow-hidden">
+        {/* Ambient Red Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-red-600/10 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 relative z-10">
+          {/* Stat Card 1 */}
+          <div className="bg-slate-900/90 border border-slate-700/80 border-t-2 border-t-red-500 rounded-2xl p-5 sm:p-6 flex flex-col items-center justify-center text-center space-y-1.5 hover:border-red-500 hover:shadow-[0_10px_30px_rgba(228,24,39,0.15)] hover:-translate-y-1 transition-all duration-300 shadow-md group">
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+              <span className="text-2xl sm:text-4xl lg:text-5xl font-black font-mono text-red-500 tracking-tight group-hover:scale-105 transition-transform">
+                99.8%
+              </span>
+            </div>
+            <span className="text-[10px] sm:text-xs font-mono text-slate-300 uppercase tracking-widest font-bold">
+              Verified Model Accuracy
+            </span>
+          </div>
+
+          {/* Stat Card 2 */}
+          <div className="bg-slate-900/90 border border-slate-700/80 border-t-2 border-t-slate-600 rounded-2xl p-5 sm:p-6 flex flex-col items-center justify-center text-center space-y-1.5 hover:border-slate-500 hover:shadow-[0_10px_30px_rgba(255,255,255,0.06)] hover:-translate-y-1 transition-all duration-300 shadow-md group">
+            <span className="text-2xl sm:text-4xl lg:text-5xl font-black font-mono text-white tracking-tight group-hover:scale-105 transition-transform">
+              &lt;0.04s
+            </span>
+            <span className="text-[10px] sm:text-xs font-mono text-slate-300 uppercase tracking-widest font-bold">
+              Visual Processing Speed
+            </span>
+          </div>
+
+          {/* Stat Card 3 */}
+          <div className="bg-slate-900/90 border border-slate-700/80 border-t-2 border-t-slate-600 rounded-2xl p-5 sm:p-6 flex flex-col items-center justify-center text-center space-y-1.5 hover:border-slate-500 hover:shadow-[0_10px_30px_rgba(255,255,255,0.06)] hover:-translate-y-1 transition-all duration-300 shadow-md group">
+            <span className="text-2xl sm:text-4xl lg:text-5xl font-black font-mono text-white tracking-tight group-hover:scale-105 transition-transform">
+              14.2M+
+            </span>
+            <span className="text-[10px] sm:text-xs font-mono text-slate-300 uppercase tracking-widest font-bold">
+              Match Cycles Analyzed
+            </span>
+          </div>
+
+          {/* Stat Card 4 */}
+          <div className="bg-slate-900/90 border border-slate-700/80 border-t-2 border-t-emerald-500 rounded-2xl p-5 sm:p-6 flex flex-col items-center justify-center text-center space-y-1.5 hover:border-emerald-400 hover:shadow-[0_10px_30px_rgba(16,185,129,0.15)] hover:-translate-y-1 transition-all duration-300 shadow-md group">
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="text-2xl sm:text-4xl lg:text-5xl font-black font-mono text-emerald-400 tracking-tight group-hover:scale-105 transition-transform">
+                24/7
+              </span>
+            </div>
+            <span className="text-[10px] sm:text-xs font-mono text-slate-300 uppercase tracking-widest font-bold">
+              Automated Signal Stream
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section — Editorial Grid */}
+      <section id="features" className="py-20 sm:py-24 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto">
+        <div className="mb-12 sm:mb-16 space-y-3">
+          <span className="text-xs font-mono font-bold tracking-widest text-red-600 uppercase">
+            ENGINE ARCHITECTURE
           </span>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-950 uppercase">
+            BUILT FOR HIGH-FREQUENCY ACCURACY.
+          </h2>
+          <p className="text-slate-600 text-sm sm:text-base max-w-2xl font-normal leading-relaxed">
+            PREDICTA operates with direct computer vision parsing, calculating high-probability outcome vectors before public match completion.
+          </p>
         </div>
 
-        {/* Outcomes */}
-        <div className="space-y-2">
-          {outcomes.map((v, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          {features.map((item) => (
             <div
-              key={v.game}
-              className="rounded-xl p-3"
-              style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(228,24,39,0.14)",
-                animation: `slide-up-fade 0.5s cubic-bezier(0.22,1,0.36,1) ${0.1 + i * 0.15}s both`,
-              }}
+              key={item.title}
+              className="p-6 sm:p-10 rounded-2xl bg-white border border-slate-200 hover:border-red-600/50 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_rgba(224,36,36,0.12)] hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden"
             >
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-[9px] tracking-wider text-neutral-500 truncate">{v.game} · {v.match}</p>
-                  <p className="mt-0.5 text-xs font-bold text-white">{v.result}</p>
-                </div>
-                <div className="text-right shrink-0">
-                  <span
-                    className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-bold"
-                    style={{ background: "rgba(16,185,129,0.15)", border: "1px solid rgba(16,185,129,0.35)", color: "#6ee7b7" }}
-                  >
-                    <Check className="size-2.5" /> EXPOSED
+              <div className="space-y-4">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-mono font-bold text-slate-400 group-hover:text-red-600 transition-colors">
+                    {item.code}
                   </span>
-                  <p className="mt-0.5 text-[9px] font-bold text-emerald-400">@{v.odds}</p>
+                  <span className="text-[10px] font-mono font-bold tracking-wider text-red-700 bg-red-50 border border-red-200 px-3 py-1 rounded-full uppercase">
+                    {item.badge}
+                  </span>
                 </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-950 group-hover:text-red-600 transition-colors">
+                  {item.title}
+                </h3>
+                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                  {item.description}
+                </p>
+              </div>
+              <div className="pt-6 sm:pt-8 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-950 group-hover:text-red-600 transition-colors">
+                <span>Technical Specifications</span>
+                <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
               </div>
             </div>
           ))}
         </div>
+      </section>
 
-        {/* Progress bar */}
-        <div
-          className="mt-4 rounded-xl p-3"
-          style={{ background: "rgba(228,24,39,0.08)", border: "1px solid rgba(228,24,39,0.18)" }}
-        >
-          <div className="flex items-center justify-between text-[10px] font-semibold mb-2">
-            <span className="text-red-400">SYSTEM ACCESS: GRANTED</span>
-            <span className="text-emerald-400">✓ EXPOSED</span>
+      {/* Methodology — Numbered Steps */}
+      <section id="how-it-works" className="py-20 sm:py-24 px-4 sm:px-8 lg:px-12 bg-slate-50 border-y border-slate-200/80">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-12 sm:mb-16 space-y-3">
+            <span className="text-xs font-mono font-bold tracking-widest text-red-600 uppercase">
+              PREDICTIVE METHODOLOGY
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-950 uppercase">
+              HOW VISUAL INTELLIGENCE WORKS.
+            </h2>
           </div>
-          <div className="h-1.5 rounded-full overflow-hidden bg-white/10">
-            <div className="h-full rounded-full animate-hack-bar" style={{ background: "linear-gradient(90deg, #E41827, #10b981)" }} />
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12">
+            {methodologySteps.map((step) => (
+              <div key={step.number} className="relative space-y-3 sm:space-y-4 pt-6 sm:pt-8 border-t-2 border-slate-900">
+                <span className="text-5xl sm:text-7xl font-black font-mono text-slate-200 block -mt-4">
+                  {step.number}
+                </span>
+                <span className="text-xs font-mono font-bold text-red-600 tracking-widest uppercase block">
+                  {step.subtitle}
+                </span>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-950 uppercase">{step.title}</h3>
+                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">{step.description}</p>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
+      </section>
 
-function Index() {
-  return (
-    <div className="min-h-screen bg-white text-slate-900">
-      <SiteNavbar />
-      <LiveTicker />
+      {/* Trust Pillars — Dark Section */}
+      <section id="trust" className="py-20 sm:py-24 px-4 sm:px-8 lg:px-12 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden border-y border-slate-800/80">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-red-600/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <main>
-        {/* ── HERO ── */}
-        <section className="relative overflow-hidden bg-white">
-          {/* Subtle radial tint top-right */}
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{ background: "radial-gradient(ellipse 70% 60% at 80% -10%, rgba(228,24,39,0.06) 0%, transparent 65%)" }}
-          />
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{ background: "radial-gradient(ellipse 40% 35% at 0% 100%, rgba(16,185,129,0.05) 0%, transparent 70%)" }}
-          />
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-3 sm:space-y-4">
+            <span className="text-xs font-mono font-bold tracking-widest text-red-500 uppercase">
+              UNCOMPROMISED INTEGRITY
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white uppercase">
+              VERIFIABLE CRYPTOGRAPHIC LEDGER.
+            </h2>
+            <p className="text-slate-400 text-xs sm:text-sm leading-relaxed">
+              We publish prediction timestamps to an immutable block log before match conclusion, enabling complete post-match auditability.
+            </p>
+          </div>
 
-          <FloatingParticles />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            {trustPillars.map((pillar) => {
+              const Icon = pillar.icon;
+              return (
+                <div
+                  key={pillar.title}
+                  className="p-6 sm:p-8 rounded-2xl bg-slate-900/90 border border-slate-700/80 hover:border-red-500/60 shadow-xl hover:shadow-[0_15px_35px_rgba(228,24,39,0.15)] hover:-translate-y-1 transition-all duration-300 space-y-4"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-red-950/80 border border-red-800/70 flex items-center justify-center text-red-500 shadow-sm">
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-base sm:text-lg font-bold text-white uppercase">{pillar.title}</h3>
+                  <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">{pillar.description}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
-          <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:py-24 sm:px-6 lg:grid-cols-2 lg:py-32">
-            {/* Left */}
-            <div className="animate-rise">
-              {/* Badge */}
-              <div className="mb-5">
-                <span className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-3.5 py-1.5 text-xs font-bold tracking-widest text-red-600 font-mono">
-                  <span className="size-1.5 rounded-full bg-red-500 animate-status-blink" />
-                  SYSTEM BREACH ACTIVE
+      {/* Pricing Packages */}
+      <section id="pricing" className="py-20 sm:py-24 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto">
+        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-3 sm:space-y-4">
+          <span className="text-xs font-mono font-bold tracking-widest text-red-600 uppercase">
+            MEMBERSHIP TIERS
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-950 uppercase">
+            SELECT YOUR ACCESS LEVEL.
+          </h2>
+          <p className="text-slate-600 text-xs sm:text-sm">
+            Instant activation. Manage or upgrade your tier directly from your member dashboard.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch">
+          {plans.map((plan) => (
+            <div
+              key={plan.name}
+              className={`rounded-3xl p-6 sm:p-10 flex flex-col justify-between transition-all duration-300 ${
+                plan.popular
+                  ? "bg-gradient-to-b from-slate-900 to-slate-950 text-white border-2 border-red-600 shadow-[0_20px_50px_rgba(228,24,39,0.2)] scale-[1.02] sm:scale-[1.03] relative"
+                  : "bg-white text-slate-950 border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-0.5"
+              }`}
+            >
+              {plan.popular && (
+                <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-red-600 text-white font-mono text-[10px] sm:text-[11px] font-bold tracking-widest uppercase px-4 py-1 rounded-full shadow-md whitespace-nowrap">
+                  MOST POPULAR ACCESS
                 </span>
+              )}
+
+              <div>
+                <div className="space-y-2 pt-2 sm:pt-0">
+                  <h3 className="text-xs font-mono font-bold tracking-widest uppercase opacity-80">
+                    {plan.name}
+                  </h3>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl sm:text-5xl font-black tracking-tight">{plan.price}</span>
+                    <span className="text-xs font-mono opacity-70">{plan.period}</span>
+                  </div>
+                  <p className="text-xs opacity-80 leading-relaxed pt-2">{plan.description}</p>
+                </div>
+
+                <div className="my-6 sm:my-8 border-t border-current/10 pt-6 space-y-3">
+                  {plan.features.map((feature) => (
+                    <div key={feature} className="flex items-center gap-3 text-xs font-medium">
+                      <Check className={`w-4 h-4 flex-shrink-0 ${plan.popular ? "text-red-500" : "text-red-600"}`} />
+                      <span>{feature}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl leading-[1.1]">
-                Instant Virtuals.{" "}
-                <GlitchText className="text-red-600">Outcome Exposed.</GlitchText>
-              </h1>
+              <Link
+                to="/register"
+                className={`w-full py-3.5 sm:py-4 rounded-full font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  plan.popular
+                    ? "bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-600/30"
+                    : "bg-slate-950 hover:bg-red-600 text-white"
+                }`}
+              >
+                {plan.cta}
+                <ArrowUpRight className="w-4 h-4" />
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
 
-              <p className="mt-5 max-w-lg text-lg leading-relaxed text-slate-600">
-                Our proprietary algorithm penetrates the{" "}
-                <span className="font-bold text-emerald-600">SportyBet instant virtual engine</span>{" "}
-                — delivering the next match outcome before the game even loads. No guesswork. Just exposed results.
-              </p>
+      {/* FAQ Accordion */}
+      <section id="faq" className="py-20 sm:py-24 px-4 sm:px-8 lg:px-12 bg-slate-50 border-t border-slate-200">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16 space-y-3">
+            <span className="text-xs font-mono font-bold tracking-widest text-red-600 uppercase">
+              FREQUENTLY ASKED
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-950 uppercase">
+              INTELLIGENCE DISCLOSURES.
+            </h2>
+          </div>
 
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  to="/register"
-                  className="inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold text-white shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
-                  style={{ background: "linear-gradient(135deg, #E41827, #B00D1A)", boxShadow: "0 8px 24px rgba(228,24,39,0.30)" }}
+          <div className="space-y-3 sm:space-y-4">
+            {faqs.map((faq, idx) => (
+              <div
+                key={faq.q}
+                className="bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all"
+              >
+                <button
+                  onClick={() => toggleFaq(idx)}
+                  className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-slate-950 uppercase hover:text-red-600 transition-colors cursor-pointer"
                 >
-                  HACK THE OUTCOME
-                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                </Link>
-                <a
-                  href="#how-it-works"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-7 py-3.5 text-sm font-semibold text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-all"
-                >
-                  <Terminal className="size-4 text-emerald-600" />
-                  See How It Works
-                </a>
+                  <span>{faq.q}</span>
+                  <ChevronDown
+                    className={`w-5 h-5 text-slate-400 transition-transform duration-300 shrink-0 ${
+                      openFaq === idx ? "rotate-180 text-red-600" : ""
+                    }`}
+                  />
+                </button>
+                {openFaq === idx && (
+                  <div className="px-5 sm:px-6 pb-5 sm:pb-6 text-slate-600 text-xs sm:text-sm leading-relaxed border-t border-slate-100 pt-4">
+                    {faq.a}
+                  </div>
+                )}
               </div>
-
-              {/* Stats */}
-              <div className="mt-10 flex flex-wrap gap-6 pt-8 border-t border-slate-100">
-                <div>
-                  <div className="text-2xl font-extrabold font-mono text-slate-900">
-                    <AnimatedCounter end={99} suffix="%" />
-                  </div>
-                  <div className="text-xs font-semibold text-slate-500 mt-0.5">Accuracy rate</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-extrabold font-mono text-slate-900">
-                    <AnimatedCounter end={14} suffix="K+" />
-                  </div>
-                  <div className="text-xs font-semibold text-slate-500 mt-0.5">Outcomes exposed</div>
-                </div>
-                <div>
-                  <div className="flex items-center gap-1.5 text-2xl font-extrabold font-mono text-slate-900">
-                    <span className="size-2.5 rounded-full bg-emerald-500 animate-status-blink" />
-                    24/7
-                  </div>
-                  <div className="text-xs font-semibold text-slate-500 mt-0.5">Always live</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right — terminal */}
-            <div className="animate-rise" style={{ animationDelay: "0.12s" }}>
-              <TerminalHackCard />
-            </div>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ── Divider ── */}
-        <div className="section-line" />
-
-        {/* ── FEATURES ── */}
-        <section id="features" className="bg-[#F8F9FB] py-16 sm:py-24">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="max-w-2xl mb-10">
-              <span className="text-xs font-bold tracking-widest text-red-600 font-mono uppercase inline-flex items-center gap-1.5 mb-3">
-                <Activity className="size-3.5" />
-                WHY OUR ALGORITHM NEVER FAILS
-              </span>
-              <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-                Built to Expose, Not Guess
-              </h2>
-              <p className="mt-3 text-slate-600">
-                Every component is engineered to deliver certainty — not predictions.
-              </p>
-            </div>
-
-            <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-              {features.map((f) => (
-                <div
-                  key={f.title}
-                  className="group bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 cursor-default"
-                >
-                  <span className={cn("inline-flex size-11 items-center justify-center rounded-xl mb-4", f.iconBg)}>
-                    <f.icon className={cn("size-5", f.iconColor)} />
-                  </span>
-                  <h3 className="text-base font-bold text-slate-900 font-mono">{f.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-500">{f.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <div className="section-line" />
-
-        {/* ── HOW IT WORKS ── */}
-        <section id="how-it-works" className="bg-white py-16 sm:py-24">
-          <FloatingParticles />
-          <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="max-w-2xl mb-12">
-              <span className="text-xs font-bold tracking-widest text-emerald-600 font-mono uppercase inline-flex items-center gap-1.5 mb-3">
-                <Wifi className="size-3.5" />
-                BREACH PROTOCOL
-              </span>
-              <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-                How The System Works
-              </h2>
-              <p className="mt-3 text-slate-600">
-                Three steps from screenshot to exposed instant virtual outcome.
-              </p>
-            </div>
-
-            <ol className="grid gap-6 sm:grid-cols-3">
-              {steps.map((s, idx) => (
-                <li
-                  key={s.n}
-                  className={cn(
-                    "group relative rounded-2xl border p-7 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-default overflow-hidden",
-                    s.accentBorder
-                  )}
-                >
-                  {/* Ghost step number */}
-                  <div
-                    className="pointer-events-none absolute -right-3 -bottom-3 text-[100px] font-black font-mono leading-none select-none opacity-[0.05]"
-                    style={{ color: idx === 1 ? "#10b981" : "#E41827" }}
-                  >
-                    {s.n}
-                  </div>
-                  <span className={cn("inline-flex size-11 items-center justify-center rounded-xl text-sm font-extrabold font-mono mb-4", s.accentBg, s.accent)}>
-                    {s.n}
-                  </span>
-                  <h3 className="text-lg font-bold text-slate-900 font-mono">{s.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-500">{s.body}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        <div className="section-line" />
-
-        {/* ── TRUST ── */}
-        <section className="bg-[#F8F9FB] py-16 sm:py-24">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="text-center max-w-2xl mx-auto mb-12">
-              <span className="text-xs font-bold tracking-widest text-red-600 font-mono uppercase inline-flex items-center gap-1.5 mb-3">
-                <Database className="size-3.5" />
-                OPERATIONAL INTEGRITY
-              </span>
-              <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-                Built on Trust, Hardened by Design
-              </h2>
-              <p className="mt-3 text-slate-600">
-                Every layer of PREDICTA is engineered for security, reliability, and transparency.
-              </p>
-            </div>
-
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {trust.map((t) => (
-                <div
-                  key={t.title}
-                  className="group bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 cursor-default"
-                >
-                  <span className={cn("inline-flex size-11 items-center justify-center rounded-xl mb-4", t.bg)}>
-                    <t.icon className={cn("size-5", t.color)} />
-                  </span>
-                  <h3 className="text-sm font-bold text-slate-900 font-mono">{t.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-500">{t.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <div className="section-line" />
-
-        {/* ── PACKAGES ── */}
-        <section id="packages" className="bg-white py-16 sm:py-24">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="text-center max-w-2xl mx-auto mb-12">
-              <span className="text-xs font-bold tracking-widest text-red-600 font-mono uppercase inline-flex items-center gap-1.5 mb-3">
-                <ScanSearch className="size-3.5" />
-                CREDIT PACKAGES
-              </span>
-              <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-                Choose Your Intel Tier
-              </h2>
-              <p className="mt-3 text-slate-600">
-                One credit = one screenshot scan = one exposed outcome.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-              {packages.map((pkg) => (
-                <div
-                  key={pkg.name}
-                  className={cn(
-                    "relative rounded-2xl p-8 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1",
-                    pkg.popular
-                      ? "bg-white ring-2 ring-red-600 shadow-2xl"
-                      : "bg-white border border-slate-100 shadow-sm hover:shadow-xl"
-                  )}
-                >
-                  {pkg.badge && (
-                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                      <span
-                        className="rounded-full text-white text-[11px] font-bold px-3.5 py-1 tracking-wide shadow-lg"
-                        style={{ background: "linear-gradient(135deg, #E41827, #B00D1A)" }}
-                      >
-                        {pkg.badge}
-                      </span>
-                    </div>
-                  )}
-
-                  <div>
-                    <div className="flex items-center justify-between gap-2 mb-4">
-                      <h3 className="text-xl font-bold font-mono text-slate-900">{pkg.name}</h3>
-                      <span className="text-xs font-mono text-slate-400">{pkg.credits}</span>
-                    </div>
-
-                    <div className="flex items-baseline gap-1 mb-6">
-                      <span className={cn("text-4xl font-extrabold font-mono", pkg.popular ? "text-red-600" : "text-slate-900")}>
-                        {pkg.price}
-                      </span>
-                    </div>
-
-                    <div className="mb-6 h-px bg-slate-100" />
-
-                    <ul className="space-y-2.5">
-                      {pkg.perks.map((perk) => (
-                        <li key={perk} className="flex items-center gap-2.5 text-sm text-slate-600">
-                          <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
-                          {perk}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="mt-7">
-                    <Link
-                      to="/register"
-                      className={cn(
-                        "w-full flex items-center justify-center rounded-xl py-3 text-xs font-bold tracking-widest font-mono transition-all hover:scale-[1.02] active:scale-[0.98]",
-                        pkg.popular
-                          ? "text-white shadow-lg"
-                          : "text-red-600 bg-red-50 hover:bg-red-100"
-                      )}
-                      style={pkg.popular ? { background: "linear-gradient(135deg, #E41827, #B00D1A)", boxShadow: "0 8px 24px rgba(228,24,39,0.25)" } : {}}
-                    >
-                      SELECT {pkg.name.toUpperCase()}
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <div className="section-line" />
-
-        {/* ── FAQ ── */}
-        <section id="faq" className="bg-[#F8F9FB] py-16 sm:py-24">
-          <div className="mx-auto max-w-3xl px-4 sm:px-6">
-            <div className="mb-10">
-              <span className="text-xs font-bold tracking-widest text-emerald-600 font-mono uppercase inline-flex items-center gap-1.5 mb-3">
-                <Eye className="size-3.5" />
-                FREQUENTLY ASKED
-              </span>
-              <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-                Questions & Intel
-              </h2>
-            </div>
-
-            <Accordion type="single" collapsible className="space-y-3">
-              {faqs.map((f) => (
-                <AccordionItem
-                  key={f.q}
-                  value={f.q}
-                  className="bg-white rounded-xl border border-slate-100 px-6 shadow-sm"
-                >
-                  <AccordionTrigger className="text-left text-sm sm:text-base font-bold font-mono py-5 hover:no-underline text-slate-900 hover:text-red-600 transition-colors">
-                    {f.q}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-sm leading-relaxed pb-5 text-slate-500">
-                    {f.a}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-        </section>
-      </main>
-
+      {/* Footer */}
       <SiteFooter />
     </div>
   );
