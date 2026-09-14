@@ -22,6 +22,7 @@ import {
 import { PageHeader } from "@/components/app/AppShell";
 import { LogoSymbol } from "@/components/brand/Logo";
 import { supabase } from "@/integrations/supabase/client";
+import { logAdminAction } from "@/lib/audit";
 import { adjustMemberSpent, deleteMember, explodePlatformData, updatePaymentSettings } from "@/lib/admin.functions";
 import {
   cleanDisplayValue,
@@ -253,6 +254,7 @@ function AdminPage() {
         queryClient.invalidateQueries({ queryKey: ["admin-members"] }),
         queryClient.invalidateQueries({ queryKey: ["admin-partner-payouts"] }),
         queryClient.invalidateQueries({ queryKey: ["admin-daily-commission-snapshots"] }),
+        queryClient.invalidateQueries({ queryKey: ["audit-logs"] }),
       ]);
       toast.success("Payment review submitted");
     },
@@ -507,12 +509,32 @@ function AdminPage() {
 
         <TabsContent value="audit" className="min-h-[450px] space-y-6 focus-visible:outline-none">
           <ExplodeCard />
-          <AuditLogList logs={logs ?? []} />
+          <AuditLogList logs={logs ?? []} members={(members ?? []) as MemberRow[]} />
         </TabsContent>
       </Tabs>
     </div>
   );
 }
+
+type MemberRow = {
+  id: string;
+  email: string | null;
+  full_name: string | null;
+  phone: string | null;
+  credits: number;
+  referral_code: string;
+  created_at: string;
+  last_sign_in_at: string | null;
+  registration_paid: boolean;
+  registration_paid_at: string | null;
+  is_partner: boolean;
+  is_admin: boolean;
+  referred_by: string | null;
+  referrer_name: string | null;
+  spent_ghs: number;
+  referral_count: number;
+  max_verdicts?: number;
+};
 
 type AuditLog = {
   id: string;
@@ -608,66 +630,150 @@ function RemoveMember({ userId, label }: { userId: string; label: string }) {
   );
 }
 
-/** Returns Badge className matching PREDICTA color language:
- *  emerald = approved/verified/granted  |  red = removed/deleted/exploded/reject  |  amber = updated/changed/pending  |  slate = everything else
- */
+/** Maps action codes to plain-English sentences shown in the audit log. */
+function humanReadableAction(action: string, meta: unknown): { title: string; detail: string | null } {
+  const m = (meta && typeof meta === "object" && !Array.isArray(meta))
+    ? (meta as Record<string, unknown>)
+    : {};
+  const gv = (k: string) => (m[k] != null ? String(m[k]) : null);
+
+  switch (action) {
+    // ── Payments ──────────────────────────────────────────────────────────
+    case "payment.approved":
+      return { title: "Payment approved", detail: `GH₵${gv("amount_ghs") ?? "?"} credited — ${gv("credits") ?? "?"}cr added to member` };
+    case "payment.rejected":
+      return { title: "Payment rejected", detail: gv("note") ? `Reason: ${gv("note")}` : "Payment was declined by admin" };
+    case "payment.review":
+    case "payment.reviewed":
+      return { title: "Payment reviewed", detail: `Status set to ${gv("status") ?? "updated"}` };
+    case "payment.registration_approved":
+      return { title: "Registration payment approved", detail: `GH₵${gv("amount_ghs") ?? "?"} — account activated` };
+
+    // ── Credits ───────────────────────────────────────────────────────────
+    case "credits.adjusted":
+    case "admin.credits_adjusted": {
+      const delta = gv("delta") ?? gv("amount");
+      const sign = delta && Number(delta) > 0 ? "+" : "";
+      return { title: "Credits adjusted", detail: `${sign}${delta ?? "?"} credits — ${gv("reason") ?? gv("note") ?? "admin adjustment"}` };
+    }
+    case "member.spent_adjusted":
+      return { title: "Member spend balance adjusted", detail: `Previous total: GH₵${gv("previousTotal") ?? "?"}${gv("setTotalSpent") ? ` → GH₵${gv("setTotalSpent")}` : ``}${gv("reduceBy") ? ` — reduced by GH₵${gv("reduceBy")}` : ``}${gv("reason") ? ` (${gv("reason")})` : ""}` };
+
+    // ── Partner ───────────────────────────────────────────────────────────
+    case "partner.approved":
+      return { title: "Partner application approved", detail: "Partner hub access granted — commission earning activated" };
+    case "partner.rejected":
+      return { title: "Partner application rejected", detail: gv("note") ? `Reason: ${gv("note")}` : "Application was declined" };
+    case "partner.payout_cleared":
+      return { title: "Partner payout cleared", detail: `GH₵${gv("amount_ghs") ?? "?"} paid out${gv("note") ? ` — ${gv("note")}` : ""}` };
+    case "partner.payout_reverted":
+      return { title: "Payout reversal", detail: `Payout entry removed — balance returned to pending` };
+    case "partner.payout_requested":
+      return { title: "Partner requested payout", detail: "Partner signalled they want their balance withdrawn" };
+    case "partner.commission_rate_set":
+      return { title: "Commission rate updated", detail: `Rate set to ${gv("rate") ?? gv("new_rate") ?? "?"}%${gv("old_rate") ? ` (was ${gv("old_rate")}%)` : ""}` };
+
+    // ── Members ───────────────────────────────────────────────────────────
+    case "member.deleted":
+    case "admin.member_deleted":
+      return { title: "Member account deleted", detail: "All analyses, payments and credits permanently removed" };
+    case "admin.role_granted":
+      return { title: "Admin role granted", detail: `User promoted to administrator` };
+    case "admin.role_revoked":
+      return { title: "Admin role revoked", detail: `Administrator privileges removed from user` };
+    case "member.registered":
+      return { title: "New member registered", detail: gv("referral_code") ? `Referred by code: ${gv("referral_code")}` : null };
+
+    // ── Packages ──────────────────────────────────────────────────────────
+    case "package.created":
+      return { title: "Package created", detail: `"${gv("name") ?? "New package"}" — GH₵${gv("price_ghs") ?? "?"} / ${gv("credits") ?? "?"}cr` };
+    case "package.updated":
+      return { title: "Package updated", detail: `"${gv("name") ?? "Package"}" settings changed` };
+    case "package.deleted":
+      return { title: "Package deleted", detail: `"${gv("name") ?? "Package"}" permanently removed` };
+    case "package.toggled":
+      return { title: "Package visibility toggled", detail: `"${gv("name") ?? "Package"}" marked ${gv("is_active") === "true" ? "active" : "inactive"}` };
+
+    // ── Settings ──────────────────────────────────────────────────────────
+    case "settings.updated":
+    case "payment_settings.updated":
+      return { title: "Payment settings updated", detail: `MoMo number / recipient / network changed` };
+    case "commission.rates_updated":
+    case "settings.commission_updated":
+      return { title: "Commission rates updated", detail: `Dev: ${gv("developer_rate") ?? "?"}%, Admin: ${gv("admin_rate") ?? "?"}%, Partner default: ${gv("partner_rate") ?? "?"}%` };
+
+    // ── Platform ──────────────────────────────────────────────────────────
+    case "platform.exploded":
+      return {
+        title: "⚠️ PLATFORM DATA RESET",
+        detail: `Wiped ${gv("analyses") ?? 0} analyses, ${gv("payments") ?? 0} payments, ${gv("commissions") ?? 0} commissions, ${gv("applications") ?? 0} partner applications`,
+      };
+
+    default: {
+      // Graceful fallback: split on dot and title-case the parts
+      const parts = action.split(".");
+      const title = parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(" → ");
+      return { title, detail: null };
+    }
+  }
+}
+
+/** Color badge class per action category */
 function actionBadgeClass(action: string): string {
   if (
-    action.includes("removed") ||
-    action.includes("deleted") ||
-    action.includes("exploded") ||
-    action.includes("reject")
-  )
-    return "bg-red-50 text-red-700 border border-red-200";
+    action.includes("rejected") || action.includes("deleted") ||
+    action.includes("removed") || action.includes("exploded") || action.includes("revoked")
+  ) return "bg-red-50 text-red-700 border border-red-200";
   if (
-    action.includes("approved") ||
-    action.includes("verified") ||
-    action.includes("granted")
-  )
-    return "bg-emerald-50 text-emerald-700 border border-emerald-200";
+    action.includes("approved") || action.includes("granted") ||
+    action.includes("cleared") || action.includes("registered")
+  ) return "bg-emerald-50 text-emerald-700 border border-emerald-200";
   if (
-    action.includes("updated") ||
-    action.includes("changed") ||
-    action.includes("modified") ||
-    action.includes("pending")
-  )
-    return "bg-amber-50 text-amber-700 border border-amber-200";
-  return "bg-slate-100 text-slate-800 border border-slate-200";
+    action.includes("updated") || action.includes("adjusted") ||
+    action.includes("set") || action.includes("toggled") || action.includes("requested")
+  ) return "bg-amber-50 text-amber-700 border border-amber-200";
+  return "bg-slate-100 text-slate-700 border border-slate-200";
 }
 
 function MetaTable({ meta }: { meta: unknown }) {
   if (!meta || typeof meta !== "object" || Array.isArray(meta)) return null;
   const entries = Object.entries(meta as Record<string, unknown>);
   if (entries.length === 0) return null;
+
+  // Human-friendly key labels
+  const keyLabel: Record<string, string> = {
+    amount_ghs: "Amount (GH₵)", credits: "Credits", delta: "Credit change",
+    reason: "Reason", note: "Admin note", status: "Status",
+    rate: "Commission rate", new_rate: "New rate", old_rate: "Previous rate",
+    reduceBy: "Reduced by", setTotalSpent: "Set total spent", previousTotal: "Previous total",
+    name: "Package name", price_ghs: "Price (GH₵)", is_active: "Active?",
+    analyses: "Analyses wiped", payments: "Payments wiped",
+    commissions: "Commissions wiped", applications: "Applications wiped",
+    developer_rate: "Dev commission %", admin_rate: "Admin commission %",
+    partner_rate: "Partner default %", cleared_at: "Cleared at",
+  };
+
   return (
-    <div className="mt-2 rounded-xl bg-slate-900 p-3 font-mono text-[11px] text-slate-200 overflow-x-auto">
-      <table className="w-full">
-        <tbody>
-          {entries.map(([k, v]) => {
-            let displayVal: string;
-            if (typeof v === "object" && v !== null) {
-              displayVal = JSON.stringify(v, null, 2);
-            } else if (typeof v === "string") {
-              displayVal = String(cleanDisplayValue(v) ?? "—");
-            } else {
-              displayVal = String(v ?? "—");
-            }
-            return (
-              <tr key={k} className="border-t border-slate-800 first:border-t-0">
-                <td className="py-1 pr-3 font-bold text-red-400 w-1/3 align-top">{k}</td>
-                <td className="py-1 break-all text-slate-200">
-                  {displayVal}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+    <div className="mt-2 divide-y divide-slate-100 rounded-xl border border-slate-200 overflow-hidden">
+      {entries.map(([k, v]) => {
+        let displayVal: string;
+        if (typeof v === "object" && v !== null) displayVal = JSON.stringify(v);
+        else if (typeof v === "boolean") displayVal = v ? "Yes" : "No";
+        else displayVal = String(v ?? "—");
+        return (
+          <div key={k} className="flex items-start gap-3 px-3 py-2">
+            <span className="shrink-0 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 w-32 pt-0.5">
+              {keyLabel[k] ?? k}
+            </span>
+            <span className="text-xs font-mono text-slate-800 break-all">{displayVal}</span>
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-function AuditLogList({ logs }: { logs: AuditLog[] }) {
+function AuditLogList({ logs, members = [] }: { logs: AuditLog[]; members?: MemberRow[] }) {
   const [expanded, setExpanded] = useState(false);
   const [search, setSearch] = useState("");
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -679,174 +785,108 @@ function AuditLogList({ logs }: { logs: AuditLog[] }) {
       (l) =>
         l.action.toLowerCase().includes(q) ||
         l.entity.toLowerCase().includes(q) ||
+        humanReadableAction(l.action, l.meta).title.toLowerCase().includes(q) ||
+        (humanReadableAction(l.action, l.meta).detail ?? "").toLowerCase().includes(q) ||
         (l.entity_id ?? "").toLowerCase().includes(q) ||
-        (l.actor_id ?? "").toLowerCase().includes(q) ||
         JSON.stringify(l.meta ?? {}).toLowerCase().includes(q),
     );
   }, [logs, search]);
 
-  const visible = expanded ? filtered : filtered.slice(0, 15);
-
+  const visible = expanded ? filtered : filtered.slice(0, 20);
   const toggleRow = (id: string) =>
     setExpandedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
 
   return (
     <div className="space-y-4">
-      {/* Search + count row */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1 sm:max-w-md">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by action, entity, ID, actor or metadata…"
+            placeholder="Search actions, amounts, members…"
             aria-label="Search audit logs"
             className="pl-10 rounded-xl border-slate-200 bg-white"
           />
         </div>
         <p className="text-xs font-mono text-slate-500 shrink-0">
-          Showing <strong className="text-slate-950 font-bold">{visible.length}</strong> of{" "}
-          <strong className="text-slate-950 font-bold">{filtered.length}</strong> log{filtered.length === 1 ? "" : "s"}
+          <strong className="text-slate-950">{visible.length}</strong> of{" "}
+          <strong className="text-slate-950">{filtered.length}</strong> entries
         </p>
       </div>
 
-      {/* Card list */}
       <div className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs">
         {logs.length === 0 && (
           <p className="p-8 text-center text-sm font-mono text-slate-400">No admin activity recorded yet.</p>
         )}
         {logs.length > 0 && filtered.length === 0 && (
-          <p className="p-8 text-center text-sm font-mono text-slate-400">No audit logs match your search.</p>
+          <p className="p-8 text-center text-sm font-mono text-slate-400">No logs match your search.</p>
         )}
-
         {visible.map((l) => {
           const isOpen = expandedIds.has(l.id);
-          const hasMeta =
-            l.meta !== null &&
-            typeof l.meta === "object" &&
-            !Array.isArray(l.meta) &&
-            Object.keys(l.meta).length > 0;
+          const { title, detail } = humanReadableAction(l.action, l.meta);
+          const hasMeta = l.meta !== null && typeof l.meta === "object" && !Array.isArray(l.meta) && Object.keys(l.meta as object).length > 0;
           const date = new Date(l.created_at);
-          const hasDetail = !!(hasMeta || l.entity_id || l.actor_id);
           return (
-            <div key={l.id} className="grid gap-3 p-4 sm:p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start transition-colors hover:bg-slate-50/50">
-              {/* Left: primary info */}
-              <div className="min-w-0 space-y-1.5">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-sm font-bold text-slate-950 font-mono">{l.action}</p>
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
-                    {l.entity}
-                  </span>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-slate-500">
-                  {l.actor_id && (
-                    <span>
-                      Actor:{" "}
-                      <strong className="text-slate-800 font-mono font-semibold">
-                        {l.actor_id.slice(0, 8)}…
-                      </strong>
-                    </span>
-                  )}
-                  {l.entity_id && (
-                    <span>
-                      Entity ID:{" "}
-                      <strong className="text-slate-800 font-mono font-semibold">
-                        {l.entity_id.slice(0, 8)}…
-                      </strong>
-                    </span>
-                  )}
-                </div>
-
-                <p className="text-[11px] font-mono text-slate-400">
-                  {date.toLocaleString()} · Log ID: {l.id.slice(0, 8)}
-                </p>
-
-                {hasDetail && (
-                  <button
-                    type="button"
-                    className="mt-1 flex items-center gap-1 text-xs font-mono font-semibold text-red-600 hover:text-red-700 transition-colors"
-                    onClick={() => toggleRow(l.id)}
-                    aria-expanded={isOpen}
-                  >
-                    <ChevronDown
-                      className="size-3.5 transition-transform duration-150"
-                      style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
-                    />
-                    {isOpen ? "Hide metadata details" : "View metadata details"}
-                  </button>
-                )}
-
-                {isOpen && (
-                  <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3 text-xs space-y-2">
-                    <div className="grid gap-x-4 gap-y-1 sm:grid-cols-2">
-                      <div>
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">Log ID</span>
-                        <p className="mt-0.5 break-all font-mono text-slate-800">{l.id}</p>
-                      </div>
-                      {l.actor_id && (
-                        <div>
-                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">Actor (user ID)</span>
-                          <p className="mt-0.5 break-all font-mono text-slate-800">{l.actor_id}</p>
-                        </div>
-                      )}
-                      {l.entity_id && (
-                        <div>
-                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">Entity ID</span>
-                          <p className="mt-0.5 break-all font-mono text-slate-800">{l.entity_id}</p>
-                        </div>
-                      )}
-                      <div>
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">Timestamp (ISO)</span>
-                        <p className="mt-0.5 font-mono text-slate-800">{date.toISOString()}</p>
-                      </div>
-                    </div>
-                    {hasMeta && (
-                      <div className="border-t border-slate-200 pt-2">
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">Payload Metadata</span>
-                        <MetaTable meta={l.meta as Record<string, unknown>} />
-                      </div>
-                    )}
+            <div key={l.id} className="p-4 sm:p-5 transition-colors hover:bg-slate-50/60">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 space-y-1">
+                  {/* Human-readable title */}
+                  <p className="text-sm font-bold text-slate-950">{title}</p>
+                  {/* Plain-language detail */}
+                  {detail && <p className="text-xs text-slate-600 leading-relaxed">{detail}</p>}
+                  {/* Timestamp + raw action code */}
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 pt-0.5">
+                    <span className="text-[11px] text-slate-400 font-mono">{date.toLocaleString()}</span>
+                    <span className="text-[10px] font-mono text-slate-300">·</span>
+                    <span className="text-[10px] font-mono text-slate-400">{l.action}</span>
                   </div>
-                )}
+                  {/* Expand for technical details */}
+                  {(hasMeta || l.entity_id) && (
+                    <button
+                      type="button"
+                      onClick={() => toggleRow(l.id)}
+                      aria-expanded={isOpen}
+                      className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-red-600 hover:text-red-700 transition-colors"
+                    >
+                      <ChevronDown className="size-3" style={{ transform: isOpen ? "rotate(180deg)" : "none" }} />
+                      {isOpen ? "Hide details" : "View details"}
+                    </button>
+                  )}
+                  {isOpen && (
+                    <div className="mt-3 space-y-3">
+                      {l.entity_id && (
+                        <div className="rounded-xl bg-slate-50 border border-slate-200 px-3 py-2 text-xs font-mono text-slate-700">
+                          <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">Target ID</span>
+                          <p className="mt-0.5 break-all">{l.entity_id}</p>
+                        </div>
+                      )}
+                      {hasMeta && <MetaTable meta={l.meta} />}
+                      <p className="text-[10px] font-mono text-slate-400">Log ID: {l.id} · Actor: {l.actor_id?.slice(0, 8) ?? "system"}…</p>
+                    </div>
+                  )}
+                </div>
+                {/* Status badge — shows the event category */}
+                <Badge className={cn("shrink-0 font-mono font-bold uppercase tracking-wider text-[10px] px-2.5 py-1 rounded-full", actionBadgeClass(l.action))}>
+                  {l.action.split(".").at(-1)}
+                </Badge>
               </div>
-
-              {/* Right: status badge */}
-              <Badge
-                className={cn(
-                  "w-fit font-mono font-bold uppercase tracking-wider text-[10px] px-2.5 py-1 rounded-full shrink-0",
-                  actionBadgeClass(l.action),
-                )}
-              >
-                {l.action.split(".").pop()}
-              </Badge>
             </div>
           );
         })}
       </div>
 
-      {filtered.length > 15 && (
+      {filtered.length > 20 && (
         <div className="flex justify-center pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setExpanded((v) => !v)}
-            className="flex items-center gap-1.5 rounded-xl border-slate-200 text-xs font-mono font-semibold"
-          >
-            {expanded ? (
-              <>
-                <ChevronUp className="size-4" /> Show fewer
-              </>
-            ) : (
-              <>
-                <ChevronDown className="size-4" /> Show all {filtered.length} logs ({filtered.length - 15} more)
-              </>
-            )}
+          <Button variant="outline" size="sm" onClick={() => setExpanded((v) => !v)}
+            className="flex items-center gap-1.5 rounded-xl border-slate-200 text-xs font-mono font-semibold">
+            {expanded
+              ? <><ChevronUp className="size-4" /> Show fewer</>
+              : <><ChevronDown className="size-4" /> Show all {filtered.length} logs</>}
           </Button>
         </div>
       )}
@@ -1831,6 +1871,12 @@ function PartnerPayouts() {
         .update({ commission_rate: rate, updated_at: new Date().toISOString() })
         .eq("id", id);
       if (tableError) throw new Error(rpcError.message || tableError.message);
+      await logAdminAction({
+        action: "partner.commission_rate_set",
+        entity: "profiles",
+        entityId: id,
+        meta: { new_rate: rate },
+      });
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries();
@@ -2125,26 +2171,6 @@ function PartnerPayoutHistoryDialog({
     </Dialog>
   );
 }
-
-type MemberRow = {
-  id: string;
-  email: string | null;
-  full_name: string | null;
-  phone: string | null;
-  credits: number;
-  referral_code: string;
-  created_at: string;
-  last_sign_in_at: string | null;
-  registration_paid: boolean;
-  registration_paid_at: string | null;
-  is_partner: boolean;
-  is_admin: boolean;
-  referred_by: string | null;
-  referrer_name: string | null;
-  spent_ghs: number;
-  referral_count: number;
-  max_verdicts?: number;
-};
 
 function PartnerManager() {
   const queryClient = useQueryClient();
@@ -2493,6 +2519,16 @@ function PartnerApplications() {
           .eq("user_id", targetUserId)
           .eq("role", "partner");
       }
+
+      await logAdminAction({
+        action: approve ? "partner.approved" : "partner.rejected",
+        entity: "partner_applications",
+        entityId: id,
+        meta: {
+          note: approve ? "Approved as partner" : "Application rejected",
+          target_user_id: targetUserId,
+        },
+      });
     },
     onSuccess: async (_d, vars) => {
       await queryClient.invalidateQueries();
@@ -2720,6 +2756,8 @@ function CreditAdjusterInner({
       const approvedPayments = payments ?? [];
       const currentTotal = approvedPayments.reduce((acc, p) => acc + Number(p.amount_ghs || 0), 0);
 
+      const finalSpentVal = setSpent !== undefined ? setSpent : Math.max(0, currentTotal - (redBy || 0));
+
       let amountToSubtract = 0;
       if (redBy !== undefined) {
         amountToSubtract = Math.abs(redBy);
@@ -2753,10 +2791,9 @@ function CreditAdjusterInner({
         }
       } else {
         const refCode = `ADJ-${Date.now().toString(36).toUpperCase()}`;
-        const targetVal = setSpent !== undefined ? setSpent : Math.max(0, 0 - (redBy || 0));
         const { error: insertErr } = await supabase.from("payments").insert({
           user_id: userId,
-          amount_ghs: targetVal,
+          amount_ghs: finalSpentVal,
           credits: 0,
           method: "Admin Adjustment",
           reference: refCode,
@@ -2767,16 +2804,18 @@ function CreditAdjusterInner({
         if (insertErr) throw new Error(insertErr.message);
       }
 
-      try {
-        await supabase.from("audit_logs").insert({
-          action: "member.spent_adjusted",
-          entity: "profiles",
-          entity_id: userId,
-          meta: { reduceBy: redBy, setTotalSpent: setSpent, previousTotal: currentTotal, reason: note },
-        });
-      } catch {
-        // Audit log insert optional
-      }
+      await logAdminAction({
+        action: "member.spent_adjusted",
+        entity: "profiles",
+        entityId: userId,
+        meta: {
+          reduceBy: redBy,
+          setTotalSpent: setSpent,
+          previousTotal: currentTotal,
+          finalSpent: finalSpentVal,
+          reason: note,
+        },
+      });
     },
     onSuccess: async () => {
       setReduceSpentBy("");
@@ -3179,6 +3218,7 @@ function AdminSettingsManager() {
         queryClient.invalidateQueries({ queryKey: ["payment-settings"] }),
         queryClient.invalidateQueries({ queryKey: ["admin-daily-commission-snapshots"] }),
         queryClient.invalidateQueries({ queryKey: ["admin-stats"] }),
+        queryClient.invalidateQueries({ queryKey: ["audit-logs"] }),
       ]);
       toast.success("Platform settings updated successfully");
     },
@@ -3424,8 +3464,14 @@ function MonetisationManager() {
           })
           .eq("id", d.id);
         if (directErr) throw new Error(directErr.message || err10.message);
+        await logAdminAction({
+          action: "package.updated",
+          entity: "packages",
+          entityId: d.id,
+          meta: { name, price_ghs, credits, is_active, max_verdicts, is_popular },
+        });
       } else {
-        const { error: directErr } = await supabase
+        const { data: newPkg, error: directErr } = await supabase
           .from("packages")
           .insert({
             name,
@@ -3437,8 +3483,16 @@ function MonetisationManager() {
             is_popular,
             sort_order,
             max_verdicts,
-          });
+          })
+          .select("id")
+          .maybeSingle();
         if (directErr) throw new Error(directErr.message || err10.message);
+        await logAdminAction({
+          action: "package.created",
+          entity: "packages",
+          entityId: newPkg?.id ?? null,
+          meta: { name, price_ghs, credits, is_active, max_verdicts, is_popular },
+        });
       }
     },
     onSuccess: async () => {
@@ -3466,7 +3520,15 @@ function MonetisationManager() {
         _max_verdicts: p.max_verdicts,
       } as never);
 
-      if (!err10) return;
+      if (!err10) {
+        await logAdminAction({
+          action: "package.toggled",
+          entity: "packages",
+          entityId: p.id,
+          meta: { name: p.name, is_active },
+        });
+        return;
+      }
 
       if (!err10.message.includes("Could not find the function") && !err10.message.includes("schema cache")) {
         throw new Error(err10.message);
@@ -3484,7 +3546,15 @@ function MonetisationManager() {
         _max_verdicts: p.max_verdicts,
       } as never);
 
-      if (!err9) return;
+      if (!err9) {
+        await logAdminAction({
+          action: "package.toggled",
+          entity: "packages",
+          entityId: p.id,
+          meta: { name: p.name, is_active },
+        });
+        return;
+      }
 
       const { error: directErr } = await supabase
         .from("packages")
@@ -3492,6 +3562,13 @@ function MonetisationManager() {
         .eq("id", p.id);
 
       if (directErr) throw new Error(directErr.message || err10.message);
+
+      await logAdminAction({
+        action: "package.toggled",
+        entity: "packages",
+        entityId: p.id,
+        meta: { name: p.name, is_active },
+      });
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries();

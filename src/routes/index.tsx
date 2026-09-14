@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { LiveTicker } from "@/components/site/LiveTicker";
+import { LiveWinsBelt } from "@/components/site/LiveWinsBelt";
 import { SiteNavbar } from "@/components/site/SiteNavbar";
 import { SiteFooter } from "@/components/site/SiteFooter";
 
@@ -131,6 +132,9 @@ function LandingPage() {
       {/* Navigation */}
       <SiteNavbar />
 
+      {/* Live Wins Moving Belt */}
+      <LiveWinsBelt />
+
       {/* Hero Section — Refined Institutional Visual AI */}
       <section className="relative pt-6 sm:pt-10 pb-16 sm:pb-24 px-5 sm:px-8 lg:px-12 max-w-7xl mx-auto overflow-hidden">
         {/* Ambient Glow Accent */}
@@ -153,20 +157,20 @@ function LandingPage() {
             Transform virtual match screenshots into high-confidence outcome intelligence. PREDICTA combines visual pattern recognition with historical probability models before kickoff.
           </p>
 
-          {/* Primary CTA Group */}
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-2 w-full max-w-full px-2 sm:px-4">
+          {/* Primary CTA Group — Prominent, Clickable & Tactile */}
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-3 sm:pt-5 w-full max-w-2xl mx-auto px-2 sm:px-4">
             <Link
               to="/register"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-[11px] sm:text-xs md:text-sm font-bold uppercase tracking-wider bg-red-600 hover:bg-slate-950 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-full transition-all duration-300 shadow-md shadow-red-600/25 hover:shadow-lg max-w-full truncate cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-wider bg-red-600 hover:bg-red-700 active:bg-red-800 text-white min-h-[52px] sm:min-h-[58px] px-8 sm:px-10 py-3.5 sm:py-4 rounded-2xl transition-all duration-200 shadow-xl shadow-red-600/30 hover:shadow-2xl hover:shadow-red-600/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] border border-red-500/60 ring-4 ring-red-600/10 cursor-pointer group"
             >
-              Analyze Match Screenshot
-              <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
+              <span>Analyze Match Screenshot</span>
+              <ArrowUpRight className="w-4 h-4 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </Link>
             <a
               href="#how-it-works"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-[11px] sm:text-xs md:text-sm font-semibold uppercase tracking-wider text-slate-700 hover:text-slate-950 border border-slate-300 hover:border-slate-950 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full transition-all bg-white max-w-full truncate cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 text-xs sm:text-sm md:text-base font-bold uppercase tracking-wider text-slate-800 hover:text-slate-950 bg-white hover:bg-slate-50 active:bg-slate-100 min-h-[52px] sm:min-h-[58px] px-8 sm:px-10 py-3.5 sm:py-4 rounded-2xl border-2 border-slate-200 hover:border-slate-400 active:border-slate-950 transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] cursor-pointer"
             >
-              Explore Methodology
+              <span>Explore Methodology</span>
             </a>
           </div>
 

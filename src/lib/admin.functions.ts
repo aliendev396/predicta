@@ -157,7 +157,12 @@ export const explodePlatformData = createServerFn({ method: "POST" })
 
       return counts;
     } catch (fallbackError) {
-      if (rpcError) throw new Error(rpcError.message);
+      if (rpcError) {
+        if (rpcError.message?.includes("schema cache") || rpcError.message?.includes("without parameters")) {
+          throw new Error("Database function not found. Please push the latest migrations to Supabase (run: npx supabase db push).");
+        }
+        throw new Error(rpcError.message);
+      }
       throw fallbackError;
     }
   });
@@ -359,7 +364,7 @@ export const updatePaymentSettings = createServerFn({ method: "POST" })
         actor_id: userId,
         action: "settings.updated",
         entity: "payment_settings",
-        entity_id: "true",
+        entity_id: null,
         meta: payload,
       });
 
@@ -408,6 +413,18 @@ export const updatePaymentSettings = createServerFn({ method: "POST" })
       }
 
       if (res.error) throw new Error(res.error.message || fallbackError?.message);
+
+      try {
+        await supabase.from("audit_logs").insert({
+          actor_id: userId,
+          action: "settings.updated",
+          entity: "payment_settings",
+          entity_id: null,
+          meta: payload,
+        });
+      } catch {
+        // Fallback audit log insert is best effort
+      }
 
       return {
         ok: true,
