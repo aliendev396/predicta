@@ -4,7 +4,7 @@ import { ANALYSIS_MODEL, buildAnalysisSystemPrompt, IRRELEVANT_MESSAGE } from ".
 
 export const runAnalysis = createServerFn({ method: "POST" })
   .middleware([requireAnalysisAuth])
-  .inputValidator((input: { analysisId: string }) => {
+  .validator((input: { analysisId: string }) => {
     if (!input?.analysisId || typeof input.analysisId !== "string") {
       throw new Error("analysisId is required");
     }

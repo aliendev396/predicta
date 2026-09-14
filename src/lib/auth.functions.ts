@@ -6,7 +6,7 @@ import { z } from "zod";
  * either identifier. Returns null when no account matches.
  */
 export const resolveLoginEmail = createServerFn({ method: "POST" })
-  .inputValidator((data) => z.object({ phone: z.string().min(6).max(24) }).parse(data))
+  .validator((data) => z.object({ phone: z.string().min(6).max(24) }).parse(data))
   .handler(async ({ data }) => {
     const { supabase } = await import("@/integrations/supabase/client");
     const digits = data.phone.replace(/\D/g, "");

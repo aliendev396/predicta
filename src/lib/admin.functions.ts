@@ -9,7 +9,7 @@ import { requireAnalysisAuth } from "@/lib/auth-bearer";
  */
 export const deleteMember = createServerFn({ method: "POST" })
   .middleware([requireAnalysisAuth])
-  .inputValidator((data) => z.object({ userId: z.string().uuid() }).parse(data))
+  .validator((data) => z.object({ userId: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
@@ -164,7 +164,7 @@ export const explodePlatformData = createServerFn({ method: "POST" })
 
 export const adjustMemberSpent = createServerFn({ method: "POST" })
   .middleware([requireAnalysisAuth])
-  .inputValidator((data) =>
+  .validator((data) =>
     z
       .object({
         userId: z.string().uuid(),
@@ -263,7 +263,7 @@ export const adjustMemberSpent = createServerFn({ method: "POST" })
 
 export const updatePaymentSettings = createServerFn({ method: "POST" })
   .middleware([requireAnalysisAuth])
-  .inputValidator((data) =>
+  .validator((data) =>
     z
       .object({
         momoNumber: z.string().min(6).max(30),
