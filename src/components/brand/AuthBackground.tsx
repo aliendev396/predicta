@@ -9,7 +9,7 @@ interface AuthBackgroundProps {
 
 export function AuthBackground({ children }: AuthBackgroundProps) {
   return (
-    <main className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-slate-50 font-sans selection:bg-red-600 selection:text-white">
+    <main className="min-h-screen w-full max-w-full overflow-x-hidden grid grid-cols-1 lg:grid-cols-12 bg-slate-50 font-sans selection:bg-red-600 selection:text-white">
       {/* Left Editorial / Institutional Panel (Desktop) */}
       <div className="hidden lg:flex lg:col-span-5 bg-slate-950 text-white relative flex-col justify-between p-10 xl:p-14 overflow-hidden border-r border-slate-800">
         {/* Ambient Red & Cyan Mesh Glows */}

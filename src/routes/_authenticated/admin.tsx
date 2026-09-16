@@ -494,9 +494,9 @@ function AdminPage() {
       </div>
 
       {/* Main Tabs Navigation */}
-      <Tabs defaultValue="payments" className="min-h-[650px] space-y-6">
-        <div className="sticky top-14 sm:top-16 lg:top-0 z-30 -mx-3 px-3 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10 py-3 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-2xs transition-all">
-          <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <Tabs defaultValue="payments" className="min-h-[650px] space-y-6 w-full max-w-full">
+        <div className="sticky top-14 sm:top-16 lg:top-0 z-30 w-full max-w-full py-3 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-2xs transition-all">
+          <div className="overflow-x-auto max-w-full [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <TabsList className="w-max min-w-full justify-start gap-1.5 bg-slate-100/80 p-1.5 rounded-full border border-slate-200/80">
               {[
                 { value: "payments", label: "Payments Queue", badge: pendingPaymentsCount > 0 ? pendingPaymentsCount : null },

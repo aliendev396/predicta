@@ -101,7 +101,7 @@ function PartnerPage() {
       />
 
       {/* Hero Obsidian Payout Banner */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-slate-800 text-white p-8 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.25)]">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-slate-800 text-white p-5 sm:p-8 lg:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.25)]">
         <div className="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-red-600/20 blur-[100px]" />
         <LogoWatermark className="opacity-[0.06] text-white" />
         <LogoSymbol
@@ -118,7 +118,7 @@ function PartnerPage() {
 
           <div className="space-y-1">
             <p className="text-xs font-mono font-bold uppercase tracking-widest text-slate-400">PENDING PAYOUT BALANCE</p>
-            <p className="text-5xl sm:text-6xl font-black leading-none tracking-tight font-sans text-white">
+            <p className="text-3xl sm:text-5xl lg:text-6xl font-black leading-none tracking-tight font-sans text-white break-words">
               {ghs(unpaidBalance)}
             </p>
             <p className="text-xs font-mono text-slate-400 pt-1">

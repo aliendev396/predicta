@@ -138,7 +138,7 @@ function RegistrationFeePage() {
   });
 
   return (
-    <main className="min-h-screen bg-slate-50/60 text-slate-950 font-sans selection:bg-red-600 selection:text-white py-6 sm:py-12 px-3 sm:px-6 lg:px-8 flex flex-col justify-between relative overflow-hidden mobile-contain">
+    <main className="min-h-screen w-full max-w-full bg-slate-50/60 text-slate-950 font-sans selection:bg-red-600 selection:text-white py-6 sm:py-12 px-3 sm:px-6 lg:px-8 flex flex-col justify-between relative overflow-hidden overflow-x-hidden mobile-contain">
       {/* Background Red Ambient Top Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[350px] bg-red-500/10 rounded-full blur-[100px] pointer-events-none" />
 

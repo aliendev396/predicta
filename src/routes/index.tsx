@@ -128,7 +128,7 @@ function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-slate-950 font-sans selection:bg-red-600 selection:text-white">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white text-slate-950 font-sans selection:bg-red-600 selection:text-white">
       {/* Navigation */}
       <SiteNavbar />
 

@@ -213,7 +213,7 @@ export function AppShell({
       )}
 
       {/* Main Content Area */}
-      <main className="w-full min-w-0 overflow-x-hidden px-4 py-6 sm:px-6 sm:py-8 lg:ml-64 lg:px-12 lg:py-10 max-w-7xl">
+      <main className="w-full min-w-0 max-w-full overflow-x-hidden px-4 py-6 sm:px-6 sm:py-8 lg:ml-64 lg:px-12 lg:py-10 max-w-7xl">
         {children}
       </main>
     </div>
@@ -235,7 +235,7 @@ export function PageHeader({
         <Sparkles className="size-3" />
         {badgeText}
       </div>
-      <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-950 uppercase">
+      <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-950 uppercase break-words">
         {title}
       </h1>
       {description && (

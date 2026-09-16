@@ -49,7 +49,7 @@ export function LegalHeroBanner({
           </span>
           <span className="text-xs text-slate-400 font-mono">{lastUpdated}</span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white font-sans">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-white font-sans break-words">
           {title}
         </h1>
         <p className="mt-4 text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed font-normal">

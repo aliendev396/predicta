@@ -121,7 +121,7 @@ function CreditsPage() {
 
       {/* Top Section: Obsidian Balance Hero Card & Mini Stat */}
       <div className="grid gap-6 lg:grid-cols-3">
-        <section className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-slate-800 text-white p-6 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.25)] lg:col-span-2">
+        <section className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-slate-800 text-white p-5 sm:p-8 lg:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.25)] lg:col-span-2">
           {/* Ambient Red Glow */}
           <div className="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-red-600/20 blur-[100px]" />
           <div className="pointer-events-none absolute -bottom-20 -left-10 size-60 rounded-full bg-red-900/10 blur-[80px]" />
@@ -144,7 +144,7 @@ function CreditsPage() {
             </div>
 
             <div className="flex flex-wrap items-baseline gap-3 sm:gap-4 pt-2">
-              <p className="text-5xl sm:text-7xl font-black leading-none tracking-tight font-sans text-white">{credits}</p>
+              <p className="text-4xl sm:text-6xl lg:text-7xl font-black leading-none tracking-tight font-sans text-white break-words">{credits}</p>
               <div className="space-y-0.5">
                 <p className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-slate-300">Scan Credits Active</p>
                 <p className="text-xs text-slate-400">1 credit deducted per screenshot match scan</p>
@@ -245,7 +245,7 @@ function CreditsPage() {
                       +{p.credits} CREDITS
                     </span>
                   </div>
-                  <p className="text-xs font-mono text-slate-500">
+                  <p className="text-xs font-mono text-slate-500 break-all">
                     {p.method} · {p.reference}
                   </p>
                   <p className="text-[11px] text-slate-400">
@@ -449,7 +449,7 @@ function UpgradeDialog() {
           <ArrowUpRight className="size-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[95vw] sm:w-full max-h-[92vh] overflow-y-auto sm:max-w-4xl lg:max-w-5xl rounded-2xl sm:rounded-3xl bg-white border border-slate-200 p-4 sm:p-8 lg:p-10 selection:bg-red-600 selection:text-white mobile-contain">
+      <DialogContent className="w-[95vw] sm:w-full max-w-full max-h-[92vh] overflow-y-auto overflow-x-hidden sm:max-w-4xl lg:max-w-5xl rounded-2xl sm:rounded-3xl bg-white border border-slate-200 p-4 sm:p-8 lg:p-10 selection:bg-red-600 selection:text-white mobile-contain">
         <DialogHeader className="space-y-1.5 sm:space-y-2 text-left">
           <div className="inline-flex items-center gap-2 px-3 py-0.5 sm:py-1 rounded-full bg-red-50 border border-red-200 text-red-600 font-mono text-[9px] sm:text-[10px] font-bold tracking-widest uppercase w-fit">
             PREDICTA BILLING CHECKOUT

@@ -22,7 +22,7 @@ export const Route = createFileRoute("/privacy")({
 
 function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen relative bg-slate-50 text-foreground flex flex-col" style={{ overflowX: "clip" }}>
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden relative bg-slate-50 text-foreground flex flex-col">
       <SiteNavbar />
 
       <main className="flex-1">

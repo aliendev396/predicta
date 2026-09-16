@@ -96,7 +96,7 @@ function PartnerApplyPage() {
   });
 
   return (
-    <main className="mx-auto w-full max-w-2xl py-8 selection:bg-red-600 selection:text-white">
+    <main className="mx-auto w-full max-w-2xl px-4 sm:px-6 min-w-0 overflow-x-hidden py-8 selection:bg-red-600 selection:text-white">
       <div className="flex justify-center mb-6">
         <LogoFull className="h-8 w-auto" />
       </div>
