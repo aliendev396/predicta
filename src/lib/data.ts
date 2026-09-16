@@ -272,11 +272,11 @@ export const adminStatsQuery = () =>
       ]);
 
       const approvedRevenue = (paymentsRes.data ?? [])
-        .filter((p) => p.status === "approved")
+        .filter((p) => (p.status || "").toLowerCase() === "approved")
         .reduce((acc, p) => acc + Number(p.amount_ghs || 0), 0);
 
       const pendingCount = (paymentsRes.data ?? [])
-        .filter((p) => p.status === "pending").length;
+        .filter((p) => (p.status || "").toLowerCase() === "pending").length;
 
       return {
         members: profilesRes.count ?? 0,

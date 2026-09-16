@@ -265,21 +265,47 @@ function AdminPage() {
   const [selectedHistoryDate, setSelectedHistoryDate] = useState<Date | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
 
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = useMemo(() => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }, []);
 
   // Compute which date to show revenue for (selected or today)
   const activeDate = selectedHistoryDate;
-  const activeDateStr = activeDate
-    ? `${activeDate.getFullYear()}-${String(activeDate.getMonth() + 1).padStart(2, "0")}-${String(activeDate.getDate()).padStart(2, "0")}`
-    : todayStr;
+  const activeDateStr = useMemo(() => {
+    if (!activeDate) return todayStr;
+    const year = activeDate.getFullYear();
+    const month = String(activeDate.getMonth() + 1).padStart(2, "0");
+    const day = String(activeDate.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }, [activeDate, todayStr]);
+
   const isHistoryMode = selectedHistoryDate !== null;
   const isPastLockedDate = isHistoryMode && activeDateStr < todayStr;
 
-  const activeRevenue = (payments ?? [])
-    .filter((p) => p.status === "approved" && (p.created_at || "").slice(0, 10) === activeDateStr)
-    .reduce((acc, p) => acc + Number(p.amount_ghs || 0), 0);
-
   const selectedSnapshot = snapshotMap.get(activeDateStr);
+  const snapshotRev = Number(selectedSnapshot?.revenue_ghs ?? 0);
+
+  const paymentsActiveRev = useMemo(() => {
+    return (payments ?? [])
+      .filter((p) => {
+        const isApproved = (p.status || "").toLowerCase() === "approved";
+        if (!isApproved) return false;
+        if (!p.created_at) return false;
+        const d = new Date(p.created_at);
+        const pDateStr = !isNaN(d.getTime())
+          ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+          : "";
+        const rawDateStr = p.created_at.slice(0, 10);
+        return pDateStr === activeDateStr || rawDateStr === activeDateStr;
+      })
+      .reduce((acc, p) => acc + Number(p.amount_ghs || (p.kind === "registration" ? 50 : 0)), 0);
+  }, [payments, activeDateStr]);
+
+  const activeRevenue = Math.max(snapshotRev, paymentsActiveRev);
 
   const devRate = isPastLockedDate && selectedSnapshot
     ? Number(selectedSnapshot.developer_commission_rate)
@@ -295,20 +321,29 @@ function AdminPage() {
   const revenueDays = useMemo(() => {
     const days = new Set<string>();
     for (const p of payments ?? []) {
-      if (p.status === "approved" && p.created_at) {
+      if ((p.status || "").toLowerCase() === "approved" && p.created_at) {
         days.add(p.created_at.slice(0, 10));
       }
     }
-    return Array.from(days).map((d) => new Date(d + "T00:00:00"));
-  }, [payments]);
+    for (const s of snapshots ?? []) {
+      if (Number(s.revenue_ghs || 0) > 0 && s.date) {
+        days.add(typeof s.date === "string" ? s.date.slice(0, 10) : "");
+      }
+    }
+    return Array.from(days).filter(Boolean).map((d) => new Date(d + "T00:00:00"));
+  }, [payments, snapshots]);
 
   const totalAcceptedRevenue = useMemo(() => {
     const statsRev = Number(stats?.revenue_ghs ?? 0);
     const paymentsRev = (payments ?? [])
-      .filter((p) => p.status === "approved")
-      .reduce((acc, p) => acc + Number(p.amount_ghs || 0), 0);
-    return Math.max(statsRev, paymentsRev);
-  }, [stats?.revenue_ghs, payments]);
+      .filter((p) => (p.status || "").toLowerCase() === "approved")
+      .reduce((acc, p) => acc + Number(p.amount_ghs || (p.kind === "registration" ? 50 : 0)), 0);
+    const snapshotsRev = (snapshots ?? []).reduce((acc, s) => acc + Number(s.revenue_ghs || 0), 0);
+    const memberSpentSum = (members ?? []).reduce((acc, m) => acc + Number(m.spent_ghs || 0), 0);
+    const regPaidSum = (members ?? []).filter((m) => m.registration_paid).length * 50;
+
+    return Math.max(statsRev, paymentsRev, snapshotsRev, memberSpentSum, regPaidSum);
+  }, [stats?.revenue_ghs, payments, snapshots, members]);
 
   const activeDateLabel = activeDate
     ? activeDate.toLocaleDateString("en-GB", { day: "numeric", month: "short" })
@@ -369,87 +404,93 @@ function AdminPage() {
         </div>
       </div>
 
-      {/* Bento-Style Stat Overview Grid */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-8">
-        <Stat
-          label="Total Revenue"
-          value={ghs(totalAcceptedRevenue)}
-          highlight
-          subtext="Total ever accepted"
-          icon={Wallet}
-        />
-        <Stat
-          label={isHistoryMode ? `Revenue · ${activeDateLabel}` : "Today's Revenue"}
-          value={ghs(activeRevenue)}
-          highlight
-          subtext={isHistoryMode ? `Historical snapshot` : `Live daily tally`}
-          icon={CreditCard}
-          action={
-            <div className="flex items-center gap-1">
-              {isHistoryMode && (
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); setSelectedHistoryDate(null); }}
-                  className="flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-mono font-bold text-white backdrop-blur-sm transition-all hover:bg-white/30 hover:scale-105 active:scale-95"
-                  aria-label="Back to today"
-                >
-                  <X className="size-2.5" />
-                  Today
-                </button>
-              )}
-              <RevenueHistoryCalendar
-                open={calendarOpen}
-                onOpenChange={setCalendarOpen}
-                selected={selectedHistoryDate}
-                onSelect={(day) => {
-                  setSelectedHistoryDate(day ?? null);
-                  setCalendarOpen(false);
-                }}
-                revenueDays={revenueDays}
-                snapshotMap={snapshotMap}
-              />
-            </div>
-          }
-        />
-        <Stat
-          label={isHistoryMode ? `Dev (${devRate}%) · ${activeDateLabel}` : `Dev Split (${devRate}%)`}
-          value={ghs(devCommission)}
-          highlight
-          subtext="System share"
-          icon={Percent}
-        />
-        <Stat
-          label={isHistoryMode ? `Admin (${adminRate}%) · ${activeDateLabel}` : `Admin Split (${adminRate}%)`}
-          value={ghs(adminCommission)}
-          highlight
-          subtext="Platform share"
-          icon={Percent}
-        />
-        <Stat
-          label="Partners"
-          value={String(stats?.partners ?? 0)}
-          subtext="Affiliate network"
-          icon={Users}
-        />
-        <Stat
-          label="Members"
-          value={String(stats?.members ?? 0)}
-          subtext="Registered users"
-          icon={ShieldCheck}
-        />
-        <Stat
-          label="Analyses"
-          value={String(stats?.analyses ?? 0)}
-          subtext="AI scans run"
-          icon={Activity}
-        />
-        <Stat
-          label="Pending Queue"
-          value={String(stats?.pending_payments ?? 0)}
-          subtext={stats?.pending_payments ? "Action required" : "Queue clear"}
-          alert={Number(stats?.pending_payments ?? 0) > 0}
-          icon={Clock}
-        />
+      {/* Main Monetization & Revenue Stat Overview Grid */}
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Stat
+            label="Total Revenue"
+            value={ghs(totalAcceptedRevenue)}
+            highlight
+            subtext="Total ever accepted"
+            icon={Wallet}
+          />
+          <Stat
+            label={isHistoryMode ? `Revenue · ${activeDateLabel}` : "Today's Revenue"}
+            value={ghs(activeRevenue)}
+            highlight
+            subtext={isHistoryMode ? `Historical snapshot` : `Live daily tally`}
+            icon={CreditCard}
+            action={
+              <div className="flex items-center gap-1">
+                {isHistoryMode && (
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setSelectedHistoryDate(null); }}
+                    className="flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-mono font-bold text-white backdrop-blur-sm transition-all hover:bg-white/30 hover:scale-105 active:scale-95"
+                    aria-label="Back to today"
+                  >
+                    <X className="size-2.5" />
+                    Today
+                  </button>
+                )}
+                <RevenueHistoryCalendar
+                  open={calendarOpen}
+                  onOpenChange={setCalendarOpen}
+                  selected={selectedHistoryDate}
+                  onSelect={(day) => {
+                    setSelectedHistoryDate(day ?? null);
+                    setCalendarOpen(false);
+                  }}
+                  revenueDays={revenueDays}
+                  snapshotMap={snapshotMap}
+                />
+              </div>
+            }
+          />
+          <Stat
+            label={isHistoryMode ? `Dev (${devRate}%) · ${activeDateLabel}` : `Dev Split (${devRate}%)`}
+            value={ghs(devCommission)}
+            highlight
+            subtext="System share"
+            icon={Percent}
+          />
+          <Stat
+            label={isHistoryMode ? `Admin (${adminRate}%) · ${activeDateLabel}` : `Admin Split (${adminRate}%)`}
+            value={ghs(adminCommission)}
+            highlight
+            subtext="Platform share"
+            icon={Percent}
+          />
+        </div>
+
+        {/* System & Operations Secondary Cards */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
+          <Stat
+            label="Partners"
+            value={String(stats?.partners ?? 0)}
+            subtext="Affiliate network"
+            icon={Users}
+          />
+          <Stat
+            label="Members"
+            value={String(stats?.members ?? 0)}
+            subtext="Registered users"
+            icon={ShieldCheck}
+          />
+          <Stat
+            label="Analyses"
+            value={String(stats?.analyses ?? 0)}
+            subtext="AI scans run"
+            icon={Activity}
+          />
+          <Stat
+            label="Pending Queue"
+            value={String(stats?.pending_payments ?? 0)}
+            subtext={stats?.pending_payments ? "Action required" : "Queue clear"}
+            alert={Number(stats?.pending_payments ?? 0) > 0}
+            icon={Clock}
+          />
+        </div>
       </div>
 
       {/* Main Tabs Navigation */}
@@ -1562,25 +1603,30 @@ function Stat({
 }) {
   if (highlight) {
     return (
-      <div className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4 sm:p-5 text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-700 hover:shadow-xl flex flex-col justify-between min-h-[120px]">
+      <div className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-5 sm:p-6 text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-700 hover:shadow-2xl flex flex-col justify-between min-h-[140px]">
         {/* Ambient red blur */}
-        <div className="pointer-events-none absolute -top-12 -right-12 size-32 rounded-full bg-red-600/20 blur-2xl group-hover:bg-red-600/30 transition-all duration-300" />
+        <div className="pointer-events-none absolute -top-12 -right-12 size-36 rounded-full bg-red-600/25 blur-2xl group-hover:bg-red-600/40 transition-all duration-300" />
         <LogoSymbol
           aria-hidden
-          className="absolute right-3 top-3 h-5 w-auto opacity-20 brightness-0 invert transition-transform duration-300 group-hover:scale-110 group-hover:opacity-35"
+          className="absolute right-4 top-4 h-6 w-auto opacity-20 brightness-0 invert transition-transform duration-300 group-hover:scale-110 group-hover:opacity-35"
         />
-        <div>
-          <div className="flex items-center justify-between gap-1">
-            <p className="text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 truncate pr-6">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
               {label}
-            </p>
+            </span>
+            {Icon && (
+              <div className="size-7 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 flex items-center justify-center shrink-0">
+                <Icon className="size-4" />
+              </div>
+            )}
           </div>
-          <p className="mt-2 text-xl sm:text-2xl font-black tracking-tight text-white font-sans truncate">
+          <p className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-sans break-words leading-tight">
             {value}
           </p>
         </div>
-        <div className="mt-3 flex items-center justify-between border-t border-slate-800/80 pt-2">
-          <p className="text-[10px] font-mono text-slate-400 truncate">{subtext || "PREDICTA metric"}</p>
+        <div className="mt-4 flex items-center justify-between border-t border-slate-800/90 pt-2.5">
+          <p className="text-[11px] font-mono text-slate-400">{subtext || "PREDICTA metric"}</p>
           {action && <div className="shrink-0">{action}</div>}
         </div>
       </div>
@@ -1590,32 +1636,32 @@ function Stat({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-2xl sm:rounded-3xl border bg-white p-4 sm:p-5 shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md flex flex-col justify-between min-h-[120px]",
+        "group relative overflow-hidden rounded-2xl sm:rounded-3xl border bg-white p-5 sm:p-6 shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md flex flex-col justify-between min-h-[140px]",
         alert
-          ? "border-amber-300 bg-amber-50/30 hover:border-amber-400"
+          ? "border-amber-300 bg-amber-50/40 hover:border-amber-400"
           : "border-slate-200/90 hover:border-slate-300"
       )}
     >
-      <div>
-        <div className="flex items-center justify-between gap-1">
-          <span className="text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 truncate">
+      <div className="space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-500">
             {label}
           </span>
           {Icon && (
             <div className={cn(
-              "size-6 rounded-full flex items-center justify-center shrink-0",
+              "size-7 rounded-full flex items-center justify-center shrink-0",
               alert ? "bg-amber-100 text-amber-700" : "bg-red-50 text-red-600"
             )}>
-              <Icon className="size-3.5" />
+              <Icon className="size-4" />
             </div>
           )}
         </div>
-        <p className="mt-2 text-xl sm:text-2xl font-black tracking-tight text-slate-950 font-sans truncate">
+        <p className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-950 font-sans break-words leading-tight">
           {value}
         </p>
       </div>
-      <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2">
-        <p className="text-[10px] font-mono text-slate-400 truncate">{subtext || "PREDICTA metric"}</p>
+      <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-2.5">
+        <p className="text-[11px] font-mono text-slate-400">{subtext || "PREDICTA metric"}</p>
         {action && <div className="shrink-0">{action}</div>}
       </div>
     </div>
