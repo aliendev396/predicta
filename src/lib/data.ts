@@ -189,7 +189,7 @@ export const paymentsQuery = (userId: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("payments")
-        .select("id, amount_ghs, credits, method, reference, status, admin_note, created_at")
+        .select("id, amount_ghs, credits, method, sender_name, reference, status, kind, admin_note, created_at")
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
       if (error) throw error;

@@ -4,12 +4,22 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
   ArrowUpRight,
+  Building2,
   Check,
+  CheckCircle2,
   Clock,
   Coins,
   Copy,
+  ExternalLink,
+  Eye,
+  FileText,
+  Image as ImageIcon,
   Loader2,
+  ShieldCheck,
+  Smartphone,
   Sparkles,
+  X,
+  XCircle,
   Zap,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -108,6 +118,20 @@ function CreditsPage() {
   const spent = (history ?? []).reduce((sum, t) => (t.delta < 0 ? sum - t.delta : sum), 0);
   const pending = (payments ?? []).filter((p) => p.status === "pending").length;
   const low = credits <= 2;
+
+  const [previewProofUrl, setPreviewProofUrl] = useState<string | null>(null);
+  const [copiedRefId, setCopiedRefId] = useState<string | null>(null);
+
+  const handleCopyRef = async (text: string, id: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedRefId(id);
+      toast.success("Reference copied to clipboard");
+      setTimeout(() => setCopiedRefId(null), 2000);
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
 
   return (
     <div className="space-y-10 selection:bg-red-600 selection:text-white pb-12">
@@ -232,52 +256,159 @@ function CreditsPage() {
 
           <div className="divide-y divide-slate-100 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
             {(payments ?? []).length === 0 && (
-              <div className="p-8 text-center space-y-2">
-                <Coins className="mx-auto size-8 text-slate-300" />
-                <p className="text-sm font-medium text-slate-950">No payments submitted yet</p>
+              <div className="p-10 text-center space-y-3">
+                <Coins className="mx-auto size-10 text-slate-300" />
+                <p className="text-base font-extrabold uppercase tracking-tight text-slate-950">
+                  No payments submitted yet
+                </p>
                 <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                  Select a package above to purchase prediction scan credits via Mobile Money.
+                  Select an access tier above to unlock prediction scan credits via Mobile Money or Bank Transfer.
                 </p>
               </div>
             )}
-            {(payments ?? []).map((p) => (
-              <div key={p.id} className="flex flex-wrap items-start justify-between gap-4 p-5 hover:bg-slate-50/80 transition-colors">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <p className="text-base font-extrabold text-slate-950 font-sans">
-                      {ghs(p.amount_ghs)}
-                    </p>
-                    <span className="text-xs font-mono font-semibold text-red-600 bg-red-50 px-2.5 py-0.5 rounded-full border border-red-100">
-                      +{p.credits} CREDITS
-                    </span>
+            {(payments ?? []).map((p) => {
+              const isNgn =
+                (p.method || "").includes("Nigeria") ||
+                (p.method || "").includes("Fidelity") ||
+                (p.reference || "").toLowerCase().includes("ngn");
+              const ngnPrice = getNgnPrice(p.amount_ghs);
+
+              const proofMatch = (p.reference || "").match(/Proof:\s*(https?:\/\/[^\s]+|data:image\/[^\s]+)/);
+              const proofUrl = proofMatch
+                ? proofMatch[1]
+                : ((p.reference || "").startsWith("http") || (p.reference || "").startsWith("data:image")
+                  ? p.reference
+                  : null);
+              const rawRef = (p.reference || "")
+                .replace(/\|?\s*Proof:\s*(https?:\/\/[^\s]+|data:image\/[^\s]+)/, "")
+                .trim();
+              const cleanRef =
+                rawRef && rawRef !== "Not provided" && !rawRef.startsWith("data:image") ? rawRef : null;
+
+              return (
+                <div
+                  key={p.id}
+                  className="p-5 sm:p-6 hover:bg-slate-50/80 transition-colors space-y-4"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-baseline gap-2">
+                        <span className="text-xl font-black tracking-tight text-slate-950 font-sans">
+                          {isNgn ? ngn(ngnPrice) : ghs(p.amount_ghs)}
+                        </span>
+                        {isNgn && (
+                          <span className="text-xs font-mono text-slate-400 font-medium">
+                            ({ghs(p.amount_ghs)} equiv)
+                          </span>
+                        )}
+                        <span className="inline-flex items-center gap-1 font-mono text-[11px] font-bold text-red-600 bg-red-50 border border-red-100 px-2.5 py-0.5 rounded-full">
+                          +{p.credits} CREDITS
+                        </span>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 pt-1">
+                        {isNgn ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                            <span>🇳🇬</span> Fidelity Bank Transfer
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                            <span>🇬🇭</span> {p.method}
+                          </span>
+                        )}
+                        <span className="text-[11px] text-slate-400 font-mono">
+                          {new Date(p.created_at).toLocaleDateString(undefined, {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                    </div>
+
+                    <Badge
+                      className={cn(
+                        "font-mono text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-2xs border",
+                        p.status === "approved"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                          : p.status === "rejected"
+                            ? "bg-red-50 text-red-700 border-red-200"
+                            : "bg-amber-50 text-amber-700 border-amber-200"
+                      )}
+                    >
+                      {p.status === "approved" && <CheckCircle2 className="size-3.5 mr-1" />}
+                      {p.status === "pending" && <Clock className="size-3.5 mr-1 animate-spin text-amber-600" />}
+                      {p.status === "rejected" && <XCircle className="size-3.5 mr-1 text-red-600" />}
+                      {p.status === "pending" ? "PENDING APPROVAL" : p.status === "approved" ? "APPROVED" : "DECLINED"}
+                    </Badge>
                   </div>
-                  <p className="text-xs font-mono text-slate-500 break-all">
-                    {p.method} · {p.reference}
-                  </p>
-                  <p className="text-[11px] text-slate-400">
-                    {new Date(p.created_at).toLocaleString()}
-                  </p>
+
+                  {/* Transaction Details & Sender */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs bg-slate-50/70 border border-slate-100 p-3 rounded-2xl">
+                    <div>
+                      <span className="text-slate-400 font-mono text-[11px] uppercase block">Sender Account</span>
+                      <span className="font-bold text-slate-900">{p.sender_name || "Not provided"}</span>
+                    </div>
+                    {cleanRef && (
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-slate-400 font-mono text-[11px] uppercase block">Reference</span>
+                          <span className="font-mono font-semibold text-slate-800">{cleanRef}</span>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleCopyRef(cleanRef, p.id)}
+                          className="size-7 p-0 text-slate-400 hover:text-slate-700"
+                          title="Copy reference"
+                        >
+                          {copiedRefId === p.id ? <Check className="size-3.5 text-emerald-600" /> : <Copy className="size-3.5" />}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Payment Receipt Proof Preview */}
+                  {proofUrl && (
+                    <div className="pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setPreviewProofUrl(proofUrl)}
+                        className="group flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-2.5 pr-4 hover:border-red-300 hover:bg-red-50/30 transition-all cursor-pointer shadow-2xs text-left w-fit"
+                      >
+                        <div className="size-11 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shrink-0 flex items-center justify-center">
+                          <img
+                            src={proofUrl}
+                            alt="Payment receipt proof preview"
+                            className="size-full object-cover group-hover:scale-105 transition-transform"
+                          />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                            <ImageIcon className="size-3.5 text-red-600" />
+                            Receipt Screenshot Attached
+                          </p>
+                          <p className="text-[11px] text-slate-500 font-mono">
+                            Click to view full payment proof
+                          </p>
+                        </div>
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Admin note banner */}
                   {p.admin_note && (
-                    <p className="mt-1 text-xs text-slate-600 bg-slate-50 border border-slate-200 p-2 rounded-xl">
-                      <span className="font-semibold text-slate-900">Admin Note:</span> {p.admin_note}
-                    </p>
+                    <div className="text-xs text-slate-700 bg-amber-50/80 border border-amber-200 rounded-xl p-3 flex items-start gap-2">
+                      <span className="font-bold text-amber-900 shrink-0 font-mono uppercase text-[10px]">Admin Note:</span>
+                      <span>{p.admin_note}</span>
+                    </div>
                   )}
                 </div>
-
-                <Badge
-                  className={cn(
-                    "font-mono text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-2xs border-0",
-                    p.status === "approved"
-                      ? "bg-slate-950 text-white"
-                      : p.status === "rejected"
-                        ? "bg-red-600 text-white"
-                        : "bg-amber-500 text-white"
-                  )}
-                >
-                  {p.status}
-                </Badge>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -331,6 +462,57 @@ function CreditsPage() {
           </div>
         </section>
       </div>
+
+      {/* Receipt Proof Lightbox Dialog */}
+      <Dialog open={!!previewProofUrl} onOpenChange={(isOpen) => !isOpen && setPreviewProofUrl(null)}>
+        <DialogContent className="max-w-xl rounded-3xl bg-white p-6 border border-slate-200 shadow-2xl">
+          <DialogHeader className="space-y-1 text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-red-600 font-mono text-[10px] font-bold uppercase tracking-wider w-fit">
+              <ImageIcon className="size-3.5" />
+              PAYMENT RECEIPT PROOF
+            </div>
+            <DialogTitle className="text-xl font-extrabold uppercase tracking-tight text-slate-950">
+              Uploaded Bank Screenshot
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Proof of bank transfer submitted for account verification.
+            </DialogDescription>
+          </DialogHeader>
+
+          {previewProofUrl && (
+            <div className="mt-4 space-y-4">
+              <div className="relative max-h-[60vh] overflow-auto rounded-2xl border border-slate-200 bg-slate-950/5 p-2 flex items-center justify-center">
+                <img
+                  src={previewProofUrl}
+                  alt="Uploaded payment proof receipt"
+                  className="max-h-[55vh] w-auto max-w-full rounded-xl object-contain shadow-sm"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setPreviewProofUrl(null)}
+                  className="rounded-full px-5 text-xs font-bold uppercase tracking-wider"
+                >
+                  Close
+                </Button>
+                <Button
+                  type="button"
+                  asChild
+                  className="rounded-full bg-red-600 hover:bg-red-700 text-white px-5 text-xs font-bold uppercase tracking-wider border-0"
+                >
+                  <a href={previewProofUrl} target="_blank" rel="noreferrer" download="payment-proof">
+                    <ExternalLink className="mr-1.5 size-3.5" />
+                    Open Full Image
+                  </a>
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
