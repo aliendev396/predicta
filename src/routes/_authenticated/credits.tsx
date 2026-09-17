@@ -30,18 +30,24 @@ import {
 
 import { LogoSymbol, LogoWatermark } from "@/components/brand/Logo";
 import { PaymentVerificationView } from "@/components/payment/PaymentVerificationView";
+import { CountryPaymentTabs, PaymentCountry } from "@/components/payment/CountryPaymentTabs";
+import { NigerianPaymentForm } from "@/components/payment/NigerianPaymentForm";
 import { supabase } from "@/integrations/supabase/client";
 import {
   creditHistoryQuery,
+  getNgnPrice,
   ghs,
+  ngn,
   packagesQuery,
   paymentSettingsQuery,
   paymentsQuery,
   profileQuery,
+  uploadPaymentProof,
   verdictLimitQuery,
 } from "@/lib/data";
 import { checkPaymentRateLimit, formatRetryAfter } from "@/lib/rateLimit";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/_authenticated/credits")({
   head: () => ({
@@ -337,6 +343,7 @@ function UpgradeDialog() {
   const { data: settings } = useQuery(paymentSettingsQuery());
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [country, setCountry] = useState<PaymentCountry>("ghana");
   const [selected, setSelected] = useState<string | null>(null);
   const method = settings?.network ?? "MTN MoMo";
   const [senderName, setSenderName] = useState("");
@@ -432,6 +439,77 @@ function UpgradeDialog() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const submitNigerian = useMutation({
+    mutationFn: async ({
+      senderName,
+      reference,
+      proofFile,
+    }: {
+      senderName: string;
+      reference: string;
+      proofFile: File | null;
+    }) => {
+      const rl = checkPaymentRateLimit(user.id);
+      if (!rl.allowed) {
+        throw new Error(
+          `Submission limit reached (max 7 per hour). Please wait ${formatRetryAfter(
+            rl.retryAfterSeconds
+          )} before submitting again.`
+        );
+      }
+
+      if (!pkg) throw new Error("Choose a package first.");
+      const name = senderName.trim();
+      if (name.length < 2 || name.length > 80) {
+        throw new Error("Enter the bank account name you transferred from (2-80 characters).");
+      }
+
+      let proofUrl = "";
+      if (proofFile) {
+        proofUrl = await uploadPaymentProof(user.id, proofFile);
+      }
+
+      const refString = proofUrl
+        ? `${reference ? `${reference} | ` : ""}Proof: ${proofUrl}`
+        : reference || "Not provided";
+
+      const { data, error } = await supabase
+        .from("payments")
+        .insert({
+          user_id: user.id,
+          package_id: pkg.id,
+          amount_ghs: pkg.price_ghs,
+          credits: pkg.credits,
+          kind: "package",
+          method: "Bank Transfer (Nigeria - Fidelity Bank)",
+          sender_name: name,
+          reference: refString,
+        })
+        .select("id")
+        .single();
+
+      if (error) {
+        if (error.message.includes("RATE_LIMITED")) {
+          throw new Error("Too many payment submissions (max 7 per hour). Please wait before trying again.");
+        }
+        throw new Error(error.message);
+      }
+      return data.id as string;
+    },
+    onSuccess: async (id: string) => {
+      setPaymentId(id);
+      setStep(3);
+      void supabase.channel("admin-realtime-websocket").send({
+        type: "broadcast",
+        event: "payment-submitted",
+        payload: { userId: user.id },
+      });
+      await queryClient.invalidateQueries({ queryKey: ["payments", user.id] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+
   return (
     <Dialog
       open={open}
@@ -479,11 +557,17 @@ function UpgradeDialog() {
           ))}
         </div>
 
+        {/* Country Selector Tabs (Ghanaians vs Nigerians) */}
+        <div className="mb-2">
+          <CountryPaymentTabs country={country} onChange={setCountry} />
+        </div>
+
         {/* Step 1: Package Selection Cards Replicating Homepage Design */}
         {step === 1 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch pt-4">
             {(packages ?? []).map((pkg) => {
               const popular = pkg.is_popular === true;
+              const ngnPrice = getNgnPrice(pkg.price_ghs);
               return (
                 <div
                   key={pkg.id}
@@ -511,11 +595,11 @@ function UpgradeDialog() {
                       </h3>
                       <div className="flex items-baseline gap-1">
                         <span className="text-4xl sm:text-5xl font-black tracking-tight font-sans">
-                          {ghs(pkg.price_ghs)}
+                          {country === "nigeria" ? ngn(ngnPrice) : ghs(pkg.price_ghs)}
                         </span>
                       </div>
                       <p className="text-xs opacity-80 pt-1 font-mono">
-                        {pkg.credits} match scan credits
+                        {pkg.credits} match scan credits {country === "nigeria" && `(GH₵${pkg.price_ghs} equiv)`}
                       </p>
                     </div>
 
@@ -566,121 +650,152 @@ function UpgradeDialog() {
 
         {/* Step 2: Payment Details Form */}
         {step === 2 && pkg && (
-          <form
-            className="mt-4 space-y-6"
-            onSubmit={(e) => {
-              e.preventDefault();
-              submit.mutate();
-            }}
-          >
-            {/* Selected Package Banner */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white p-6 border border-slate-800 shadow-md">
-              <LogoWatermark className="opacity-[0.05] text-white" />
-              <div className="relative z-10 flex flex-wrap items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <span className="text-[10px] font-mono font-bold tracking-widest text-red-500 uppercase">
-                    SELECTED PACKAGE
+          <div className="mt-4 space-y-6">
+            {country === "nigeria" ? (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setStep(1)}
+                    className="rounded-full border-slate-300 font-bold uppercase tracking-wider text-xs px-5 py-2 hover:bg-slate-100"
+                  >
+                    <ArrowLeft className="mr-1.5 size-4" /> Change Package
+                  </Button>
+                  <span className="text-xs font-mono font-bold uppercase text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                    {pkg.name} Package selected
                   </span>
-                  <h3 className="text-2xl font-black tracking-tight text-white uppercase">{pkg.name} ACCESS</h3>
-                  <p className="text-xs text-slate-400 font-mono">
-                    {pkg.credits} scan credits · Up to {pkg.max_verdicts} verdicts per scan
-                  </p>
                 </div>
-                <div className="text-right">
-                  <span className="text-3xl font-black tracking-tight text-white">{ghs(pkg.price_ghs)}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Payment Recipient Info Box */}
-            <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-6 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200">
-                <div>
-                  <p className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest">
-                    PAY TO ({settings?.network ?? "MOBILE MONEY"})
-                  </p>
-                  <p className="text-2xl font-black tracking-tight text-slate-950 font-mono mt-0.5">
-                    {settings?.momo_number ?? "—"}
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  onClick={handleCopyMomo}
-                  className="bg-red-600 hover:bg-slate-950 text-white font-mono text-xs font-bold rounded-full px-5 py-2.5 flex items-center gap-2 shadow-md shadow-red-600/20 transition-all cursor-pointer border-0"
-                >
-                  {momoCopied ? (
-                    <span className="flex items-center gap-1.5 font-bold">
-                      <Check className="size-4" /> Copied!
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1.5">
-                      <Copy className="size-4" /> Copy Number
-                    </span>
-                  )}
-                </Button>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-4 pt-1">
-                <div>
-                  <p className="text-xs font-mono text-slate-500 uppercase tracking-widest">ACCOUNT NAME</p>
-                  <p className="text-sm font-extrabold text-slate-950 mt-0.5">{settings?.recipient_name ?? "—"}</p>
-                </div>
-                {settings?.instructions && (
-                  <div>
-                    <p className="text-xs font-mono text-slate-500 uppercase tracking-widest">INSTRUCTIONS</p>
-                    <p className="text-xs text-slate-600 mt-0.5">{settings.instructions}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* User Input Section */}
-            <div className="grid gap-4 sm:grid-cols-2 rounded-3xl border border-slate-200 bg-white p-6">
-              <div className="space-y-2">
-                <Label className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
-                  Payment Method
-                </Label>
-                <div className="flex h-12 items-center rounded-xl border border-slate-200 bg-slate-50 px-4">
-                  <span className="text-sm font-bold text-slate-900 font-mono">{method}</span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="sender" className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
-                  Your MoMo Account Name
-                </Label>
-                <Input
-                  id="sender"
-                  value={senderName}
-                  maxLength={80}
-                  onChange={(e) => setSenderName(e.target.value)}
-                  placeholder="Name registered on the paying MoMo account"
-                  className="h-12 rounded-xl border-slate-200 focus:border-red-600 focus:ring-red-600/20 text-sm font-medium"
-                  required
+                <NigerianPaymentForm
+                  amountNgn={getNgnPrice(pkg.price_ghs)}
+                  amountGhs={pkg.price_ghs}
+                  packageName={pkg.name}
+                  isPending={submitNigerian.isPending}
+                  onSubmit={(payload) => {
+                    setSenderName(payload.senderName);
+                    submitNigerian.mutate(payload);
+                  }}
                 />
               </div>
-            </div>
+            ) : (
+              <form
+                className="space-y-6"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  submit.mutate();
+                }}
+              >
+                {/* Selected Package Banner */}
+                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white p-6 border border-slate-800 shadow-md">
+                  <LogoWatermark className="opacity-[0.05] text-white" />
+                  <div className="relative z-10 flex flex-wrap items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono font-bold tracking-widest text-red-500 uppercase">
+                        SELECTED PACKAGE
+                      </span>
+                      <h3 className="text-2xl font-black tracking-tight text-white uppercase">{pkg.name} ACCESS</h3>
+                      <p className="text-xs text-slate-400 font-mono">
+                        {pkg.credits} scan credits · Up to {pkg.max_verdicts} verdicts per scan
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-3xl font-black tracking-tight text-white">{ghs(pkg.price_ghs)}</span>
+                    </div>
+                  </div>
+                </div>
 
-            <div className="flex flex-wrap gap-4 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setStep(1)}
-                className="rounded-full border-slate-300 font-bold uppercase tracking-wider text-xs px-6 py-3.5 h-auto hover:bg-slate-100"
-              >
-                <ArrowLeft className="mr-1.5 size-4" /> Change Package
-              </Button>
-              <Button
-                type="submit"
-                disabled={submit.isPending}
-                className="flex-1 rounded-full bg-red-600 hover:bg-slate-950 text-white font-bold uppercase tracking-wider text-xs px-8 py-3.5 h-auto shadow-lg shadow-red-600/25 transition-all border-0 cursor-pointer"
-              >
-                {submit.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
-                Confirm & Submit Payment
-              </Button>
-            </div>
-          </form>
+                {/* Payment Recipient Info Box */}
+                <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-6 space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200">
+                    <div>
+                      <p className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest">
+                        PAY TO ({settings?.network ?? "MOBILE MONEY"})
+                      </p>
+                      <p className="text-2xl font-black tracking-tight text-slate-950 font-mono mt-0.5">
+                        {settings?.momo_number ?? "—"}
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={handleCopyMomo}
+                      className="bg-red-600 hover:bg-slate-950 text-white font-mono text-xs font-bold rounded-full px-5 py-2.5 flex items-center gap-2 shadow-md shadow-red-600/20 transition-all cursor-pointer border-0"
+                    >
+                      {momoCopied ? (
+                        <span className="flex items-center gap-1.5 font-bold">
+                          <Check className="size-4" /> Copied!
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1.5">
+                          <Copy className="size-4" /> Copy Number
+                        </span>
+                      )}
+                    </Button>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-4 pt-1">
+                    <div>
+                      <p className="text-xs font-mono text-slate-500 uppercase tracking-widest">ACCOUNT NAME</p>
+                      <p className="text-sm font-extrabold text-slate-950 mt-0.5">{settings?.recipient_name ?? "—"}</p>
+                    </div>
+                    {settings?.instructions && (
+                      <div>
+                        <p className="text-xs font-mono text-slate-500 uppercase tracking-widest">INSTRUCTIONS</p>
+                        <p className="text-xs text-slate-600 mt-0.5">{settings.instructions}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* User Input Section */}
+                <div className="grid gap-4 sm:grid-cols-2 rounded-3xl border border-slate-200 bg-white p-6">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
+                      Payment Method
+                    </Label>
+                    <div className="flex h-12 items-center rounded-xl border border-slate-200 bg-slate-50 px-4">
+                      <span className="text-sm font-bold text-slate-900 font-mono">{method}</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="sender" className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
+                      Your MoMo Account Name
+                    </Label>
+                    <Input
+                      id="sender"
+                      value={senderName}
+                      maxLength={80}
+                      onChange={(e) => setSenderName(e.target.value)}
+                      placeholder="Name registered on the paying MoMo account"
+                      className="h-12 rounded-xl border-slate-200 focus:border-red-600 focus:ring-red-600/20 text-sm font-medium"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-4 pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setStep(1)}
+                    className="rounded-full border-slate-300 font-bold uppercase tracking-wider text-xs px-6 py-3.5 h-auto hover:bg-slate-100"
+                  >
+                    <ArrowLeft className="mr-1.5 size-4" /> Change Package
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={submit.isPending}
+                    className="flex-1 rounded-full bg-red-600 hover:bg-slate-950 text-white font-bold uppercase tracking-wider text-xs px-8 py-3.5 h-auto shadow-lg shadow-red-600/25 transition-all border-0 cursor-pointer"
+                  >
+                    {submit.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
+                    Confirm & Submit Payment
+                  </Button>
+                </div>
+              </form>
+            )}
+          </div>
         )}
+
 
         {/* Step 3: Redesigned High-Artistry Verification & Slide-in Popups */}
         {step === 3 && (

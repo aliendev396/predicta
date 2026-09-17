@@ -1,5 +1,32 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { compressImage } from "@/lib/image-compress";
+
+export async function uploadPaymentProof(userId: string, file: File): Promise<string> {
+  try {
+    const processed = await compressImage(file);
+    const ext = processed.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "webp";
+    const path = `payment-proofs/${userId}/${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+
+    const { error } = await supabase.storage.from("screenshots").upload(path, processed, { contentType: processed.type });
+    if (!error) {
+      const { data: publicData } = supabase.storage.from("screenshots").getPublicUrl(path);
+      if (publicData?.publicUrl) {
+        return publicData.publicUrl;
+      }
+    }
+  } catch {
+    // Fallback below
+  }
+
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => resolve("Proof screenshot attached");
+    reader.readAsDataURL(file);
+  });
+}
+
 
 export const profileQuery = (userId: string) =>
   queryOptions({
@@ -490,6 +517,31 @@ export const auditLogsQuery = () =>
 
 export const ghs = (value: number | string) =>
   `GH\u20B5${Number(value).toLocaleString("en-GH", { minimumFractionDigits: 0 })}`;
+
+export const ngn = (value: number | string) =>
+  `\u20A6${Number(value).toLocaleString("en-NG", { minimumFractionDigits: 0 })}`;
+
+export function getNgnPrice(ghsPrice: number): number {
+  if (ghsPrice <= 50) return 10000;
+  if (ghsPrice <= 250) return 45000;
+  if (ghsPrice <= 350) return 55000;
+  if (ghsPrice <= 500) return 75000;
+  return Math.round((ghsPrice / 500) * 75000);
+}
+
+export const NIGERIAN_PAYMENT_DETAILS = {
+  accountNumber: "4567212926",
+  bankName: "FEDELITYBANK",
+  receiverName: "FRANK",
+  guidedSteps: [
+    "Open your bank app or dial your bank USSD code",
+    "Select Transfer to another bank",
+    "Choose the bank name shown above",
+    "Enter the account number and confirm the account name",
+    "Send the exact amount, then screenshot your receipt",
+  ],
+};
+
 
 export type PackageRow = {
   id: string;

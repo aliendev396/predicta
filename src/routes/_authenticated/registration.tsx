@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LogoFull } from "@/components/brand/Logo";
 import { PaymentVerificationView } from "@/components/payment/PaymentVerificationView";
+import { CountryPaymentTabs, PaymentCountry } from "@/components/payment/CountryPaymentTabs";
+import { NigerianPaymentForm } from "@/components/payment/NigerianPaymentForm";
 import { usePaymentRealtime } from "@/hooks/usePaymentRealtime";
 import { supabase } from "@/integrations/supabase/client";
-import { ghs, paymentSettingsQuery, profileQuery, registrationPaymentQuery } from "@/lib/data";
+import { ghs, ngn, paymentSettingsQuery, profileQuery, registrationPaymentQuery, uploadPaymentProof } from "@/lib/data";
 import { checkPaymentRateLimit, formatRetryAfter } from "@/lib/rateLimit";
 
 export const Route = createFileRoute("/_authenticated/registration")({
@@ -40,6 +42,7 @@ function RegistrationFeePage() {
   usePaymentRealtime(user.id);
 
   const method = settings?.network ?? "MTN MoMo";
+  const [country, setCountry] = useState<PaymentCountry>("ghana");
   const [senderName, setSenderName] = useState("");
   const [reference, setReference] = useState("");
   const [dismissedDecline, setDismissedDecline] = useState(false);
@@ -137,6 +140,56 @@ function RegistrationFeePage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const submitNigerian = useMutation({
+    mutationFn: async ({
+      senderName,
+      reference,
+      proofFile,
+    }: {
+      senderName: string;
+      reference: string;
+      proofFile: File | null;
+    }) => {
+      const rl = checkPaymentRateLimit(user.id);
+      if (!rl.allowed) {
+        throw new Error(`Submission limit reached. Please wait before submitting again.`);
+      }
+
+      let proofUrl = "";
+      if (proofFile) {
+        proofUrl = await uploadPaymentProof(user.id, proofFile);
+      }
+
+      const refString = proofUrl
+        ? `${reference ? `${reference} | ` : ""}Proof: ${proofUrl}`
+        : reference || "Not provided";
+
+      const { error } = await supabase.from("payments").insert({
+        user_id: user.id,
+        amount_ghs: fee,
+        credits: 0,
+        kind: "registration",
+        method: "Bank Transfer (Nigeria - Fidelity Bank)",
+        sender_name: senderName,
+        reference: refString,
+      });
+      if (error) {
+        throw new Error(error.message);
+      }
+    },
+    onSuccess: async () => {
+      void supabase.channel("admin-realtime-websocket").send({
+        type: "broadcast",
+        event: "payment-submitted",
+        payload: { userId: user.id },
+      });
+      await queryClient.invalidateQueries({ queryKey: ["registration-payment", user.id] });
+      toast.success("Submitted — an admin will approve shortly.");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+
   return (
     <main className="min-h-screen w-full max-w-full bg-slate-50/60 text-slate-950 font-sans selection:bg-red-600 selection:text-white py-6 sm:py-12 px-3 sm:px-6 lg:px-8 flex flex-col justify-between relative overflow-hidden overflow-x-hidden mobile-contain">
       {/* Background Red Ambient Top Glow */}
@@ -187,117 +240,137 @@ function RegistrationFeePage() {
                   ACTIVATION REQUIRED
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-md">
-                  Pay {ghs(fee)} once to activate your PREDICTA workspace. Once approved, your account unlocks instant seed feeds.
+                  Pay {country === "nigeria" ? ngn(10000) : ghs(fee)} once to activate your PREDICTA workspace. Once approved, your account unlocks instant seed feeds.
                 </p>
               </div>
 
               <div className="pt-2 sm:pt-3 flex items-baseline gap-2 border-t border-slate-100">
                 <span className="text-4xl sm:text-5xl font-black font-mono text-red-600 tracking-tight">
-                  {ghs(fee)}
+                  {country === "nigeria" ? ngn(10000) : ghs(fee)}
                 </span>
-                <span className="text-xs font-mono text-slate-500 uppercase font-semibold">One-Time Fee</span>
+                <span className="text-xs font-mono text-slate-500 uppercase font-semibold">
+                  {country === "nigeria" ? "One-Time Fee (₦10,000)" : "One-Time Fee"}
+                </span>
               </div>
             </div>
 
-            <form
-              className="space-y-4 sm:space-y-5"
-              onSubmit={(e) => {
-                e.preventDefault();
-                submit.mutate();
-              }}
-            >
-            {/* Copy Payment Info Card — Clean White/Slate */}
-            <div className="bg-white text-slate-950 rounded-3xl p-6 border border-slate-200/90 space-y-4 shadow-xl">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div>
-                  <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold block">PAYMENT DESTINATION</span>
-                  <span className="text-sm font-bold text-slate-900">{settings?.network ?? "MTN Mobile Money"}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleCopyMomo}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-red-600 hover:bg-slate-950 text-white font-mono text-xs font-bold transition-all shadow-sm"
-                >
-                  {momoCopied ? (
-                    <>
-                      <Check className="w-3.5 h-3.5" /> COPIED!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5" /> COPY NUMBER
-                    </>
-                  )}
-                </button>
-              </div>
+            {/* Country Selector Tabs (Ghanaians vs Nigerians) */}
+            <CountryPaymentTabs country={country} onChange={setCountry} className="py-2" />
 
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-mono text-slate-500 font-semibold uppercase">MOMO NUMBER:</span>
-                <span className="text-xl font-mono font-extrabold text-red-600 tracking-wider">
-                  {settings?.momo_number ?? "0551234567"}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                <span className="text-xs font-mono text-slate-500 font-semibold uppercase">RECIPIENT NAME:</span>
-                <span className="text-xs font-bold text-slate-900 uppercase">{settings?.recipient_name ?? "PREDICTA PLATFORM"}</span>
-              </div>
-
-              {settings?.instructions && (
-                <p className="text-[11px] text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
-                  {settings.instructions}
-                </p>
-              )}
-            </div>
-
-            {/* Input Submission Card */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-md space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="sender" className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
-                  Mobile Money Account Name
-                </Label>
-                <Input
-                  id="sender"
-                  value={senderName}
-                  maxLength={80}
-                  onChange={(e) => setSenderName(e.target.value)}
-                  placeholder="Name on the MoMo account you paid from"
-                  required
-                  className="bg-slate-50 border-slate-200 text-slate-950 focus:border-red-600 focus:ring-1 focus:ring-red-600 rounded-xl h-12 text-sm"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="ref" className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
-                  Transaction Reference (Optional)
-                </Label>
-                <Input
-                  id="ref"
-                  value={reference}
-                  maxLength={80}
-                  onChange={(e) => setReference(e.target.value)}
-                  placeholder="e.g. Transaction ID / Ref number"
-                  className="bg-slate-50 border-slate-200 text-slate-950 focus:border-red-600 focus:ring-1 focus:ring-red-600 rounded-xl h-12 text-sm"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={submit.isPending}
-                className="w-full h-12 rounded-full bg-red-600 hover:bg-slate-950 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-md shadow-red-600/20 hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-60 mt-4"
+            {country === "nigeria" ? (
+              <NigerianPaymentForm
+                amountNgn={10000}
+                amountGhs={fee}
+                packageName="ACCOUNT ACTIVATION"
+                isPending={submitNigerian.isPending}
+                onSubmit={(payload) => submitNigerian.mutate(payload)}
+              />
+            ) : (
+              <form
+                className="space-y-4 sm:space-y-5"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  submit.mutate();
+                }}
               >
-                {submit.isPending ? (
-                  <span className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Submitting Verification...
-                  </span>
-                ) : (
-                  <>
-                    Confirm Payment of {ghs(fee)}
-                    <ArrowUpRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
+                {/* Copy Payment Info Card — Clean White/Slate */}
+                <div className="bg-white text-slate-950 rounded-3xl p-6 border border-slate-200/90 space-y-4 shadow-xl">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div>
+                      <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold block">
+                        PAYMENT DESTINATION
+                      </span>
+                      <span className="text-sm font-bold text-slate-900">{settings?.network ?? "MTN Mobile Money"}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleCopyMomo}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-red-600 hover:bg-slate-950 text-white font-mono text-xs font-bold transition-all shadow-sm"
+                    >
+                      {momoCopied ? (
+                        <>
+                          <Check className="w-3.5 h-3.5" /> COPIED!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3.5 h-3.5" /> COPY NUMBER
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono text-slate-500 font-semibold uppercase">MOMO NUMBER:</span>
+                    <span className="text-xl font-mono font-extrabold text-red-600 tracking-wider">
+                      {settings?.momo_number ?? "0551234567"}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                    <span className="text-xs font-mono text-slate-500 font-semibold uppercase">RECIPIENT NAME:</span>
+                    <span className="text-xs font-bold text-slate-900 uppercase">
+                      {settings?.recipient_name ?? "PREDICTA PLATFORM"}
+                    </span>
+                  </div>
+
+                  {settings?.instructions && (
+                    <p className="text-[11px] text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+                      {settings.instructions}
+                    </p>
+                  )}
+                </div>
+
+                {/* Input Submission Card */}
+                <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-md space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="sender" className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
+                      Mobile Money Account Name
+                    </Label>
+                    <Input
+                      id="sender"
+                      value={senderName}
+                      maxLength={80}
+                      onChange={(e) => setSenderName(e.target.value)}
+                      placeholder="Name on the MoMo account you paid from"
+                      required
+                      className="bg-slate-50 border-slate-200 text-slate-950 focus:border-red-600 focus:ring-1 focus:ring-red-600 rounded-xl h-12 text-sm"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="ref" className="text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
+                      Transaction Reference (Optional)
+                    </Label>
+                    <Input
+                      id="ref"
+                      value={reference}
+                      maxLength={80}
+                      onChange={(e) => setReference(e.target.value)}
+                      placeholder="e.g. Transaction ID / Ref number"
+                      className="bg-slate-50 border-slate-200 text-slate-950 focus:border-red-600 focus:ring-1 focus:ring-red-600 rounded-xl h-12 text-sm"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={submit.isPending}
+                    className="w-full h-12 rounded-full bg-red-600 hover:bg-slate-950 text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-md shadow-red-600/20 hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-60 mt-4"
+                  >
+                    {submit.isPending ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin" /> Submitting Verification...
+                      </span>
+                    ) : (
+                      <>
+                        Confirm Payment of {ghs(fee)}
+                        <ArrowUpRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+
           </>
         )}
       </div>

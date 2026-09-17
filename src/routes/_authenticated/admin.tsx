@@ -47,6 +47,7 @@ import {
   Coins,
   Copy,
   CreditCard,
+  ExternalLink,
   Flame,
   Layers,
   Lock,
@@ -1180,23 +1181,41 @@ function PaymentsList({
                 </div>
 
                 {p.reference && p.reference !== "Not provided" && (
-                  <div className="flex items-center gap-1.5 pt-0.5">
-                    <span className="text-xs font-mono text-slate-500">
-                      Ref: <strong className="text-slate-900 font-bold">{p.reference}</strong>
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleCopyRef(p.reference, p.id)}
-                      className="text-slate-400 hover:text-red-600 transition-colors p-0.5 rounded"
-                      title="Copy reference code"
-                      aria-label="Copy reference"
-                    >
-                      {copiedRefId === p.id ? (
-                        <Check className="size-3 text-emerald-600 stroke-[3]" />
-                      ) : (
-                        <Copy className="size-3" />
-                      )}
-                    </button>
+                  <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-mono text-slate-500">
+                        Ref: <strong className="text-slate-900 font-bold">{p.reference.replace(/\|?\s*Proof:\s*(https?:\/\/[^\s]+|data:image\/[^\s]+)/, "").trim() || p.reference}</strong>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyRef(p.reference, p.id)}
+                        className="text-slate-400 hover:text-red-600 transition-colors p-0.5 rounded"
+                        title="Copy reference code"
+                        aria-label="Copy reference"
+                      >
+                        {copiedRefId === p.id ? (
+                          <Check className="size-3 text-emerald-600 stroke-[3]" />
+                        ) : (
+                          <Copy className="size-3" />
+                        )}
+                      </button>
+                    </div>
+
+                    {(() => {
+                      const match = p.reference.match(/Proof:\s*(https?:\/\/[^\s]+|data:image\/[^\s]+)/);
+                      const url = match ? match[1] : (p.reference.startsWith("http") || p.reference.startsWith("data:image") ? p.reference : null);
+                      if (!url) return null;
+                      return (
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 hover:bg-emerald-600 hover:text-white transition-all shadow-xs"
+                        >
+                          <ExternalLink className="size-3" /> View Proof Receipt
+                        </a>
+                      );
+                    })()}
                   </div>
                 )}
 
