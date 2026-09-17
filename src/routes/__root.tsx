@@ -154,10 +154,11 @@ function RootShell({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {/* Splash screen: pure HTML/CSS/JS — no React dependency, no hydration issues */}
         <div
           id="predicta-splash"
+          suppressHydrationWarning
           style={{
             position: "fixed",
             inset: 0,
