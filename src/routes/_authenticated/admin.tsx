@@ -49,6 +49,7 @@ import {
   CreditCard,
   ExternalLink,
   Flame,
+  Landmark,
   Layers,
   Lock,
   Mail,
@@ -90,7 +91,9 @@ import {
   adminPaymentsQuery,
   adminStatsQuery,
   auditLogsQuery,
+  getNgnPrice,
   ghs,
+  ngn,
   paymentSettingsQuery,
   packagesQuery,
   rolesQuery,
@@ -346,6 +349,24 @@ function AdminPage() {
     return Math.max(statsRev, paymentsRev, snapshotsRev, memberSpentSum, regPaidSum);
   }, [stats?.revenue_ghs, payments, snapshots, members]);
 
+  const approvedNigerianPayments = useMemo(() => {
+    return (payments ?? []).filter((p) => {
+      const isApproved = (p.status || "").toLowerCase() === "approved";
+      const m = (p.method || "").toLowerCase();
+      const r = (p.reference || "").toLowerCase();
+      const isNaira = m.includes("nigeria") || m.includes("fidelity") || r.includes("fidelity");
+      return isApproved && isNaira;
+    });
+  }, [payments]);
+
+  const totalNairaRevenue = useMemo(() => {
+    return approvedNigerianPayments.reduce(
+      (acc, p) => acc + getNgnPrice(Number(p.amount_ghs || (p.kind === "registration" ? 50 : 0))),
+      0
+    );
+  }, [approvedNigerianPayments]);
+
+
   const activeDateLabel = activeDate
     ? activeDate.toLocaleDateString("en-GB", { day: "numeric", month: "short" })
     : "Today";
@@ -407,13 +428,20 @@ function AdminPage() {
 
       {/* Main Monetization & Revenue Stat Overview Grid */}
       <div className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <Stat
             label="Total Revenue"
             value={ghs(totalAcceptedRevenue)}
             highlight
             subtext="Total ever accepted"
             icon={Wallet}
+          />
+          <Stat
+            label="Naira Revenue"
+            value={ngn(totalNairaRevenue)}
+            highlight
+            subtext={`${approvedNigerianPayments.length} approved bank transfer${approvedNigerianPayments.length === 1 ? "" : "s"}`}
+            icon={Landmark}
           />
           <Stat
             label={isHistoryMode ? `Revenue · ${activeDateLabel}` : "Today's Revenue"}
@@ -525,8 +553,14 @@ function AdminPage() {
           </div>
         </div>
 
-        <TabsContent value="payments" className="min-h-[450px] focus-visible:outline-none">
-          <PaymentsList payments={payments ?? []} members={(members ?? []) as MemberRow[]} reviewPayment={reviewPayment} />
+        <TabsContent value="payments" className="min-h-[450px] focus-visible:outline-none space-y-10">
+          <PaymentsList
+            payments={payments ?? []}
+            members={(members ?? []) as MemberRow[]}
+            reviewPayment={reviewPayment}
+            approvedNigerianPayments={approvedNigerianPayments}
+            totalNairaRevenue={totalNairaRevenue}
+          />
         </TabsContent>
 
         <TabsContent value="settings" className="min-h-[450px] focus-visible:outline-none">
@@ -956,20 +990,31 @@ function PaymentsList({
   payments,
   members = [],
   reviewPayment,
+  approvedNigerianPayments = [],
+  totalNairaRevenue = 0,
 }: {
   payments: AdminPaymentItem[];
   members?: MemberRow[];
   reviewPayment: { isPending: boolean; mutate: (vars: { id: string; approve: boolean }) => void };
+  approvedNigerianPayments?: AdminPaymentItem[];
+  totalNairaRevenue?: number;
 }) {
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "rejected" | "nigerian">("all");
   const [expanded, setExpanded] = useState(false);
   const [sortBy, setSortBy] = useState<PaymentSortKey>("pending_first");
   const [copiedRefId, setCopiedRefId] = useState<string | null>(null);
 
   const memberMap = new Map<string, MemberRow>(members.map((m) => [m.id, m]));
 
+  const isNigerianPayment = (p: AdminPaymentItem) => {
+    const m = (p.method || "").toLowerCase();
+    const r = (p.reference || "").toLowerCase();
+    return m.includes("nigeria") || m.includes("fidelity") || r.includes("fidelity");
+  };
+
   const filtered = payments.filter((p) => {
+    if (statusFilter === "nigerian") return isNigerianPayment(p);
     if (statusFilter !== "all" && p.status !== statusFilter) return false;
     const q = search.trim().toLowerCase();
     if (!q) return true;
@@ -1007,6 +1052,7 @@ function PaymentsList({
   const pendingCount = payments.filter((p) => p.status === "pending").length;
   const approvedCount = payments.filter((p) => p.status === "approved").length;
   const rejectedCount = payments.filter((p) => p.status === "rejected").length;
+  const nigerianCount = payments.filter((p) => isNigerianPayment(p)).length;
 
   const sortOptions: { key: PaymentSortKey; label: string }[] = [
     { key: "pending_first", label: "⚡ Pending First" },
@@ -1101,6 +1147,20 @@ function PaymentsList({
             >
               Rejected ({rejectedCount})
             </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={statusFilter === "nigerian" ? "default" : "outline"}
+              className={cn(
+                "h-8 text-xs font-mono font-bold uppercase rounded-full px-3 transition-all",
+                statusFilter === "nigerian"
+                  ? "bg-emerald-800 hover:bg-emerald-900 text-white shadow-xs shadow-emerald-900/20"
+                  : "border-emerald-700 text-emerald-800 hover:bg-emerald-50"
+              )}
+              onClick={() => setStatusFilter("nigerian")}
+            >
+              🇳🇬 Nigerian ({nigerianCount})
+            </Button>
           </div>
 
           <div className="flex flex-wrap items-center gap-1.5">
@@ -1152,9 +1212,19 @@ function PaymentsList({
                   <p className="text-xl font-black tracking-tight text-slate-950 font-sans">
                     {ghs(p.amount_ghs)}
                   </p>
+                  {isNigerianPayment(p) && (
+                    <p className="text-lg font-black tracking-tight text-emerald-700 font-sans">
+                      = {ngn(getNgnPrice(Number(p.amount_ghs || (p.kind === "registration" ? 50 : 0))))}
+                    </p>
+                  )}
                   <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                     {p.kind === "registration" ? "Registration Fee" : `${p.credits} Credits`}
                   </span>
+                  {isNigerianPayment(p) && (
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                      🇳🇬 Bank Transfer
+                    </span>
+                  )}
                   <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200/60">
                     {p.method}
                   </span>
@@ -1162,7 +1232,7 @@ function PaymentsList({
 
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
                   <span className="text-slate-500">
-                    MoMo Sender:{" "}
+                    {isNigerianPayment(p) ? "Bank Sender" : "MoMo Sender"}:{" "}
                     <strong className="text-slate-900 font-semibold font-sans">
                       {p.sender_name || "—"}
                     </strong>
@@ -1283,6 +1353,111 @@ function PaymentsList({
               </>
             )}
           </Button>
+        </div>
+      )}
+
+      {/* ── Approved Naira Revenue Cards ── */}
+      {approvedNigerianPayments.length > 0 && (
+        <div className="space-y-4 pt-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/80 pb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <Landmark className="size-4 text-emerald-700" />
+                <h2 className="text-base font-black uppercase tracking-tight text-slate-950 font-sans">
+                  Approved Naira Revenue
+                </h2>
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-mono font-bold text-emerald-700">
+                  🇳🇬 {approvedNigerianPayments.length} payment{approvedNigerianPayments.length === 1 ? "" : "s"}
+                </span>
+              </div>
+              <p className="mt-0.5 text-xs text-slate-500">Every approved Nigerian bank transfer — individual breakdown</p>
+            </div>
+            <div className="flex flex-col items-start sm:items-end gap-0.5">
+              <p className="text-xs font-mono uppercase tracking-wider text-slate-400">Total Naira Received</p>
+              <p className="text-3xl font-black text-emerald-700 font-sans tracking-tight">
+                {ngn(totalNairaRevenue)}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[...approvedNigerianPayments]
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+              .map((p) => {
+                const ngnAmount = getNgnPrice(Number(p.amount_ghs || (p.kind === "registration" ? 50 : 0)));
+                const proofMatch = p.reference?.match(/Proof:\s*(https?:\/\/[^\s]+|data:image\/[^\s]+)/);
+                const proofUrl = proofMatch
+                  ? proofMatch[1]
+                  : p.reference?.startsWith("http") || p.reference?.startsWith("data:image")
+                    ? p.reference
+                    : null;
+                const memberInMap = members.find((m) => m.id === p.user_id);
+                const payerLabel = p.sender_name ||
+                  (memberInMap ? displayUserName(memberInMap.full_name, memberInMap.email, memberInMap.phone, "Member") : "Unknown");
+                return (
+                  <div
+                    key={p.id}
+                    className="relative overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-4 shadow-xs hover:shadow-md transition-all group"
+                  >
+                    {/* Accent bar */}
+                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-t-2xl" />
+
+                    <div className="mt-1 flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-2xl font-black text-emerald-700 font-sans tracking-tight leading-none">
+                          {ngn(ngnAmount)}
+                        </p>
+                        <p className="mt-0.5 text-xs font-mono text-slate-500">
+                          = {ghs(p.amount_ghs)} GHS
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <span className="text-xl">🇳🇬</span>
+                        <span className="inline-flex items-center rounded-full bg-emerald-600 px-2 py-0.5 text-[9px] font-mono font-black text-white tracking-widest">
+                          APPROVED
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 space-y-1.5">
+                      <div className="flex items-center gap-1.5 text-xs">
+                        <span className="text-slate-400 font-mono shrink-0">Payer:</span>
+                        <span className="font-bold text-slate-900 truncate font-sans">{payerLabel}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs">
+                        <span className="text-slate-400 font-mono shrink-0">Package:</span>
+                        <span className="font-semibold text-slate-700">
+                          {p.kind === "registration" ? "Registration Activation" : `${p.credits} Credit Package`}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs">
+                        <CalendarDays className="size-3 text-slate-400 shrink-0" />
+                        <span className="text-slate-500 font-mono">
+                          {new Date(p.created_at).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    {proofUrl && (
+                      <a
+                        href={proofUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-[11px] font-mono font-bold text-white shadow-xs hover:bg-emerald-700 transition-all group-hover:shadow-emerald-600/30 group-hover:shadow-md"
+                      >
+                        <ExternalLink className="size-3" /> View Payment Receipt
+                      </a>
+                    )}
+                  </div>
+                );
+              })}
+          </div>
+
+          {/* Running total footer */}
+          <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
+            <span className="text-xs font-mono uppercase tracking-wider text-slate-400">Grand Total Naira Received:</span>
+            <span className="text-xl font-black text-emerald-700 font-sans">{ngn(totalNairaRevenue)}</span>
+          </div>
         </div>
       )}
     </div>
