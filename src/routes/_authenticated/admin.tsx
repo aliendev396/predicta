@@ -47,8 +47,10 @@ import {
   Coins,
   Copy,
   CreditCard,
+  Download,
   ExternalLink,
   Flame,
+  Image as ImageIcon,
   Landmark,
   Layers,
   Lock,
@@ -1004,6 +1006,13 @@ function PaymentsList({
   const [expanded, setExpanded] = useState(false);
   const [sortBy, setSortBy] = useState<PaymentSortKey>("pending_first");
   const [copiedRefId, setCopiedRefId] = useState<string | null>(null);
+  const [previewProof, setPreviewProof] = useState<{
+    url: string;
+    sender?: string | undefined;
+    amount?: string | undefined;
+    date?: string | undefined;
+    ref?: string | undefined;
+  } | null>(null);
 
   const memberMap = new Map<string, MemberRow>(members.map((m) => [m.id, m]));
 
@@ -1273,17 +1282,32 @@ function PaymentsList({
 
                     {(() => {
                       const match = p.reference.match(/Proof:\s*(https?:\/\/[^\s]+|data:image\/[^\s]+)/);
-                      const url = match ? match[1] : (p.reference.startsWith("http") || p.reference.startsWith("data:image") ? p.reference : null);
+                      const url = match
+                        ? match[1]
+                        : (p.reference.startsWith("http") || p.reference.startsWith("data:image")
+                          ? p.reference
+                          : null);
                       if (!url) return null;
+                      const cleanRefText = p.reference.replace(/\|?\s*Proof:\s*(https?:\/\/[^\s]+|data:image\/[^\s]+)/, "").trim();
                       return (
-                        <a
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 hover:bg-emerald-600 hover:text-white transition-all shadow-xs"
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setPreviewProof({
+                              url,
+                              sender: p.sender_name || undefined,
+                              amount: isNigerianPayment(p)
+                                ? ngn(getNgnPrice(Number(p.amount_ghs || (p.kind === "registration" ? 50 : 0))))
+                                : ghs(p.amount_ghs),
+                              date: new Date(p.created_at).toLocaleString(),
+                              ref: cleanRefText || undefined,
+                            })
+                          }
+                          className="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-600 hover:text-white px-2.5 py-1 rounded-full border border-emerald-200 transition-all shadow-xs cursor-pointer group/receipt"
                         >
-                          <ExternalLink className="size-3" /> View Proof Receipt
-                        </a>
+                          <ImageIcon className="size-3 text-emerald-600 group-hover/receipt:text-white" />
+                          <span>View Proof Receipt</span>
+                        </button>
                       );
                     })()}
                   </div>
@@ -1439,14 +1463,21 @@ function PaymentsList({
                     </div>
 
                     {proofUrl && (
-                      <a
-                        href={proofUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-[11px] font-mono font-bold text-white shadow-xs hover:bg-emerald-700 transition-all group-hover:shadow-emerald-600/30 group-hover:shadow-md"
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setPreviewProof({
+                            url: proofUrl,
+                            sender: payerLabel,
+                            amount: ngn(ngnAmount),
+                            date: new Date(p.created_at).toLocaleString(),
+                            ref: p.reference || undefined,
+                          })
+                        }
+                        className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-[11px] font-mono font-bold text-white shadow-xs hover:bg-emerald-700 transition-all group-hover:shadow-emerald-600/30 group-hover:shadow-md cursor-pointer"
                       >
-                        <ExternalLink className="size-3" /> View Payment Receipt
-                      </a>
+                        <ImageIcon className="size-3.5" /> View Payment Receipt
+                      </button>
                     )}
                   </div>
                 );
@@ -1460,6 +1491,117 @@ function PaymentsList({
           </div>
         </div>
       )}
+
+      {/* Proof Receipt Lightbox Modal for Admin */}
+      <Dialog open={!!previewProof} onOpenChange={(open) => !open && setPreviewProof(null)}>
+        <DialogContent className="max-w-2xl rounded-3xl bg-white p-6 border border-slate-200 shadow-2xl">
+          <DialogHeader className="space-y-1 text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 font-mono text-[10px] font-bold uppercase tracking-wider w-fit">
+              <ImageIcon className="size-3.5" />
+              VERIFIED PAYMENT RECEIPT PROOF
+            </div>
+            <DialogTitle className="text-xl font-extrabold uppercase tracking-tight text-slate-950">
+              Bank Transfer Screenshot
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Review the payment receipt proof uploaded by the Nigerian user.
+            </DialogDescription>
+          </DialogHeader>
+
+          {previewProof && (
+            <div className="mt-4 space-y-4">
+              {/* Payment Info Meta Bar */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-slate-50 border border-slate-200 p-3 rounded-2xl text-xs">
+                {previewProof.amount && (
+                  <div>
+                    <span className="text-slate-400 font-mono text-[10px] uppercase block">Amount Paid</span>
+                    <span className="font-bold text-slate-900 text-sm">{previewProof.amount}</span>
+                  </div>
+                )}
+                {previewProof.sender && (
+                  <div>
+                    <span className="text-slate-400 font-mono text-[10px] uppercase block">Sender Name</span>
+                    <span className="font-semibold text-slate-800 truncate block">{previewProof.sender}</span>
+                  </div>
+                )}
+                {previewProof.date && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="text-slate-400 font-mono text-[10px] uppercase block">Timestamp</span>
+                    <span className="text-slate-600 font-mono text-[11px]">{previewProof.date}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Full Screenshot Viewport */}
+              <div className="relative max-h-[60vh] overflow-auto rounded-2xl border border-slate-200 bg-slate-950/5 p-2 flex items-center justify-center">
+                <img
+                  src={previewProof.url}
+                  alt="Payment receipt proof"
+                  className="max-h-[55vh] w-auto max-w-full rounded-xl object-contain shadow-sm"
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPreviewProof(null)}
+                  className="rounded-full px-5 text-xs font-bold uppercase tracking-wider"
+                >
+                  Close
+                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="rounded-full bg-slate-900 hover:bg-slate-800 text-white px-4 text-xs font-bold uppercase tracking-wider border-0"
+                    onClick={() => {
+                      if (previewProof.url.startsWith("data:image")) {
+                        const win = window.open("");
+                        if (win) {
+                          win.document.write(`
+                            <!DOCTYPE html>
+                            <html>
+                              <head>
+                                <title>Payment Receipt Proof - PREDICTA</title>
+                                <style>
+                                  body { margin: 0; background: #0f172a; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; }
+                                  img { max-width: 95vw; max-height: 95vh; object-fit: contain; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+                                </style>
+                              </head>
+                              <body>
+                                <img src="${previewProof.url}" alt="Payment Proof Receipt" />
+                              </body>
+                            </html>
+                          `);
+                          win.document.close();
+                        }
+                      } else {
+                        window.open(previewProof.url, "_blank", "noopener,noreferrer");
+                      }
+                    }}
+                  >
+                    <ExternalLink className="mr-1.5 size-3.5" />
+                    Open in New Window
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    asChild
+                    className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white px-4 text-xs font-bold uppercase tracking-wider border-0"
+                  >
+                    <a href={previewProof.url} download="receipt-proof.png" target="_blank" rel="noreferrer">
+                      <Download className="mr-1.5 size-3.5" />
+                      Save Receipt
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
