@@ -37,13 +37,35 @@ export function PhoneInput({
 
   const handleInputChange = (rawVal: string) => {
     const digitsOnly = rawVal.replace(/\D/g, "");
+
+    // Auto-detect country based on entered digits (international or local prefix)
+    let activeCountry = country;
+    if (
+      digitsOnly.startsWith("234") ||
+      digitsOnly.startsWith("07") ||
+      digitsOnly.startsWith("08") ||
+      digitsOnly.startsWith("09")
+    ) {
+      activeCountry = "NG";
+    } else if (
+      digitsOnly.startsWith("233") ||
+      digitsOnly.startsWith("02") ||
+      digitsOnly.startsWith("05")
+    ) {
+      activeCountry = "GH";
+    }
+
+    if (activeCountry !== country) {
+      setCountry(activeCountry);
+    }
+
     let formatted = digitsOnly;
-    if (country === "GH") {
+    if (activeCountry === "GH") {
       formatted = formatGhanaNumber(digitsOnly);
     } else {
       formatted = formatNigeriaNumber(digitsOnly);
     }
-    const valResult = validateMobileNumber(formatted, country);
+    const valResult = validateMobileNumber(formatted, activeCountry);
     onChange(formatted, valResult);
   };
 

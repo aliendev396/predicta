@@ -58,6 +58,7 @@ const NG_PREFIXES: Record<string, string> = {
   "0703": "MTN",
   "0706": "MTN",
   "0704": "MTN",
+  "0702": "MTN",
   "0913": "MTN",
   "0916": "MTN",
   // Airtel Nigeria
@@ -71,6 +72,7 @@ const NG_PREFIXES: Record<string, string> = {
   "0904": "Airtel",
   "0907": "Airtel",
   "0912": "Airtel",
+  "0911": "Airtel",
   // Glo (Globacom)
   "0805": "Glo",
   "0807": "Glo",
@@ -85,6 +87,12 @@ const NG_PREFIXES: Record<string, string> = {
   "0818": "9mobile",
   "0909": "9mobile",
   "0908": "9mobile",
+  // Other Nigerian Networks (Ntel, Smile, Starcomms, etc.)
+  "0804": "Ntel",
+  "0819": "Starcomms",
+  "0707": "Glo",
+  "0709": "NG Mobile",
+  "0914": "NG Mobile",
 };
 
 export interface PhoneValidationResult {
@@ -107,7 +115,7 @@ export function validateMobileNumber(
 ): PhoneValidationResult {
   const digits = rawInput.trim().replace(/\D/g, "");
 
-  // Auto-detect country if input includes international prefix
+  // Auto-detect country if input includes international prefix or a recognizable local prefix
   let country: CountryCode = selectedCountry;
   let cleanDigits = digits;
 
@@ -117,8 +125,17 @@ export function validateMobileNumber(
   } else if (digits.startsWith("234")) {
     country = "NG";
     cleanDigits = "0" + digits.slice(3);
-  } else if (!cleanDigits.startsWith("0") && cleanDigits.length > 0) {
-    cleanDigits = "0" + cleanDigits;
+  } else {
+    if (!cleanDigits.startsWith("0") && cleanDigits.length > 0) {
+      cleanDigits = "0" + cleanDigits;
+    }
+    // Auto-detect Nigerian local prefixes (07x, 08x, 09x) vs Ghana (02x, 05x)
+    const first2 = cleanDigits.slice(0, 2);
+    if (first2 === "07" || first2 === "08" || first2 === "09") {
+      country = "NG";
+    } else if (first2 === "02" || first2 === "05") {
+      country = "GH";
+    }
   }
 
   const countryInfo = COUNTRIES[country];
@@ -182,20 +199,7 @@ export function validateMobileNumber(
 
     const national11 = cleanDigits.slice(0, 11);
     const prefix4 = national11.slice(0, 4);
-    const telco = NG_PREFIXES[prefix4] ?? null;
-
-    if (!telco) {
-      return {
-        isValid: false,
-        country: "NG",
-        nationalNumber: national11,
-        formattedDisplay: formatNigeriaNumber(national11),
-        e164Digits: "234" + national11.slice(1),
-        syntheticEmail: `234${national11.slice(1)}@phone.PREDICTA.live`,
-        telco: null,
-        error: `Prefix "${prefix4}" is not a recognized Nigeria mobile network (MTN, Airtel, Glo, 9mobile).`,
-      };
-    }
+    const telco = NG_PREFIXES[prefix4] ?? "NG Mobile";
 
     const e164 = "234" + national11.slice(1);
     return {
