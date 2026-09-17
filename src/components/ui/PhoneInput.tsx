@@ -9,6 +9,8 @@ interface PhoneInputProps {
   id?: string;
   label?: string;
   value: string;
+  country?: CountryCode;
+  onCountryChange?: (country: CountryCode) => void;
   onChange: (value: string, validation: ReturnType<typeof validateMobileNumber>) => void;
   required?: boolean;
   autoFocus?: boolean;
@@ -20,6 +22,8 @@ export function PhoneInput({
   id: propId,
   label = "Phone number",
   value,
+  country: controlledCountry,
+  onCountryChange,
   onChange,
   required = false,
   autoFocus = false,
@@ -29,8 +33,14 @@ export function PhoneInput({
   const generatedId = useId();
   const inputId = propId ?? generatedId;
 
-  const [country, setCountry] = useState<CountryCode>("GH");
+  const [internalCountry, setInternalCountry] = useState<CountryCode>("GH");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const country = controlledCountry ?? internalCountry;
+  const setCountry = (newCountry: CountryCode) => {
+    setInternalCountry(newCountry);
+    onCountryChange?.(newCountry);
+  };
 
   const countryInfo = COUNTRIES[country];
   const validation = validateMobileNumber(value, country);

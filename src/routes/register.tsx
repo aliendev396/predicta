@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { AuthBackground } from "@/components/brand/AuthBackground";
 import { supabase } from "@/integrations/supabase/client";
-import { validateMobileNumber } from "@/lib/phone";
+import { CountryCode, validateMobileNumber } from "@/lib/phone";
 import { checkRegisterRateLimit, formatRetryAfter } from "@/lib/rateLimit";
 import { cn } from "@/lib/utils";
 
@@ -54,6 +54,7 @@ function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState<CountryCode>("GH");
   const [password, setPassword] = useState("");
 
   const urlRef = (ref ?? "").trim().toUpperCase().slice(0, 16);
@@ -101,7 +102,7 @@ function RegisterPage() {
 
     if (fullName.trim().length < 2) return setError("Please enter your full name.");
 
-    const phoneVal = validateMobileNumber(phone);
+    const phoneVal = validateMobileNumber(phone, country);
     if (!phoneVal.isValid) {
       return setError(phoneVal.error ?? "Please enter a valid Ghana (10 digits) or Nigeria (11 digits) mobile number.");
     }
@@ -264,7 +265,14 @@ function RegisterPage() {
             id="phone"
             label="Mobile Number"
             value={phone}
-            onChange={(val) => setPhone(val)}
+            country={country}
+            onCountryChange={setCountry}
+            onChange={(val, validation) => {
+              setPhone(val);
+              if (validation.country && validation.country !== country) {
+                setCountry(validation.country);
+              }
+            }}
             required
           />
 
